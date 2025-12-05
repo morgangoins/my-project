@@ -13,7 +13,7 @@
       "rear_axle_configuration": "string or null (e.g., 'SRW', 'DRW')",
       "wheelbase": "number or null (e.g., 119)",
       "msrp": "number (total MSRP)",
-      "engine": "string (e.g., '2.3L EcoBoost I-4', '3.5L EcoBoost V-6', '5.0L V-8') (avoid: null)",
+      "engine": "string (e.g., '2.3L EcoBoost I4', '3.5L EcoBoost V6', '5.0L V8') (avoid: null)",
       "engine_displacement": "string (e.g., 2.3L, 3.5L, 5.0L) (avoid: '5', null)",
       "mpg": {
         "city": "integer or null",

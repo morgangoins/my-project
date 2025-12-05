@@ -1,106 +1,137 @@
 <?php
+/**
+ * Inventory API (JSON)
+ *
+ * Serves data from the SQLite database at /root/www/db/inventory.sqlite. The
+ * host PHP runtime doesn't have the SQLite extension enabled, so we call the
+ * sqlite3 CLI with JSON output and map the rows to the existing API shape.
+ */
 header('Content-Type: application/json');
 
-$directory = __DIR__ . '/../scraper';
-$pattern = $directory . '/*.csv';
-$files = glob($pattern);
-$debug = [
-    'directory' => $directory,
-    'pattern' => $pattern,
-    'fileCount' => $files ? count($files) : 0,
-];
+$dbPath = __DIR__ . '/../db/inventory.sqlite';
 
-if (!$files) {
-    echo json_encode(['vehicles' => [], 'debug' => $debug]);
+if (!file_exists($dbPath)) {
+    echo json_encode(['vehicles' => [], 'debug' => ['dbPath' => $dbPath, 'error' => 'Database not found']]);
     exit;
 }
 
-usort($files, function ($a, $b) {
-    return filemtime($b) <=> filemtime($a);
-});
+$query = <<<'SQL'
+SELECT
+    vin,
+    stock,
+    photo_urls,
+    vehicle_link,
+    year,
+    make,
+    model,
+    trim,
+    paint,
+    interior_color,
+    drivetrain,
+    body_style,
+    truck_body_style,
+    rear_axle_config,
+    engine,
+    transmission_type,
+    fuel,
+    mpg,
+    msrp,
+    total_vehicle
+FROM vehicles
+ORDER BY stock;
+SQL;
 
-$latestFile = $files[0];
+// Execute the query via the sqlite3 CLI (-json outputs a JSON array of rows).
+$cmd = 'sqlite3 -json ' . escapeshellarg($dbPath) . ' ' . escapeshellarg($query);
+$output = shell_exec($cmd);
 
-// Derive timestamp from filename like inventoryNew-20251201-133814.csv
-$basename = basename($latestFile);
-$timestampRaw = null;
-$timestampDisplay = null;
-if (preg_match('/inventoryNew-(\d{8}-\d{6})\.csv$/', $basename, $m)) {
-    $timestampRaw = $m[1];
-    $dt = DateTime::createFromFormat('Ymd-His', $timestampRaw, new DateTimeZone('America/Los_Angeles'));
-    if ($dt instanceof DateTime) {
-        $timestampDisplay = $dt->format('M j, Y g:i a T');
-    }
-}
-
-$handle = fopen($latestFile, 'r');
-
-if (!$handle) {
-    echo json_encode(['vehicles' => [], 'debug' => $debug]);
+if ($output === null) {
+    echo json_encode(['vehicles' => [], 'debug' => ['dbPath' => $dbPath, 'error' => 'sqlite3 command failed']]);
     exit;
 }
 
-$headers = fgetcsv($handle);
+$rows = json_decode($output, true);
+if (!is_array($rows)) {
+    echo json_encode(['vehicles' => [], 'debug' => ['dbPath' => $dbPath, 'error' => 'Invalid JSON from sqlite3']]);
+    exit;
+}
+
 $vehicles = [];
 
-while (($row = fgetcsv($handle)) !== false) {
-    if (!$row || count($row) !== count($headers)) {
-        continue;
-    }
-
-    $data = array_combine($headers, $row);
-
+foreach ($rows as $row) {
     $photo = '';
     $photoInterior = '';
-    if (!empty($data['Photo URLs'])) {
-        $urls = explode(',', $data['Photo URLs']);
-        if (!empty($urls[0])) {
-            $photo = trim($urls[0]);
+    $urls = [];
+
+    if (!empty($row['photo_urls'])) {
+        $urls = array_values(array_filter(array_map('trim', explode(',', $row['photo_urls']))));
+        if (isset($urls[0])) {
+            $photo = $urls[0];
         }
-        if (!empty($urls[9])) {
-            $photoInterior = trim($urls[9]);
+        if (isset($urls[9])) {
+            $photoInterior = $urls[9];
+        } elseif (isset($urls[1])) {
+            $photoInterior = $urls[1];
         }
+    }
+
+    $bodyStyle = '';
+    if (!empty($row['body_style'])) {
+        $bodyStyle = $row['body_style'];
+    } elseif (!empty($row['truck_body_style'])) {
+        $bodyStyle = $row['truck_body_style'];
     }
 
     $vehicles[] = [
-        'vin' => $data['VIN'] ?? '',
-        'year' => $data['Year'] ?? '',
-        'make' => $data['Make'] ?? '',
-        'model' => $data['Model'] ?? '',
-        'trim' => $data['Trim'] ?? '',
-        'exterior' => $data['Exterior Color'] ?? '',
-        'interior' => $data['Interior Color'] ?? '',
-        'odometer' => $data['Odometer'] ?? '',
-        'msrp' => $data['MSRP'] ?? '',
-        'sale_price' => $data['Sale Price'] ?? '',
-        'retail_price' => $data['Retail Price'] ?? '',
-        'stock' => $data['Stock Number'] ?? '',
-        'engine' => $data['Engine'] ?? '',
-        'transmission' => $data['Transmission'] ?? '',
-        'drive_line' => $data['Drive Line'] ?? '',
-        'body_style' => $data['Body Style'] ?? '',
-        'fuel_type' => $data['Fuel Type'] ?? '',
-        'condition' => $data['Condition'] ?? '',
-        'inventory_date' => $data['Inventory Date'] ?? '',
-        'fuel_economy' => $data['Fuel Economy'] ?? '',
-        'city_mpg' => $data['City Fuel Economy'] ?? '',
-        'highway_mpg' => $data['Highway Fuel Economy'] ?? '',
-        'vehicle_link' => $data['Vehicle Link'] ?? '',
+        'vin' => $row['vin'] ?? '',
+        'year' => $row['year'] ?? '',
+        'make' => $row['make'] ?? '',
+        'model' => $row['model'] ?? '',
+        'trim' => $row['trim'] ?? '',
+        'exterior' => $row['paint'] ?? '',
+        'interior' => $row['interior_color'] ?? '',
+        'odometer' => '', // not tracked in the current DB
+        'msrp' => $row['msrp'] ?? '',
+        // Use MSRP as a fallback sale price so the UI continues to show a value.
+        'sale_price' => $row['msrp'] ?? '',
+        'retail_price' => $row['total_vehicle'] ?? '',
+        'stock' => $row['stock'] ?? '',
+        'engine' => $row['engine'] ?? '',
+        'transmission' => $row['transmission_type'] ?? '',
+        'drive_line' => $row['drivetrain'] ?? '',
+        'body_style' => $bodyStyle,
+        'fuel_type' => $row['fuel'] ?? '',
+        'rear_axle_config' => $row['rear_axle_config'] ?? '',
+        'condition' => 'New',
+        'inventory_date' => '',
+        'fuel_economy' => $row['mpg'] ?? '',
+        'city_mpg' => '',
+        'highway_mpg' => '',
+        'vehicle_link' => $row['vehicle_link'] ?? '',
         'photo' => $photo,
         'photo_interior' => $photoInterior,
-        'photo_urls' => array_values(array_filter(array_map('trim', $urls))),
+        'photo_urls' => $urls,
     ];
 }
 
-fclose($handle);
+$dbTimestamp = filemtime($dbPath);
+$timestampDisplay = null;
+$timestampRaw = $dbTimestamp ? date('Ymd-His', $dbTimestamp) : null;
+if ($dbTimestamp) {
+    $dt = new DateTime('@' . $dbTimestamp);
+    $dt->setTimezone(new DateTimeZone('America/Los_Angeles'));
+    $timestampDisplay = $dt->format('M j, Y g:i a T');
+}
 
-$debug['latestFile'] = $latestFile;
-$debug['timestampRaw'] = $timestampRaw;
-$debug['timestampDisplay'] = $timestampDisplay;
+$debug = [
+    'dbPath' => $dbPath,
+    'rowCount' => count($vehicles),
+    'timestampRaw' => $timestampRaw,
+    'timestampDisplay' => $timestampDisplay,
+];
 
 echo json_encode([
     'vehicles' => $vehicles,
     'debug' => $debug,
-    'lastUpdated' => $timestampDisplay ?: $timestampRaw
+    'lastUpdated' => $timestampDisplay ?: $timestampRaw,
 ]);
-

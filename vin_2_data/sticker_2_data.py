@@ -12,6 +12,7 @@ Environment variables:
   - OPENROUTER_APP_NAME  (optional) X-Title header
 """
 
+import argparse
 import json
 import os
 import pathlib
@@ -57,6 +58,10 @@ except ValueError:
 ROOT_DIR = pathlib.Path("/root/www")
 DB_PATH = ROOT_DIR / "db" / "inventory.sqlite"
 STICKERS_DIR = ROOT_DIR / "vin_2_data" / "stickers"
+
+# Fields that come from the CSV/scraper and should not be used to decide
+# whether sticker-derived data is missing.
+NON_STICKER_COLUMNS = {"vin", "stock", "photo_urls", "vehicle_link"}
 
 
 @lru_cache(maxsize=4)
@@ -346,6 +351,59 @@ def _get_vehicle_column_types(conn: sqlite3.Connection) -> dict[str, str]:
     return {row[1]: (row[2] or "").upper() for row in cur.fetchall()}
 
 
+def _sticker_field_names(column_types: dict[str, str]) -> list[str]:
+    """
+    Return all vehicle columns that should be filled from sticker data,
+    excluding core identifiers that come from the CSV.
+    """
+    return [name for name in column_types if name not in NON_STICKER_COLUMNS]
+
+
+def _fetch_vins_missing_data(
+    conn: sqlite3.Connection,
+    missing_fields: list[str],
+    column_types: dict[str, str],
+) -> set[str]:
+    """
+    Return VINs whose sticker-derived fields are still missing.
+
+    A VIN is considered missing if *all* specified fields are NULL/empty.
+    """
+    if not missing_fields:
+        return set()
+
+    valid_fields: list[str] = []
+    for field in missing_fields:
+        if field not in column_types:
+            print(
+                f"Ignoring unknown field '{field}' in missing-field filter.",
+                file=sys.stderr,
+            )
+            continue
+        valid_fields.append(field)
+
+    if not valid_fields:
+        return set()
+
+    conditions: list[str] = []
+    for field in valid_fields:
+        col_type = column_types[field]
+        if col_type.startswith("INT") or col_type in {"REAL", "FLOAT", "DOUBLE"}:
+            conditions.append(f"{field} IS NULL")
+        else:
+            conditions.append(f"({field} IS NULL OR TRIM({field}) = '')")
+
+    where_clause = " AND ".join(conditions)
+    sql = f"SELECT vin FROM vehicles WHERE {where_clause}"
+    cur = conn.cursor()
+    cur.execute(sql)
+    return {
+        row[0].strip().upper()
+        for row in cur.fetchall()
+        if row[0] and isinstance(row[0], str)
+    }
+
+
 # Known aliases between JSON keys (from template/LLM) and DB column names.
 _LABEL_KEY_ALIASES: dict[str, str] = {
     # Equipment blobs
@@ -486,7 +544,7 @@ def _upsert_vehicle_from_labels(
 
     # Do not let the enrichment pipeline overwrite these; they are owned by the
     # scraper/importer.
-    protected_cols = {"vin", "stock", "photo_urls", "vehicle_link"}
+    protected_cols = NON_STICKER_COLUMNS
 
     update_columns = {k: v for k, v in columns.items() if k not in protected_cols}
 
@@ -512,10 +570,19 @@ def _upsert_vehicle_from_labels(
     conn.commit()
 
 
-def process_all_stickers(conn: sqlite3.Connection) -> None:
+def process_all_stickers(
+    conn: sqlite3.Connection,
+    *,
+    only_missing: bool = False,
+    missing_fields: list[str] | None = None,
+    missing_all_sticker_fields: bool = False,
+) -> None:
     """
     Walk all PDF window stickers under vin_2_data/stickers and enrich the DB.
     """
+    if missing_fields is None:
+        missing_fields = ["msrp"]
+
     if not STICKERS_DIR.exists():
         print(f"No stickers directory found at {STICKERS_DIR}", file=sys.stderr)
         return
@@ -527,6 +594,34 @@ def process_all_stickers(conn: sqlite3.Connection) -> None:
 
     # Cache column types once per connection so we can adapt to field changes.
     column_types = _get_vehicle_column_types(conn)
+
+    target_vins: set[str] | None = None
+    if only_missing:
+        if missing_all_sticker_fields:
+            missing_fields = _sticker_field_names(column_types)
+        # Fall back to default if the computed list is empty for any reason.
+        if not missing_fields:
+            missing_fields = ["msrp"]
+
+        target_vins = _fetch_vins_missing_data(conn, missing_fields, column_types)
+        if not target_vins:
+            print(
+                "All vehicles already have values for the chosen missing-field check; "
+                "nothing to do.",
+                file=sys.stderr,
+            )
+            return
+
+        pdf_files = [
+            path for path in pdf_files if path.stem.strip().upper() in target_vins
+        ]
+        if not pdf_files:
+            print(
+                "No sticker PDFs found for VINs missing data. "
+                "Ensure PDFs exist in the stickers directory.",
+                file=sys.stderr,
+            )
+            return
 
     for pdf_path in pdf_files:
         overall_start = time.perf_counter()
@@ -581,7 +676,43 @@ def process_all_stickers(conn: sqlite3.Connection) -> None:
             print(f"  Error processing {pdf_path}: {exc}", file=sys.stderr)
 
 
-def main() -> None:
+def parse_args(argv: list[str]) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Update the inventory database using window sticker PDFs that have "
+            "already been downloaded."
+        )
+    )
+    parser.add_argument(
+        "--only-missing",
+        action="store_true",
+        help=(
+            "Process only vehicles whose sticker-derived fields are missing "
+            "(defaults to checking msrp)."
+        ),
+    )
+    parser.add_argument(
+        "--missing-field",
+        action="append",
+        dest="missing_fields",
+        default=None,
+        help=(
+            "Database column to use when determining missing sticker data. "
+            "Repeat for multiple fields. Defaults to msrp."
+        ),
+    )
+    parser.add_argument(
+        "--missing-all-sticker-fields",
+        action="store_true",
+        help=(
+            "Process VINs where all sticker-derived fields are empty, ignoring the "
+            "core CSV columns (vin, stock, photo_urls, vehicle_link)."
+        ),
+    )
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> None:
     """
     Enrich the inventory SQLite database using all window sticker PDFs.
 
@@ -592,15 +723,29 @@ def main() -> None:
       - Updates or inserts rows in `/root/www/db/inventory.sqlite`
 
     Usage:
-      python sticker_2_data.py
+      python sticker_2_data.py [--only-missing] [--missing-field FIELD ...]
     """
+    if argv is None:
+        argv = sys.argv[1:]
+
+    args = parse_args(argv)
+
+    missing_fields = args.missing_fields or ["msrp"]
+
     if not OPENROUTER_API_KEY:
         print("OPENROUTER_API_KEY is not set.", file=sys.stderr)
         sys.exit(1)
 
     try:
         with sqlite3.connect(DB_PATH) as conn:
-            process_all_stickers(conn)
+            process_all_stickers(
+                conn,
+                # If the user asked for "all sticker fields missing", implicitly
+                # enable the only-missing path.
+                only_missing=args.only_missing or args.missing_all_sticker_fields,
+                missing_fields=missing_fields,
+                missing_all_sticker_fields=args.missing_all_sticker_fields,
+            )
     except Exception as exc:  # noqa: BLE001
         print(f"Error updating database: {exc}", file=sys.stderr)
         sys.exit(1)

@@ -290,7 +290,8 @@
             <div class="sort">
                 <span class="sort-label">Price:</span>
                 <select class="sort-select" aria-label="Sort by price">
-                    <option>low to high</option>
+                    <option value="asc">low to high</option>
+                    <option value="desc">high to low</option>
                 </select>
             </div>
         </header>
@@ -364,6 +365,18 @@
                     <div class="filter-title">Drivetrain</div>
                     <div id="drivetrain-options"></div>
                 </div>
+                <div class="filter-section" id="engine-filter-section">
+                    <div class="filter-title">Engine</div>
+                    <div id="engine-options"></div>
+                </div>
+                <div class="filter-section" id="fuel-filter-section">
+                    <div class="filter-title">Fuel</div>
+                    <div id="fuel-options"></div>
+                </div>
+                <div class="filter-section" id="rear-axle-filter-section">
+                    <div class="filter-title">Rear Axle Config</div>
+                    <div id="rear-axle-options"></div>
+                </div>
             </aside>
 
             <section class="inventory" aria-label="Vehicle inventory">
@@ -381,6 +394,13 @@
         const trimContainer = document.getElementById('trim-options');
         const drivetrainContainer = document.getElementById('drivetrain-options');
         const drivetrainSection = document.getElementById('drivetrain-filter-section');
+        const engineContainer = document.getElementById('engine-options');
+        const engineSection = document.getElementById('engine-filter-section');
+        const sortSelect = document.querySelector('.sort-select');
+        const fuelContainer = document.getElementById('fuel-options');
+        const fuelSection = document.getElementById('fuel-filter-section');
+        const rearAxleContainer = document.getElementById('rear-axle-options');
+        const rearAxleSection = document.getElementById('rear-axle-filter-section');
         let vehicles = [];
 
         function getSelectedModelKey() {
@@ -434,6 +454,41 @@
             }
 
             return d.trim();
+        }
+
+        function normalizeFuel(fuel) {
+            if (!fuel) return '';
+            return String(fuel).toLowerCase().trim();
+        }
+
+        function normalizeRearAxleConfig(axle) {
+            if (!axle) return '';
+            return String(axle).toLowerCase().trim();
+        }
+
+        function normalizeEngine(engine) {
+            if (!engine) return '';
+            return String(engine)
+                .toLowerCase()
+                // Replace punctuation/extra whitespace to make matching resilient
+                .replace(/[.\-]+/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        function formatMoney(value) {
+            if (value === null || value === undefined) return '';
+            const cleaned = String(value).replace(/[^0-9.]/g, '');
+            const num = parseFloat(cleaned);
+            if (!isFinite(num)) return '';
+            return num.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+        }
+
+        function getMsrpNumber(vehicle) {
+            const raw = vehicle && vehicle.msrp ? vehicle.msrp : '';
+            const cleaned = String(raw).replace(/[^0-9.]/g, '');
+            const num = parseFloat(cleaned);
+            return isFinite(num) ? num : Infinity; // push missing/invalid to end
         }
 
         function normalizeSeriesFromModel(model) {
@@ -506,6 +561,131 @@
 
         function getSelectedDrivetrainKey() {
             const selected = document.querySelector('input[name="drivetrain"]:checked');
+            if (!selected || selected.value === 'all') return null;
+            return selected.value;
+        }
+
+        function renderEngineOptions() {
+            if (!engineContainer || !engineSection) return;
+            engineContainer.innerHTML = '';
+
+            const modelKey = getSelectedModelKey();
+
+            // Engine filter only applies to F-150
+            if (modelKey !== 'f150') {
+                engineSection.style.display = 'none';
+                return;
+            }
+
+            engineSection.style.display = 'block';
+
+            function addOption(label, value, checked) {
+                const wrapper = document.createElement('label');
+                wrapper.className = 'filter-option';
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = 'engine';
+                input.value = value;
+                if (checked) input.checked = true;
+                const span = document.createElement('span');
+                span.textContent = label;
+                wrapper.appendChild(input);
+                wrapper.appendChild(span);
+                engineContainer.appendChild(wrapper);
+            }
+
+            addOption('All', 'all', true);
+            // Store normalized values to make matching resilient
+            addOption('2.7L V6 EcoBoost', normalizeEngine('2.7L V6 EcoBoost'), false);
+            addOption('3.5L V6 EcoBoost', normalizeEngine('3.5L V6 EcoBoost'), false);
+            addOption('3.5L V6 EcoBoost High Output', normalizeEngine('3.5L EcoBoost High Output'), false);
+            // Drop V6 in value to match "PowerBoost Full Hybrid" rows
+            addOption('3.5L V6 PowerBoost', normalizeEngine('3.5L PowerBoost'), false);
+            addOption('5.0L V8', normalizeEngine('5.0L V8'), false);
+        }
+
+        function getSelectedEngineKey() {
+            const selected = document.querySelector('input[name="engine"]:checked');
+            if (!selected || selected.value === 'all') return null;
+            return normalizeEngine(selected.value);
+        }
+
+        function renderFuelOptions() {
+            if (!fuelContainer || !fuelSection) return;
+            fuelContainer.innerHTML = '';
+
+            const modelKey = getSelectedModelKey();
+
+            // Fuel filter only applies to Super Duty
+            if (modelKey !== 'super-duty') {
+                fuelSection.style.display = 'none';
+                return;
+            }
+
+            fuelSection.style.display = 'block';
+
+            function addOption(label, value, checked) {
+                const wrapper = document.createElement('label');
+                wrapper.className = 'filter-option';
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = 'fuel';
+                input.value = value;
+                if (checked) input.checked = true;
+                const span = document.createElement('span');
+                span.textContent = label;
+                wrapper.appendChild(input);
+                wrapper.appendChild(span);
+                fuelContainer.appendChild(wrapper);
+            }
+
+            addOption('All', 'all', true);
+            addOption('Gas', 'gas', false);
+            addOption('Diesel', 'diesel', false);
+        }
+
+        function getSelectedFuelKey() {
+            const selected = document.querySelector('input[name=\"fuel\"]:checked');
+            if (!selected || selected.value === 'all') return null;
+            return selected.value;
+        }
+
+        function renderRearAxleOptions() {
+            if (!rearAxleContainer || !rearAxleSection) return;
+            rearAxleContainer.innerHTML = '';
+
+            const modelKey = getSelectedModelKey();
+
+            // Rear axle filter only applies to Super Duty
+            if (modelKey !== 'super-duty') {
+                rearAxleSection.style.display = 'none';
+                return;
+            }
+
+            rearAxleSection.style.display = 'block';
+
+            function addOption(label, value, checked) {
+                const wrapper = document.createElement('label');
+                wrapper.className = 'filter-option';
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = 'rear-axle';
+                input.value = value;
+                if (checked) input.checked = true;
+                const span = document.createElement('span');
+                span.textContent = label;
+                wrapper.appendChild(input);
+                wrapper.appendChild(span);
+                rearAxleContainer.appendChild(wrapper);
+            }
+
+            addOption('All', 'all', true);
+            addOption('SRW', 'srw', false);
+            addOption('DRW', 'drw', false);
+        }
+
+        function getSelectedRearAxleKey() {
+            const selected = document.querySelector('input[name=\"rear-axle\"]:checked');
             if (!selected || selected.value === 'all') return null;
             return selected.value;
         }
@@ -656,8 +836,16 @@
 
             const tags = document.createElement('div');
             tags.className = 'card-tags';
-            // Show exterior color, engine, and MPG (fuel economy) in the gray oval tags
-            [vehicle.exterior, vehicle.engine, vehicle.fuel_economy].forEach(function (value) {
+            const modelKey = normalizeModel(vehicle.model);
+            // Mustangs/Broncos show transmission; Super Duty shows fuel; others show MPG
+            const showTransmission = modelKey === 'mustang' || modelKey === 'mustang-mach-e' || modelKey === 'bronco';
+            const showFuel = modelKey === 'super-duty';
+            const tagValues = showTransmission
+                ? [vehicle.exterior, vehicle.engine, vehicle.transmission]
+                : showFuel
+                    ? [vehicle.exterior, vehicle.engine, vehicle.fuel_type]
+                    : [vehicle.exterior, vehicle.engine, vehicle.fuel_economy];
+            tagValues.forEach(function (value) {
                 if (!value) return;
                 const tag = document.createElement('span');
                 tag.className = 'tag';
@@ -670,11 +858,8 @@
             footer.className = 'card-footer';
             const price = document.createElement('div');
             price.className = 'price';
-            const primaryPrice = vehicle.sale_price || vehicle.msrp || '';
-            price.textContent = primaryPrice;
-            const secondary = document.createElement('span');
-            secondary.textContent = vehicle.retail_price || '';
-            price.appendChild(secondary);
+            const msrpText = formatMoney(vehicle.msrp) || (vehicle.msrp || '');
+            price.textContent = msrpText || 'See dealer';
 
             const action = document.createElement('div');
             action.className = 'action';
@@ -713,6 +898,10 @@
             const selectedSeries = getSelectedSeriesKey();
             const selectedTrim = getSelectedTrimKey();
             const selectedDrivetrain = getSelectedDrivetrainKey();
+            const selectedEngine = getSelectedEngineKey();
+            const selectedFuel = getSelectedFuelKey();
+            const selectedRearAxle = getSelectedRearAxleKey();
+            const sortDirection = sortSelect && sortSelect.value === 'desc' ? 'desc' : 'asc';
 
             const filtered = vehicles.filter(function (v) {
                 if (selectedKey === 'all') return true;
@@ -732,10 +921,37 @@
                     const driveNorm = normalizeDrivetrain(v.drive_line);
                     if (!driveNorm || driveNorm !== selectedDrivetrain) return false;
                 }
+
+                // Engine filter only applies to F-150
+                if (selectedKey === 'f150' && selectedEngine) {
+                    const engineNorm = normalizeEngine(v.engine);
+                    // Allow contains match for resilience (e.g., V6 ordering/punctuation)
+                    if (!engineNorm || (!engineNorm.includes(selectedEngine) && !selectedEngine.includes(engineNorm))) return false;
+                }
+
+                // Fuel filter only applies to Super Duty
+                if (selectedKey === 'super-duty' && selectedFuel) {
+                    const fuelNorm = normalizeFuel(v.fuel_type);
+                    if (!fuelNorm || fuelNorm !== selectedFuel) return false;
+                }
+
+                // Rear axle filter only applies to Super Duty
+                if (selectedKey === 'super-duty' && selectedRearAxle) {
+                    const axleNorm = normalizeRearAxleConfig(v.rear_axle_config);
+                    if (!axleNorm || axleNorm !== selectedRearAxle) return false;
+                }
+
                 return true;
             });
 
-            if (!filtered.length) {
+            const sorted = filtered.slice().sort(function (a, b) {
+                const aNum = getMsrpNumber(a);
+                const bNum = getMsrpNumber(b);
+                if (aNum === bNum) return 0;
+                return sortDirection === 'desc' ? bNum - aNum : aNum - bNum;
+            });
+
+            if (!sorted.length) {
                 const empty = document.createElement('div');
                 empty.style.fontSize = '13px';
                 empty.style.color = '#5c5e62';
@@ -744,7 +960,7 @@
                 return;
             }
 
-            filtered.forEach(function (vehicle) {
+            sorted.forEach(function (vehicle) {
                 grid.appendChild(createCard(vehicle));
             });
         }
@@ -755,9 +971,18 @@
                     renderSeriesOptions();
                     renderTrimOptions();
                     renderDrivetrainOptions();
+                    renderEngineOptions();
+                    renderFuelOptions();
+                    renderRearAxleOptions();
                     renderCards();
                 });
             });
+
+            if (sortSelect) {
+                sortSelect.addEventListener('change', function () {
+                    renderCards();
+                });
+            }
 
             if (trimContainer) {
                 trimContainer.addEventListener('change', function (event) {
@@ -778,6 +1003,30 @@
             if (drivetrainContainer) {
                 drivetrainContainer.addEventListener('change', function (event) {
                     if (event.target && event.target.name === 'drivetrain') {
+                        renderCards();
+                    }
+                });
+            }
+
+            if (engineContainer) {
+                engineContainer.addEventListener('change', function (event) {
+                    if (event.target && event.target.name === 'engine') {
+                        renderCards();
+                    }
+                });
+            }
+
+            if (fuelContainer) {
+                fuelContainer.addEventListener('change', function (event) {
+                    if (event.target && event.target.name === 'fuel') {
+                        renderCards();
+                    }
+                });
+            }
+
+            if (rearAxleContainer) {
+                rearAxleContainer.addEventListener('change', function (event) {
+                    if (event.target && event.target.name === 'rear-axle') {
                         renderCards();
                     }
                 });
@@ -807,6 +1056,9 @@
                 renderSeriesOptions();
                 renderTrimOptions();
                 renderDrivetrainOptions();
+                renderEngineOptions();
+                renderFuelOptions();
+                renderRearAxleOptions();
                 renderCards();
                 attachFilterHandlers();
             })
