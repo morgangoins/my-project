@@ -1,0 +1,31 @@
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Environment variables
+.env
+
+# Vendor directories (if you add PHP packages later)
+vendor/
+
+# Log files
+*.log
+
+# IDE settings
+.vscode/
+.idea/
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory</title>
+    <link href="https://rsms.me/inter/inter.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f5f5f5;
+            --text: #171a20;
+            --muted: #5c5e62;
+            --border: #e4e4e4;
+            --accent: #3e6ae1;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        body {
+            display: flex;
+        }
+
+        .page {
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            padding: 24px 48px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .header-title {
+            font-size: 32px;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .sort {
+            font-size: 13px;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sort-label {
+            text-transform: none;
+        }
+
+        .sort-select {
+            border: none;
+            background: transparent;
+            font: inherit;
+            color: var(--text);
+            padding: 4px 0;
+            cursor: pointer;
+        }
+
+        .sort-select:focus-visible {
+            outline: none;
+            border-bottom: 1px solid var(--text);
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            padding: 24px 48px 48px;
+            gap: 32px;
+            align-items: flex-start;
+        }
+
+        .filters {
+            width: 260px;
+        }
+
+        .filter-section + .filter-section {
+            margin-top: 32px;
+        }
+
+        .filter-title {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+            margin-bottom: 16px;
+        }
+
+        .filter-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        .filter-option input[type="radio"] {
+            accent-color: var(--text);
+            cursor: pointer;
+        }
+
+        .inventory {
+            flex: 1;
+        }
+
+        .results-summary {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 16px;
+        }
+
+        .results-summary-strong {
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .cards-grid {
+            display: grid;
+            /* Responsive columns that fill available width, with cards themselves capped in size */
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+            justify-items: center;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 16px 16px 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e7e7e7;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            /* Keep card width visually consistent across different result counts */
+            width: 100%;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        .card-image-placeholder {
+            background: #f2f2f2;
+            border-radius: 12px 12px 0 0;
+            margin: -16px -16px 12px -16px; /* let image span card edges */
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #b0b3b8;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            /* Use a fixed height so all vehicle photos appear uniform */
+            height: 200px;
+        }
+
+        .card-image-placeholder img {
+            display: block;
+            width: 100%;
+            /* Fill the fixed-height container and crop larger photos */
+            height: 100%;
+            object-fit: cover;
+            /* Keep the bottom of the vehicle visible; crop from the top */
+            object-position: bottom center;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .card-subtitle {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .card-meta {
+            font-size: 12px;
+            color: var(--muted);
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .tag {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #f5f5f5;
+            border: 1px solid #e4e4e4;
+            color: var(--muted);
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 4px;
+        }
+
+        .price {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .price span {
+            display: block;
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .action {
+            font-size: 12px;
+            color: var(--accent);
+            cursor: pointer;
+        }
+
+        .action:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 800px) {
+            .header {
+                padding: 16px;
+                align-items: flex-start;
+                gap: 12px;
+                flex-direction: column;
+            }
+
+            .main {
+                padding: 16px 16px 32px;
+                flex-direction: column;
+            }
+
+            .filters {
+                width: 100%;
+                display: flex;
+                gap: 24px;
+                overflow-x: auto;
+                padding-bottom: 8px;
+            }
+
+            .filter-section {
+                min-width: 160px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <header class="header">
+            <div>
+                <div class="header-title">Inventory</div>
+                <div class="header-subtitle" id="last-updated"></div>
+            </div>
+            <div class="sort">
+                <span class="sort-label">Price:</span>
+                <select class="sort-select" aria-label="Sort by price">
+                    <option>low to high</option>
+                </select>
+            </div>
+        </header>
+
+        <div class="main">
+            <aside class="filters" aria-label="Filters">
+                <div class="filter-section">
+                    <div class="filter-title">Model</div>
+                    <label class="filter-option">
+                        <input type="radio" name="model" value="all" checked>
+                        <span>All</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="model" value="f150">
+                        <span>F-150</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="model" value="transit">
+                        <span>Transit</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="model" value="bronco">
+                        <span>Bronco</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="model" value="ranger">
+                        <span>Ranger</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="model" value="escape">
+                        <span>Escape</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="model" value="explorer">
+                        <span>Explorer</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="model" value="mustang">
+                        <span>Mustang</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="model" value="expedition">
+                        <span>Expedition</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="model" value="super-duty">
+                        <span>Super Duty</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="model" value="bronco-sport">
+                        <span>Bronco Sport</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="model" value="f150-lightning">
+                        <span>F-150 Lightning</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="model" value="mustang-mach-e">
+                        <span>Mustang Mach-E</span>
+                    </label>
+                </div>
+                <div class="filter-section" id="series-filter-section">
+                    <div class="filter-title">Series</div>
+                    <div id="series-options"></div>
+                </div>
+                <div class="filter-section">
+                    <div class="filter-title">Trim</div>
+                    <div id="trim-options"></div>
+                </div>
+                <div class="filter-section" id="drivetrain-filter-section">
+                    <div class="filter-title">Drivetrain</div>
+                    <div id="drivetrain-options"></div>
+                </div>
+            </aside>
+
+            <section class="inventory" aria-label="Vehicle inventory">
+                <div class="cards-grid" id="cards-grid"></div>
+                <div id="debug" style="font-size:12px; color:#5c5e62; margin-top:16px;"></div>
+            </section>
+        </div>
+    </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const grid = document.getElementById('cards-grid');
+        const modelRadios = document.querySelectorAll('input[name="model"]');
+        const seriesContainer = document.getElementById('series-options');
+        const seriesSection = document.getElementById('series-filter-section');
+        const trimContainer = document.getElementById('trim-options');
+        const drivetrainContainer = document.getElementById('drivetrain-options');
+        const drivetrainSection = document.getElementById('drivetrain-filter-section');
+        let vehicles = [];
+
+        function getSelectedModelKey() {
+            const selected = document.querySelector('input[name="model"]:checked');
+            if (!selected) return null;
+            return selected.value;
+        }
+
+        function normalizeModel(model) {
+            if (!model) return '';
+            const m = String(model).toLowerCase();
+
+            // More specific variants first
+            if (m.includes('f-150 lightning') || m.includes('f150 lightning')) return 'f150-lightning';
+            if (m.includes('mustang mach-e') || m.includes('mustang mach e') || m.includes('mach-e') || m.includes('mach e')) return 'mustang-mach-e';
+            if (m.includes('bronco sport')) return 'bronco-sport';
+
+            if (m.includes('f-150') || m.includes('f150')) return 'f150';
+            if (m.includes('transit')) return 'transit';
+            if (m.includes('bronco')) return 'bronco';
+            if (m.includes('ranger')) return 'ranger';
+            if (m.includes('escape')) return 'escape';
+            if (m.includes('explorer')) return 'explorer';
+            if (m.includes('mustang')) return 'mustang';
+            if (m.includes('expedition')) return 'expedition';
+            if (m.includes('super duty') || m.includes('super-duty') || m.includes('f-250') || m.includes('f250') || m.includes('f-350') || m.includes('f350')) {
+                return 'super-duty';
+            }
+            if (m.includes('maverick')) return 'maverick';
+
+            return m.trim();
+        }
+
+        function normalizeTrim(trim) {
+            if (!trim) return '';
+            return String(trim).toLowerCase().trim();
+        }
+
+        function normalizeDrivetrain(drivetrain) {
+            if (!drivetrain) return '';
+            const d = String(drivetrain).toLowerCase();
+
+            // Treat common 4x4 / 4WD notations as 4x4
+            if (d.includes('4x4') || d.includes('4wd') || d.includes('4-wd') || d.includes('4 wheel')) {
+                return '4x4';
+            }
+
+            // Treat common 4x2 / 2WD notations as 4x2
+            if (d.includes('4x2') || d.includes('2wd') || d.includes('2-wd') || d.includes('2 wheel')) {
+                return '4x2';
+            }
+
+            return d.trim();
+        }
+
+        function normalizeSeriesFromModel(model) {
+            if (!model) return '';
+            const m = String(model).toLowerCase();
+
+            // Super Duty series
+            if (m.includes('f-250') || m.includes('f250')) return 'f-250';
+            if (m.includes('f-350') || m.includes('f350')) return 'f-350';
+            if (m.includes('f-450') || m.includes('f450')) return 'f-450';
+
+            // Transit series (Transit-150, Transit-250, Transit-350, etc.)
+            if (m.includes('transit') && m.includes('150')) return '150';
+            if (m.includes('transit') && m.includes('250')) return '250';
+            if (m.includes('transit') && m.includes('350')) return '350';
+
+            return '';
+        }
+
+        const trimOptionsByModel = {
+            f150: ['XL', 'STX', 'XLT', 'Lariat', 'Tremor', 'Raptor', 'King Ranch', 'Platinum'],
+            explorer: ['Active', 'ST-Line', 'ST', 'Tremor', 'Platinum'],
+            bronco: ['Base', 'Big Bend', 'Outer Banks', 'Badlands', 'Raptor'],
+            'bronco-sport': ['Big Bend', 'Outer Banks', 'Badlands'],
+            ranger: ['XL', 'XLT', 'Lariat', 'Raptor'],
+            mustang: ['Ecoboost', 'Ecoboost Premium', 'GT', 'GT Premium', 'Dark Horse'],
+            'mustang-mach-e': ['Select', 'Premium', 'GT'],
+            'super-duty': ['XL', 'XLT', 'Lariat', 'King Ranch', 'Platinum', 'Limited'],
+            maverick: ['XL', 'XLT', 'Lobo', 'Lariat']
+        };
+
+        const seriesOptionsByModel = {
+            'super-duty': ['F-250', 'F-350', 'F-450'],
+            transit: ['150', '250', '350']
+        };
+
+        function renderDrivetrainOptions() {
+            if (!drivetrainContainer || !drivetrainSection) return;
+            drivetrainContainer.innerHTML = '';
+
+            const modelKey = getSelectedModelKey();
+
+            // Drivetrain filter only applies to F-150
+            if (modelKey !== 'f150') {
+                drivetrainSection.style.display = 'none';
+                return;
+            }
+
+            drivetrainSection.style.display = 'block';
+
+            function addOption(label, value, checked) {
+                const wrapper = document.createElement('label');
+                wrapper.className = 'filter-option';
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = 'drivetrain';
+                input.value = value;
+                if (checked) input.checked = true;
+                const span = document.createElement('span');
+                span.textContent = label;
+                wrapper.appendChild(input);
+                wrapper.appendChild(span);
+                drivetrainContainer.appendChild(wrapper);
+            }
+
+            addOption('All', 'all', true);
+            addOption('4x2', '4x2', false);
+            addOption('4x4', '4x4', false);
+        }
+
+        function getSelectedDrivetrainKey() {
+            const selected = document.querySelector('input[name="drivetrain"]:checked');
+            if (!selected || selected.value === 'all') return null;
+            return selected.value;
+        }
+
+        function renderSeriesOptions() {
+            if (!seriesContainer || !seriesSection) return;
+            seriesContainer.innerHTML = '';
+
+            const modelKey = getSelectedModelKey();
+            const seriesList = seriesOptionsByModel[modelKey] || [];
+
+            if (!seriesList.length) {
+                seriesSection.style.display = 'none';
+                return;
+            }
+
+            seriesSection.style.display = 'block';
+
+            function addOption(label, value, checked) {
+                const wrapper = document.createElement('label');
+                wrapper.className = 'filter-option';
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = 'series';
+                input.value = value;
+                if (checked) input.checked = true;
+                const span = document.createElement('span');
+                span.textContent = label;
+                wrapper.appendChild(input);
+                wrapper.appendChild(span);
+                seriesContainer.appendChild(wrapper);
+            }
+
+            addOption('All', 'all', true);
+            seriesList.forEach(function (series) {
+                addOption(series, series.toLowerCase(), false);
+            });
+        }
+
+        function getSelectedSeriesKey() {
+            const selected = document.querySelector('input[name="series"]:checked');
+            if (!selected || selected.value === 'all') return null;
+            return selected.value;
+        }
+
+        function renderTrimOptions() {
+            if (!trimContainer) return;
+            trimContainer.innerHTML = '';
+
+            const modelKey = getSelectedModelKey();
+            const trims = trimOptionsByModel[modelKey] || [];
+
+            if (!trims.length) {
+                trimContainer.style.display = 'none';
+                return;
+            }
+
+            trimContainer.style.display = 'block';
+
+            function addOption(label, value, checked) {
+                const wrapper = document.createElement('label');
+                wrapper.className = 'filter-option';
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = 'trim';
+                input.value = value;
+                if (checked) input.checked = true;
+                const span = document.createElement('span');
+                span.textContent = label;
+                wrapper.appendChild(input);
+                wrapper.appendChild(span);
+                trimContainer.appendChild(wrapper);
+            }
+
+            addOption('All', 'all', true);
+            trims.forEach(function (trim) {
+                addOption(trim, normalizeTrim(trim), false);
+            });
+        }
+
+        function getSelectedTrimKey() {
+            const selected = document.querySelector('input[name="trim"]:checked');
+            if (!selected || selected.value === 'all') return null;
+            return selected.value;
+        }
+
+        function createCard(vehicle) {
+            const article = document.createElement('article');
+            article.className = 'card';
+            article.dataset.model = vehicle.model || '';
+
+            const imageDiv = document.createElement('div');
+            imageDiv.className = 'card-image-placeholder';
+
+            const exteriorPhoto = vehicle.photo || '';
+            const interiorPhoto = vehicle.photo_interior || '';
+
+            if (exteriorPhoto) {
+                const img = document.createElement('img');
+                img.src = exteriorPhoto;
+                img.alt = (vehicle.year ? vehicle.year + ' ' : '') + (vehicle.model || 'Vehicle');
+                img.loading = 'lazy';
+                imageDiv.textContent = '';
+                imageDiv.appendChild(img);
+
+                if (interiorPhoto && interiorPhoto !== exteriorPhoto) {
+                    imageDiv.addEventListener('mouseenter', function () {
+                        img.src = interiorPhoto;
+                    });
+                    imageDiv.addEventListener('mouseleave', function () {
+                        img.src = exteriorPhoto;
+                    });
+                }
+            } else {
+                imageDiv.textContent = 'Vehicle Image';
+            }
+
+            const titleContainer = document.createElement('div');
+            const title = document.createElement('div');
+            title.className = 'card-title';
+            title.textContent =
+                (vehicle.year ? vehicle.year + ' ' : '') +
+                (vehicle.model || '') +
+                (vehicle.trim ? ' ' + vehicle.trim : '');
+            const subtitle = document.createElement('div');
+            subtitle.className = 'card-subtitle';
+            subtitle.textContent = [vehicle.drive_line].filter(Boolean).join(' \u00b7 ');
+            titleContainer.appendChild(title);
+            titleContainer.appendChild(subtitle);
+
+            const meta = document.createElement('div');
+            meta.className = 'card-meta';
+            const condition = vehicle.condition || 'New';
+            const line1 = document.createElement('span');
+            line1.textContent = condition;
+            const line2 = document.createElement('span');
+            line2.textContent = vehicle.body_style || '';
+            const stock = vehicle.stock || '';
+
+            // Order: condition ("New"), then stock number, then body style
+            meta.appendChild(line1);
+            if (stock) {
+                const stockLine = document.createElement('span');
+                stockLine.textContent = stock;
+                meta.appendChild(stockLine);
+            }
+            meta.appendChild(line2);
+
+            const tags = document.createElement('div');
+            tags.className = 'card-tags';
+            // Show exterior color, engine, and MPG (fuel economy) in the gray oval tags
+            [vehicle.exterior, vehicle.engine, vehicle.fuel_economy].forEach(function (value) {
+                if (!value) return;
+                const tag = document.createElement('span');
+                tag.className = 'tag';
+                tag.textContent = value;
+                tags.appendChild(tag);
+            });
+            meta.appendChild(tags);
+
+            const footer = document.createElement('div');
+            footer.className = 'card-footer';
+            const price = document.createElement('div');
+            price.className = 'price';
+            const primaryPrice = vehicle.sale_price || vehicle.msrp || '';
+            price.textContent = primaryPrice;
+            const secondary = document.createElement('span');
+            secondary.textContent = vehicle.retail_price || '';
+            price.appendChild(secondary);
+
+            const action = document.createElement('div');
+            action.className = 'action';
+
+            // Always prefer internal detail page; fall back to VIN if stock is missing
+            const detailKey = vehicle.stock || vehicle.vin || '';
+            const detailUrl = detailKey ? 'vehicle.php?stock=' + encodeURIComponent(detailKey) : null;
+
+            action.textContent = 'View details';
+
+            if (detailUrl) {
+                action.addEventListener('click', function (event) {
+                    event.stopPropagation();
+                    window.location.href = detailUrl;
+                });
+                article.addEventListener('click', function () {
+                    window.location.href = detailUrl;
+                });
+            }
+
+            footer.appendChild(price);
+            footer.appendChild(action);
+
+            article.appendChild(imageDiv);
+            article.appendChild(titleContainer);
+            article.appendChild(meta);
+            article.appendChild(footer);
+
+            return article;
+        }
+
+        function renderCards() {
+            if (!grid) return;
+            grid.innerHTML = '';
+            const selectedKey = getSelectedModelKey();
+            const selectedSeries = getSelectedSeriesKey();
+            const selectedTrim = getSelectedTrimKey();
+            const selectedDrivetrain = getSelectedDrivetrainKey();
+
+            const filtered = vehicles.filter(function (v) {
+                if (selectedKey === 'all') return true;
+                if (!selectedKey) return true;
+                const modelNorm = normalizeModel(v.model);
+                if (modelNorm !== selectedKey) return false;
+
+                if ((selectedKey === 'super-duty' || selectedKey === 'transit') && selectedSeries) {
+                    const seriesNorm = normalizeSeriesFromModel(v.model);
+                    if (!seriesNorm || seriesNorm !== selectedSeries) return false;
+                }
+
+                if (selectedTrim && normalizeTrim(v.trim) !== selectedTrim) return false;
+
+                // Drivetrain filter only applies to F-150
+                if (selectedKey === 'f150' && selectedDrivetrain) {
+                    const driveNorm = normalizeDrivetrain(v.drive_line);
+                    if (!driveNorm || driveNorm !== selectedDrivetrain) return false;
+                }
+                return true;
+            });
+
+            if (!filtered.length) {
+                const empty = document.createElement('div');
+                empty.style.fontSize = '13px';
+                empty.style.color = '#5c5e62';
+                empty.textContent = 'No vehicles match this model right now.';
+                grid.appendChild(empty);
+                return;
+            }
+
+            filtered.forEach(function (vehicle) {
+                grid.appendChild(createCard(vehicle));
+            });
+        }
+
+        function attachFilterHandlers() {
+            modelRadios.forEach(function (radio) {
+                radio.addEventListener('change', function () {
+                    renderSeriesOptions();
+                    renderTrimOptions();
+                    renderDrivetrainOptions();
+                    renderCards();
+                });
+            });
+
+            if (trimContainer) {
+                trimContainer.addEventListener('change', function (event) {
+                    if (event.target && event.target.name === 'trim') {
+                        renderCards();
+                    }
+                });
+            }
+
+            if (seriesContainer) {
+                seriesContainer.addEventListener('change', function (event) {
+                    if (event.target && event.target.name === 'series') {
+                        renderCards();
+                    }
+                });
+            }
+
+            if (drivetrainContainer) {
+                drivetrainContainer.addEventListener('change', function (event) {
+                    if (event.target && event.target.name === 'drivetrain') {
+                        renderCards();
+                    }
+                });
+            }
+        }
+
+        fetch('inventory.php')
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                vehicles = (data && data.vehicles) ? data.vehicles : [];
+                const debugEl = document.getElementById('debug');
+                if (debugEl) {
+                    const firstNorm = vehicles.length > 0 ? normalizeModel(vehicles[0].model) : 'n/a';
+                    const dbg = data && data.debug ? data.debug : {};
+                    const fileInfo = dbg.fileCount !== undefined ? ` | CSV files seen: ${dbg.fileCount}` : '';
+                    const latestInfo = dbg.latestFile ? ` | Latest file: ${dbg.latestFile}` : '';
+                    debugEl.textContent = `Debug: Loaded ${vehicles.length} vehicles. First model normalized to: ${firstNorm}${fileInfo}${latestInfo}`;
+                }
+
+                const updatedEl = document.getElementById('last-updated');
+                if (updatedEl && data && data.lastUpdated) {
+                    updatedEl.textContent = 'Updated ' + data.lastUpdated;
+                }
+
+                renderSeriesOptions();
+                renderTrimOptions();
+                renderDrivetrainOptions();
+                renderCards();
+                attachFilterHandlers();
+            })
+            .catch(function (error) {
+                console.error('Failed to load inventory', error);
+                if (grid) {
+                    grid.innerHTML = '<p style="font-size:13px;color:#5c5e62;">Unable to load inventory right now.</p>';
+                }
+            });
+    });
+</script>
+</body>
+</html>
