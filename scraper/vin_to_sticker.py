@@ -6,7 +6,7 @@ This script:
   - Reads VIN and stock from /root/www/db/inventory.sqlite (vehicles table)
   - Hits https://www.windowsticker.forddirect.com/windowsticker.pdf?vin={vin}
     for each VIN
-  - Saves the resulting PDF as /root/www/vin_2_data/stickers/{vin}.pdf
+  - Saves the resulting PDF as /root/www/scraper/stickers/{vin}.pdf
 
 We do a small amount of validation to avoid saving the "Please check back later."
 placeholder page when a sticker has not yet been released
@@ -29,7 +29,7 @@ from urllib.request import Request, urlopen
 
 ROOT_DIR = Path("/root/www")
 DB_PATH = ROOT_DIR / "db" / "inventory.sqlite"
-STICKERS_DIR = ROOT_DIR / "vin_2_data" / "stickers"
+STICKERS_DIR = ROOT_DIR / "scraper" / "stickers"
 WINDOW_STICKER_URL = (
     "https://www.windowsticker.forddirect.com/windowsticker.pdf?vin={vin}"
 )

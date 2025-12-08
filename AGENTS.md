@@ -14,17 +14,19 @@ Ford dealership inventory system for **Fairfield Ford** that:
 
 ```
 /root/www/
-├── scraper/          # Inventory scraper (from dealer API)
-├── db/               # SQLite database + sync scripts
-├── vin_2_data/       # Window sticker processing
+├── scraper/          # Inventory scraper + window sticker processing
 │   ├── stickers/     # Downloaded window sticker PDFs (named by VIN)
 │   └── invoices/     # Invoice PDFs
+├── db/               # SQLite database + sync scripts
+│   └── ford_guides/  # Ford product guides + LLM context
+│       ├── context/  # LLM context files (template.json, options.json)
+│       ├── json/     # Extracted guide data by year
+│       └── pdf/      # Ford product guide PDFs
 ├── html/             # Web frontend (PHP + vanilla JS)
-├── ford_guides/      # Ford product guides + LLM context
-│   ├── context/      # LLM context files (template.json, options.json)
-│   ├── json/         # Extracted guide data by year
-│   └── pdf/          # Ford product guide PDFs
-└── update_inventory.sh  # Main orchestration script
+├── var/              # Logs and backups (not in git)
+│   ├── logs/         # update.log
+│   └── backups/      # Database backups
+└── update.py         # Main orchestration script
 ```
 
 ---
@@ -34,13 +36,13 @@ Ford dealership inventory system for **Fairfield Ford** that:
 | File | Purpose |
 |------|---------|
 | `scraper/scrapeNew.py` | Fetches inventory JSON from fordfairfield.com API, outputs CSV |
+| `scraper/sticker_2_data.py` | LLM extracts structured data from window sticker PDFs |
+| `scraper/vin_to_sticker.py` | Downloads window sticker PDFs from Ford's site |
 | `db/sync_db.py` | Syncs CSV → SQLite, creates CTI schema, handles deletes/updates |
-| `vin_2_data/sticker_2_data.py` | LLM extracts structured data from window sticker PDFs |
-| `vin_2_data/vin_to_sticker.py` | Downloads window sticker PDFs from Ford's site |
-| `ford_guides/context/template.json` | JSON schema for LLM output — **source of truth for fields** |
-| `ford_guides/context/options.json` | Canonical values by model (trims, colors, engines, etc.) |
+| `db/ford_guides/context/template.json` | JSON schema for LLM output — **source of truth for fields** |
+| `db/ford_guides/context/options.json` | Canonical values by model (trims, colors, engines, etc.) |
 | `html/index.php` | Main inventory UI (client-side filtering, infinite scroll) |
-| `update_inventory.sh` | Runs scraper → sync_db → generate_cache |
+| `update.py` | Orchestrates full pipeline (scrape → sync → stickers → enrich → cache) |
 
 ---
 
@@ -70,7 +72,7 @@ Vehicle type is inferred from model name (see `infer_vehicle_type()` in both `sy
 5. generate_cache.php → static JSON cache for fast page loads
 ```
 
-Run manually: `./update_inventory.sh`
+Run manually: `python update.py` (use `--help` for options like `--skip-enrich`)
 
 ---
 
@@ -78,7 +80,7 @@ Run manually: `./update_inventory.sh`
 
 - Uses **OpenRouter API** (default model: `google/gemini-2.5-flash`)
 - Env var: `OPENROUTER_API_KEY` (required)
-- Context loaded from `ford_guides/context/`:
+- Context loaded from `db/ford_guides/context/`:
   - `template.json` — Expected output schema with field descriptions
   - `options.json` — Canonical values for normalization (fuzzy-matched)
   - Example PDF+JSON pairs teach the model the mapping
@@ -100,7 +102,7 @@ Run manually: `./update_inventory.sh`
 ## Common Tasks
 
 ### Add a new vehicle model to options.json
-Add a new key to `ford_guides/context/options.json` with arrays for each attribute. The LLM uses this for extraction guidance and value normalization.
+Add a new key to `db/ford_guides/context/options.json` with arrays for each attribute. The LLM uses this for extraction guidance and value normalization.
 
 ### Add a new database column
 1. Add column definition to the appropriate table in `db/sync_db.py` (`init_db()`)
@@ -109,7 +111,7 @@ Add a new key to `ford_guides/context/options.json` with arrays for each attribu
 
 ### Re-process a specific VIN's sticker
 ```bash
-cd /root/www/vin_2_data
+cd /root/www/scraper
 python sticker_2_data.py --process-all  # or delete the VIN's enriched data first
 ```
 

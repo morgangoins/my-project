@@ -7,7 +7,7 @@ This script:
   - Logs into https://fordvisions.dealerconnection.com via browser automation
   - Hits https://fordvisions.dealerconnection.com/vinv/GetInvoice.aspx?v={vin}
     for each VIN
-  - Saves the resulting PDF as /root/www/vin_2_data/invoices/{vin}.pdf
+  - Saves the resulting PDF as /root/www/scraper/invoices/{vin}.pdf
 
 Requires Playwright for browser automation due to login requirements.
 Install with: pip install playwright && playwright install chromium
@@ -39,7 +39,7 @@ from playwright.sync_api import sync_playwright, Browser, Page, TimeoutError as 
 
 ROOT_DIR = Path("/root/www")
 DB_PATH = ROOT_DIR / "db" / "inventory.sqlite"
-INVOICES_DIR = ROOT_DIR / "vin_2_data" / "invoices"
+INVOICES_DIR = ROOT_DIR / "scraper" / "invoices"
 INVOICE_URL = "https://fordvisions.dealerconnection.com/vinv/GetInvoice.aspx?v={vin}"
 LOGIN_URL = "https://fordvisions.dealerconnection.com"
 

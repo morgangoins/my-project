@@ -41,8 +41,8 @@ BASE_URL = os.getenv(
 #   - "x-ai/grok-4.1"
 DEFAULT_MODEL = os.getenv("OPENROUTER_MODEL", "google/gemini-2.5-flash")
 
-# By default, use the ford_guides/context directory for context files
-DEFAULT_CONTEXT_DIR = pathlib.Path("/root/www/ford_guides/context")
+# By default, use the db/ford_guides/context directory for context files
+DEFAULT_CONTEXT_DIR = pathlib.Path("/root/www/db/ford_guides/context")
 CONTEXT_DIR = pathlib.Path(
     os.getenv("OPENROUTER_CONTEXT_DIR", str(DEFAULT_CONTEXT_DIR))
 )
@@ -58,7 +58,7 @@ except ValueError:
 # Project locations (adjust if your layout changes)
 ROOT_DIR = pathlib.Path("/root/www")
 DB_PATH = ROOT_DIR / "db" / "inventory.sqlite"
-STICKERS_DIR = ROOT_DIR / "vin_2_data" / "stickers"
+STICKERS_DIR = ROOT_DIR / "scraper" / "stickers"
 
 # Fields that come from the CSV/scraper and should not be used to decide
 # whether sticker-derived data is missing.
@@ -885,7 +885,7 @@ def process_all_stickers(
     missing_all_sticker_fields: bool = False,
 ) -> None:
     """
-    Walk all PDF window stickers under vin_2_data/stickers and enrich the DB.
+    Walk all PDF window stickers under scraper/stickers and enrich the DB.
     """
     if missing_fields is None:
         missing_fields = ["msrp"]
@@ -1029,7 +1029,7 @@ def main(argv: list[str] | None = None) -> None:
     Enrich the inventory SQLite database using all window sticker PDFs.
 
     This script:
-      - Reads all `*.pdf` files under `/root/www/vin_2_data/stickers`
+      - Reads all `*.pdf` files under `/root/www/scraper/stickers`
       - Uses a configurable chat model (via OpenRouter) plus your example
         context to extract data
       - Updates or inserts rows in `/root/www/db/inventory.sqlite`

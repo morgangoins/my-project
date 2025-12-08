@@ -7,6 +7,7 @@ This script orchestrates the full inventory update workflow:
   2. Sync the SQLite database with the scraped CSV
   3. Download window sticker PDFs for all VINs
   4. Enrich the database using AI extraction from stickers
+  5. Generate static JSON cache for fast page loads
 
 Usage:
   python update.py                    # Run all steps
@@ -17,16 +18,51 @@ Usage:
 """
 
 import argparse
+import logging
 import os
+import subprocess
 import sys
 import time
+from datetime import datetime
 from pathlib import Path
 
 # Add script directories to path for imports
 ROOT_DIR = Path(__file__).parent.resolve()
+LOG_DIR = ROOT_DIR / "var" / "logs"
+LOG_FILE = LOG_DIR / "update.log"
+
 sys.path.insert(0, str(ROOT_DIR / "scraper"))
 sys.path.insert(0, str(ROOT_DIR / "db"))
-sys.path.insert(0, str(ROOT_DIR / "vin_2_data"))
+
+
+def setup_logging() -> logging.Logger:
+    """Configure file and console logging."""
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
+    
+    logger = logging.getLogger("update")
+    logger.setLevel(logging.INFO)
+    
+    # File handler - always logs
+    file_handler = logging.FileHandler(LOG_FILE)
+    file_handler.setLevel(logging.INFO)
+    file_handler.setFormatter(logging.Formatter(
+        "[%(asctime)s] %(message)s", datefmt="%Y-%m-%d %H:%M:%S %Z"
+    ))
+    logger.addHandler(file_handler)
+    
+    return logger
+
+
+# Global logger instance
+_logger: logging.Logger | None = None
+
+
+def log(message: str) -> None:
+    """Log a message to the log file."""
+    global _logger
+    if _logger is None:
+        _logger = setup_logging()
+    _logger.info(message)
 
 
 def check_environment() -> list[str]:
@@ -220,6 +256,40 @@ def step_enrich_data(verbose: bool = False) -> dict:
     return result
 
 
+def step_generate_cache(verbose: bool = False) -> dict:
+    """Step 5: Generate static JSON cache for fast page loads."""
+    result = {"success": False, "error": None}
+    
+    try:
+        cache_script = ROOT_DIR / "db" / "generate_cache.php"
+        if not cache_script.exists():
+            result["error"] = f"Cache script not found: {cache_script}"
+            return result
+        
+        proc = subprocess.run(
+            ["php", str(cache_script)],
+            capture_output=True,
+            text=True,
+            cwd=str(ROOT_DIR / "db"),
+        )
+        
+        if verbose and proc.stdout:
+            print(proc.stdout)
+        if verbose and proc.stderr:
+            print(proc.stderr, file=sys.stderr)
+        
+        if proc.returncode != 0:
+            result["error"] = proc.stderr or f"Exit code {proc.returncode}"
+            return result
+        
+        result["success"] = True
+        
+    except Exception as e:
+        result["error"] = str(e)
+    
+    return result
+
+
 def print_summary(results: dict, elapsed: float) -> None:
     """Print a summary of all steps."""
     print("\n" + "=" * 50)
@@ -263,6 +333,15 @@ def print_summary(results: dict, elapsed: float) -> None:
     else:
         print("○ Enrichment:  skipped")
     
+    if "cache" in results:
+        r = results["cache"]
+        if r["success"]:
+            print("✓ Cache:       generated")
+        else:
+            print(f"✗ Cache:       FAILED - {r['error']}")
+    else:
+        print("○ Cache:       skipped")
+    
     print("-" * 50)
     print(f"Total time: {elapsed:.1f}s")
     print("=" * 50)
@@ -270,7 +349,7 @@ def print_summary(results: dict, elapsed: float) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Update website inventory (scrape → sync → stickers → enrich)"
+        description="Update website inventory (scrape → sync → stickers → enrich → cache)"
     )
     parser.add_argument(
         "--skip-scrape",
@@ -300,63 +379,95 @@ def main() -> int:
     results = {}
     start_time = time.time()
     
+    log("Starting inventory update...")
+    
     # Check environment
     warnings = check_environment()
     for warning in warnings:
         print(f"⚠ Warning: {warning}")
+        log(f"Warning: {warning}")
     
     # Step 1: Scrape
     if not args.skip_scrape:
-        print("\n[1/4] Scraping inventory from Ford Fairfield API...")
+        print("\n[1/5] Scraping inventory from Ford Fairfield API...")
+        log("Running scraper...")
         results["scrape"] = step_scrape(args.verbose)
         if not results["scrape"]["success"]:
             print(f"  ✗ Scrape failed: {results['scrape']['error']}")
+            log(f"ERROR: Scraper failed - {results['scrape']['error']}")
             print("  Stopping due to scrape failure.")
             print_summary(results, time.time() - start_time)
             return 1
         print(f"  ✓ Scraped {results['scrape']['vehicles']} vehicles")
+        log(f"Scraper completed: {results['scrape']['vehicles']} vehicles")
     else:
-        print("\n[1/4] Scraping... SKIPPED")
+        print("\n[1/5] Scraping... SKIPPED")
+        log("Scraper skipped")
     
     # Step 2: Sync DB
-    print("\n[2/4] Syncing database from CSV...")
+    print("\n[2/5] Syncing database from CSV...")
+    log("Syncing database...")
     results["sync"] = step_sync_db(args.verbose)
     if not results["sync"]["success"]:
         print(f"  ✗ Sync failed: {results['sync']['error']}")
+        log(f"ERROR: Database sync failed - {results['sync']['error']}")
         print("  Stopping due to sync failure.")
         print_summary(results, time.time() - start_time)
         return 1
     print(f"  ✓ Database now has {results['sync']['total']} vehicles")
+    log(f"Database sync completed: {results['sync']['total']} vehicles")
     
     # Step 3: Download stickers
     if not args.skip_stickers:
-        print("\n[3/4] Downloading window sticker PDFs...")
+        print("\n[3/5] Downloading window sticker PDFs...")
+        log("Downloading stickers...")
         results["stickers"] = step_download_stickers(args.verbose)
         if not results["stickers"]["success"]:
             print(f"  ✗ Sticker download failed: {results['stickers']['error']}")
+            log(f"WARNING: Sticker download failed - {results['stickers']['error']}")
             # Continue anyway - enrichment can still work on existing stickers
         else:
             print(f"  ✓ Downloaded {results['stickers']['downloaded']}, skipped {results['stickers']['skipped']} cached")
+            log(f"Stickers completed: {results['stickers']['downloaded']} downloaded, {results['stickers']['skipped']} cached")
     else:
-        print("\n[3/4] Downloading stickers... SKIPPED")
+        print("\n[3/5] Downloading stickers... SKIPPED")
+        log("Sticker download skipped")
     
     # Step 4: Enrich data
     if not args.skip_enrich:
         if os.getenv("OPENROUTER_API_KEY"):
-            print("\n[4/4] Enriching database from stickers (AI extraction)...")
+            print("\n[4/5] Enriching database from stickers (AI extraction)...")
+            log("Running AI enrichment...")
             results["enrich"] = step_enrich_data(args.verbose)
             if not results["enrich"]["success"]:
                 print(f"  ✗ Enrichment failed: {results['enrich']['error']}")
+                log(f"WARNING: Enrichment failed - {results['enrich']['error']}")
             else:
                 print(f"  ✓ Processed {results['enrich']['processed']} stickers")
+                log(f"Enrichment completed: {results['enrich']['processed']} processed")
         else:
-            print("\n[4/4] Enrichment... SKIPPED (no API key)")
+            print("\n[4/5] Enrichment... SKIPPED (no API key)")
+            log("Enrichment skipped (no API key)")
             results["enrich"] = {"success": False, "error": "No API key"}
     else:
-        print("\n[4/4] Enrichment... SKIPPED")
+        print("\n[4/5] Enrichment... SKIPPED")
+        log("Enrichment skipped")
+    
+    # Step 5: Generate cache
+    print("\n[5/5] Generating static cache...")
+    log("Generating cache...")
+    results["cache"] = step_generate_cache(args.verbose)
+    if not results["cache"]["success"]:
+        print(f"  ✗ Cache generation failed: {results['cache']['error']}")
+        log(f"WARNING: Cache generation failed - {results['cache']['error']}")
+    else:
+        print("  ✓ Cache generated")
+        log("Cache generation completed")
     
     # Print summary
-    print_summary(results, time.time() - start_time)
+    elapsed = time.time() - start_time
+    print_summary(results, elapsed)
+    log(f"Inventory update completed in {elapsed:.1f}s")
     
     return 0
 
