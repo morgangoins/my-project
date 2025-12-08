@@ -1,0 +1,24 @@
+Please analyze the attached Order Guide PDF and generate a comprehensive, valid JSON object representing all possible build configurations, rules, and exceptions. The output must strictly follow the structure below to ensure consistency with my previous F-150 dataset.
+
+**JSON Structure Requirements:**
+
+1.  **metadata**: Include `model_year`, `model`, `document_date`, `version` (e.g., Job 2), and `notes`.
+2.  **global_components**:
+    * **paint_colors**: Object with keys for color names (snake_case). Each entry must include `code`, `availability` (list of trims), and `notes` (e.g., "Extra Charge", "New for 2025").
+    * **powertrains**: Object with keys for engine names. Include `code`, `default_transmission` (with code), `availability` (Standard/Optional on which trims), and `restrictions`.
+    * **safety_technology**: Object defining safety suites (e.g., Co-Pilot360 2.0, Assist 2.0, BlueCruise). Include `description` and a list of `features`.
+    * **accessories**: Object separating items like `bed_protection` (bedliners), `tonneau_covers`, and `exterior_accessories`. Include names, codes, and availability.
+3.  **series_build_rules**: An array of objects for each trim level (Series). Each object must include:
+    * `series`: Name (e.g., XL, XLT).
+    * `description`: Brief summary of the trim's purpose.
+    * `equipment_groups`: Key-value pairs of codes and names (e.g., "101A": "Standard").
+    * `safety_and_technology`: Object detailing the availability of major safety tech (Standard vs. Optional vs. Not Available) for that specific trim, including Driver Assist packages and BlueCruise (or equivalent).
+    * `standard_equipment`: List of key standard features.
+    * `packages`: Object listing major packages (e.g., Appearance Packages, Tow Packages) with availability rules and included content.
+    * `options`: Key standalone options with codes.
+
+**Key Instructions:**
+* **Precision:** Capture specific option codes (e.g., 99P, 53T) and constraints (e.g., "NA w/ 2.7L engine").
+* **Updates:** If the document mentions "Job 2" or "Mid-Year" updates, prioritize those changes.
+* **Formatting:** Ensure the JSON is valid and properly indented.
+* **Completeness:** Do not summarize; include all relevant trims, engines, and major packages found in the guide.

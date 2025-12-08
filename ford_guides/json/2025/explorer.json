@@ -1,0 +1,456 @@
+{
+    "metadata": {
+      "model_year": "2025",
+      "model": "Ford Explorer",
+      "document_date": "2025-05-02",
+      "version": "Job 3",
+      "notes": "Effective on vehicles built on or after 03/17/25. XLT series replaced by Active (200A). Base, Timberline, Limited, King Ranch, and Hybrid series deleted. Job 3 adds Tire Inflator Kit as standard and makes Spare Wheel optional."
+    },
+    "global_components": {
+      "paint_colors": {
+        "star_white_metallic_tri_coat": {
+          "code": "AZ",
+          "availability": [
+            "Active",
+            "ST-Line",
+            "ST",
+            "Platinum"
+          ],
+          "notes": "Extra Cost"
+        },
+        "rapid_red_metallic_tinted_clearcoat": {
+          "code": "D4",
+          "availability": [
+            "ST-Line",
+            "ST",
+            "Platinum"
+          ],
+          "notes": "Extra Cost"
+        },
+        "vapor_blue_metallic": {
+          "code": "K1",
+          "availability": [
+            "Active",
+            "ST-Line",
+            "ST",
+            "Platinum"
+          ],
+          "notes": "New for 2025. Extra Cost on Active."
+        },
+        "agate_black_metallic": {
+          "code": "UM",
+          "availability": [
+            "Active",
+            "ST-Line",
+            "ST",
+            "Platinum"
+          ],
+          "notes": "Not available with Black Painted Roof (60S)"
+        },
+        "carbonized_gray_metallic": {
+          "code": "M7",
+          "availability": [
+            "Active",
+            "ST-Line",
+            "ST",
+            "Platinum"
+          ],
+          "notes": ""
+        },
+        "space_white_metallic": {
+          "code": "A3",
+          "availability": [
+            "Active",
+            "ST-Line",
+            "ST",
+            "Platinum"
+          ],
+          "notes": "New for 2025"
+        },
+        "oxford_white": {
+          "code": "YZ",
+          "availability": [
+            "Active"
+          ],
+          "notes": "Fleet Only"
+        }
+      },
+      "powertrains": {
+        "2_3l_ecoboost_i4": {
+          "code": "99H",
+          "default_transmission": "44T",
+          "availability": {
+            "Active": "Standard",
+            "ST-Line": "Standard",
+            "Platinum": "Standard"
+          },
+          "restrictions": "Includes Auto Start-Stop Technology"
+        },
+        "3_0l_ecoboost_v6": {
+          "code": "99C",
+          "default_transmission": "44T",
+          "availability": {
+            "ST": "Standard",
+            "Platinum": "Included in Ultimate Package (68U)"
+          },
+          "restrictions": "Includes Auto Start-Stop Technology"
+        }
+      },
+      "transmissions": {
+        "10_speed_automatic": {
+          "code": "44T",
+          "availability": "Standard on all powertrains"
+        }
+      },
+      "safety_technology": {
+        "ford_co_pilot360_assist_plus": {
+          "description": "Standard driver assist suite for Active trim.",
+          "features": [
+            "Adaptive Cruise Control with Stop-and-Go and Lane Centering",
+            "Evasive Steering Assist",
+            "Intersection Assist",
+            "Pre-Collision Assist with AEB",
+            "Lane-Keeping System",
+            "BLIS with Cross-Traffic Alert and Trailer Coverage",
+            "Rear View Camera",
+            "Rear Parking Sensors"
+          ]
+        },
+        "ford_co_pilot360_assist_2_0": {
+          "description": "Enhanced suite standard on ST-Line, ST, and Platinum.",
+          "features": [
+            "360-Degree Camera with Split View",
+            "Reverse Brake Assist",
+            "Front/Side Parking Sensors",
+            "Predictive Speed Assist"
+          ]
+        },
+        "ford_bluecruise": {
+          "description": "Hands-free highway driving technology.",
+          "options": {
+            "90_day_trial": {
+              "code": "Standard (Software)",
+              "availability": [
+                "ST-Line",
+                "ST",
+                "Platinum"
+              ],
+              "notes": "Equipped vehicles come with a 90-day complimentary trial."
+            },
+            "1_year_plan": {
+              "code": "18B",
+              "availability": [
+                "ST-Line",
+                "ST",
+                "Platinum"
+              ],
+              "notes": "Optional on ST-Line/ST (purchase at order); Standard on Platinum."
+            }
+          }
+        }
+      },
+      "accessories": {
+        "dealer_installed_options": {
+          "cargo_area_management_system": {
+            "code": "DIO",
+            "notes": "Includes Cargo Mat, Cargo Net, Cargo Well Rubber Mat. Deletes standard Tire Inflator and Sealant Kit."
+          },
+          "splash_guards": {
+            "code": "DIO",
+            "notes": "Available on all trims."
+          },
+          "roof_rail_crossbars": {
+            "code": "DIO",
+            "notes": "Available on all trims."
+          },
+          "wheel_lock_kit": {
+            "code": "DIO",
+            "notes": "Available on all trims."
+          },
+          "roadside_assistance_kit": {
+            "code": "DIO",
+            "notes": "Available on all trims."
+          },
+          "first_aid_kit": {
+            "code": "DIO",
+            "notes": "Available on all trims."
+          },
+          "matte_clear_hood_graphic": {
+            "code": "DIO",
+            "notes": "Active and Platinum only. NA w/ Military Sales."
+          },
+          "smokers_package": {
+            "code": "DIO",
+            "notes": "Available on all trims."
+          }
+        }
+      }
+    },
+    "series_build_rules": [
+      {
+        "series": "Active",
+        "code": "200A",
+        "description": "Entry-level luxury replacement for the XLT series.",
+        "equipment_groups": {
+          "200A": "Standard Equipment Group"
+        },
+        "safety_and_technology": {
+          "co_pilot360_assist_plus": "Standard",
+          "co_pilot360_assist_2_0": "Not Available",
+          "bluecruise": "Not Available",
+          "360_degree_camera": "Not Available"
+        },
+        "standard_equipment": [
+          "2.3L EcoBoost I-4 Engine",
+          "18-inch Sparkle Silver-Painted Aluminum Wheels",
+          "Power Liftgate",
+          "Ford Digital Experience with 13.2-inch Touchscreen",
+          "12.3-inch Digital Cluster",
+          "Heated Front Seats",
+          "Power Driver (10-way) and Passenger (4-way) Seats",
+          "Class III Trailer Tow Package",
+          "Ford Co-Pilot360 Assist+",
+          "5G LTE Modem",
+          "Tire Inflator and Sealant Kit"
+        ],
+        "packages": {
+          "active_comfort_package": {
+            "code": "68A",
+            "type": "Optional",
+            "includes": [
+              "Heated Steering Wheel",
+              "Remote Start System",
+              "LED Fog Lamps",
+              "ActiveX Seating Material",
+              "8-Way Power Passenger Seat",
+              "Universal Garage Door Opener",
+              "Second Row HVAC Controls"
+            ]
+          }
+        },
+        "options": {
+          "panoramic_vista_roof": {
+            "code": "439",
+            "notes": "Requires 4WD and Active Comfort Package (68A)"
+          },
+          "20_inch_carbonized_gray_wheels": {
+            "code": "64Y",
+            "notes": "Requires Active Comfort Package (68A)"
+          },
+          "20_inch_luster_nickel_wheels": {
+            "code": "649",
+            "notes": "Requires Active Comfort Package (68A)"
+          },
+          "2nd_row_bench_seat": {
+            "code": "17U",
+            "notes": "35/30/35 Bench. Optional (Standard is Captain's Chairs)."
+          },
+          "spare_wheel_and_jack_kit": {
+            "code": "76U",
+            "notes": "18-inch spare. Deletes standard Tire Inflator Kit. Job 3 Update."
+          },
+          "engine_block_heater": {
+            "code": "41H",
+            "notes": "Optional"
+          },
+          "securicode_keyless_entry_keypad": {
+            "code": "61E",
+            "notes": "Dealer Installed / Optional. Requires Active Comfort Package on Active."
+          }
+        }
+      },
+      {
+        "series": "ST-Line",
+        "code": "300A",
+        "description": "Sport-inspired styling with advanced technology.",
+        "equipment_groups": {
+          "300A": "Standard Equipment Group"
+        },
+        "safety_and_technology": {
+          "co_pilot360_assist_plus": "Included",
+          "co_pilot360_assist_2_0": "Standard",
+          "bluecruise": "Standard (90-day trial). 1-Year Plan (18B) Optional."
+        },
+        "standard_equipment": [
+          "Includes Active 200A content plus:",
+          "20-inch Ebony-painted Machined Aluminum Wheels",
+          "Black Mesh Grille and Blackout Treatment",
+          "B&O Sound System (10 Speakers)",
+          "Ford Co-Pilot360 Assist 2.0",
+          "360-Degree Camera",
+          "ActiveX/Cloth Sport Seats with Red Stitching",
+          "Tire Inflator and Sealant Kit"
+        ],
+        "packages": {
+          "premium_package": {
+            "code": "68L",
+            "type": "Optional",
+            "includes": [
+              "Ambient Lighting",
+              "Power-Folding Mirrors with Autofold",
+              "Rain-Sensing Wipers",
+              "Wireless Charging Pad",
+              "2nd Row Heated Seats",
+              "110V/150W AC Power Outlet",
+              "Driver's Seat Memory"
+            ]
+          },
+          "st_line_street_pack": {
+            "code": "68P",
+            "type": "Optional",
+            "includes": [
+              "21-inch Magnetite-Painted Aluminum Wheels",
+              "Performance Brakes",
+              "Red Painted Brake Calipers"
+            ],
+            "notes": "Availability varies by drive (RWD/4WD) and seating config."
+          }
+        },
+        "options": {
+          "black_painted_roof": {
+            "code": "60S",
+            "notes": "Not available with Agate Black Metallic."
+          },
+          "panoramic_vista_roof": {
+            "code": "439",
+            "notes": "Included in some configurations (e.g., Premium Pkg w/ Captains & 4WD); Optional otherwise."
+          },
+          "2nd_row_captains_chairs": {
+            "code": "17H",
+            "notes": "Optional. Replaces standard bench."
+          },
+          "bluecruise_1_year": {
+            "code": "18B",
+            "notes": "Optional"
+          },
+          "securicode_keyless_entry_keypad": {
+            "code": "61E",
+            "notes": "Optional"
+          },
+          "spare_wheel_and_jack_kit": {
+            "code": "76U",
+            "notes": "18-inch spare. Job 3 Update."
+          }
+        }
+      },
+      {
+        "series": "ST",
+        "code": "400A",
+        "description": "Performance-oriented trim with high-output engine.",
+        "equipment_groups": {
+          "400A": "Standard Equipment Group"
+        },
+        "safety_and_technology": {
+          "co_pilot360_assist_2_0": "Standard",
+          "bluecruise": "Standard (90-day trial). 1-Year Plan (18B) Optional."
+        },
+        "standard_equipment": [
+          "3.0L EcoBoost V6 Engine",
+          "21-inch Magnetite-Painted Aluminum Wheels",
+          "Sport-Tuned Suspension",
+          "Quad Chrome Exhaust Tips",
+          "12.3-inch Digital Cluster",
+          "Heated/Ventilated Front Seats",
+          "Heated Steering Wheel (Sport Style)",
+          "2nd Row Captain's Chairs",
+          "Tire Inflator and Sealant Kit"
+        ],
+        "packages": {
+          "sun_and_sound_package": {
+            "code": "51G",
+            "type": "Optional",
+            "includes": [
+              "Panoramic Vista Roof",
+              "B&O Sound System (14 Speakers, 980 Watt)",
+              "Multicontour Seats with Active Motion (Front Only)"
+            ]
+          }
+        },
+        "options": {
+          "black_painted_roof": {
+            "code": "60S",
+            "notes": "Not available with Agate Black Metallic"
+          },
+          "bluecruise_1_year": {
+            "code": "18B",
+            "notes": "Optional"
+          },
+          "spare_wheel_and_jack_kit": {
+            "code": "76U",
+            "notes": "18-inch spare. Job 3 Update."
+          },
+          "securicode_keyless_entry_keypad": {
+            "code": "61E",
+            "notes": "Optional"
+          }
+        }
+      },
+      {
+        "series": "Platinum",
+        "code": "600A",
+        "description": "Top-tier luxury trim with premium materials.",
+        "equipment_groups": {
+          "600A": "Standard Equipment Group"
+        },
+        "safety_and_technology": {
+          "co_pilot360_assist_2_0": "Standard",
+          "bluecruise": "Standard (1-Year Plan Included)"
+        },
+        "standard_equipment": [
+          "2.3L EcoBoost (Standard) or 3.0L V6 (via Ultimate Pkg)",
+          "20-inch Luster Nickel-Painted Aluminum Wheels",
+          "Adaptive Headlamps",
+          "Panoramic Vista Roof",
+          "B&O Sound System (14 Speakers)",
+          "Heated/Ventilated Front Seats",
+          "Heated 2nd Row Seats",
+          "Leather Seating Surfaces with Diamond Perforated Inserts",
+          "Tire Inflator and Sealant Kit"
+        ],
+        "packages": {
+          "lux_leather_package": {
+            "code": "21B",
+            "type": "Optional",
+            "availability": "Available on 2.3L and 3.0L",
+            "includes": [
+              "Premium Leather Seating Surfaces",
+              "Quilting and Stitching on Seats and Door Panels",
+              "Platinum Badges (Front Seats)"
+            ],
+            "notes": "NA with 2nd Row Bench (17U)"
+          },
+          "ultimate_package": {
+            "code": "68U",
+            "type": "Optional",
+            "includes": [
+              "3.0L EcoBoost V6 Engine",
+              "21-inch Dark Alloy-painted Machined Aluminum Wheels",
+              "All content from Lux Leather Package"
+            ]
+          }
+        },
+        "options": {
+          "21_inch_bright_machined_wheels": {
+            "code": "64D",
+            "notes": "Optional on 600A"
+          },
+          "2nd_row_bench_seat": {
+            "code": "17U",
+            "notes": "Optional (Requires 4WD). NA with Lux Leather or Ultimate Pkg."
+          },
+          "black_painted_roof": {
+            "code": "60S",
+            "notes": "Not available with Agate Black Metallic"
+          },
+          "spare_wheel_and_jack_kit": {
+            "code": "76U",
+            "notes": "18-inch spare. Job 3 Update."
+          },
+          "securicode_keyless_entry_keypad": {
+            "code": "61E",
+            "notes": "Optional"
+          }
+        }
+      }
+    ]
+  }

@@ -123,24 +123,9 @@ for v in unique_vehicles:
     }
     rows.append(row)
 
-# Save to CSV in the same directory as this script, with a timestamped filename.
-# Before writing, remove any inventory CSVs older than 7 days.
 base_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Delete previously generated inventory CSV files older than 7 days
-now = datetime.now(ZoneInfo("America/Los_Angeles"))
-cutoff = now - timedelta(days=7)
-
-for existing in os.listdir(base_dir):
-    if existing.startswith("inventoryNew-") and existing.endswith(".csv"):
-        path = os.path.join(base_dir, existing)
-        try:
-            mtime = datetime.fromtimestamp(os.path.getmtime(path), ZoneInfo("America/Los_Angeles"))
-            if mtime < cutoff:
-                os.remove(path)
-        except OSError as e:
-            print(f"Warning: could not inspect/remove old inventory file {existing}: {e}")
-
+# Save to CSV in the same directory as this script, with a timestamped filename.
 timestamp = datetime.now(ZoneInfo("America/Los_Angeles")).strftime("%Y%m%d-%H%M%S")
 filename = f"inventoryNew-{timestamp}.csv"
 csv_path = os.path.join(base_dir, filename)
@@ -149,5 +134,28 @@ with open(csv_path, 'w', newline='') as f:
     writer = csv.DictWriter(f, fieldnames=fields)
     writer.writeheader()
     writer.writerows(rows)
+
+# After successfully writing, remove all older inventory CSV files so that only
+# the newest CSV remains in the scraper directory.
+try:
+    inventory_files = []
+    for existing in os.listdir(base_dir):
+        if existing.startswith("inventoryNew-") and existing.endswith(".csv"):
+            path = os.path.join(base_dir, existing)
+            try:
+                mtime = os.path.getmtime(path)
+                inventory_files.append((mtime, path))
+            except OSError as e:
+                print(f"Warning: could not inspect inventory file {existing}: {e}")
+
+    # Sort by modification time (newest first) and delete all but the newest.
+    inventory_files.sort(reverse=True)
+    for _, path in inventory_files[1:]:
+        try:
+            os.remove(path)
+        except OSError as e:
+            print(f"Warning: could not remove old inventory file {os.path.basename(path)}: {e}")
+except OSError as e:
+    print(f"Warning: could not clean up old inventory files: {e}")
 
 print(f"Saved {len(rows)} unique vehicles to {csv_path}")

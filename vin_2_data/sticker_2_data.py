@@ -23,6 +23,7 @@ import urllib.request
 import urllib.error
 
 from functools import lru_cache
+from difflib import SequenceMatcher
 
 try:
     from pypdf import PdfReader
@@ -40,8 +41,8 @@ BASE_URL = os.getenv(
 #   - "x-ai/grok-4.1"
 DEFAULT_MODEL = os.getenv("OPENROUTER_MODEL", "google/gemini-2.5-flash")
 
-# By default, use a `context` directory next to this script
-DEFAULT_CONTEXT_DIR = pathlib.Path(__file__).with_name("context")
+# By default, use the ford_guides/context directory for context files
+DEFAULT_CONTEXT_DIR = pathlib.Path("/root/www/ford_guides/context")
 CONTEXT_DIR = pathlib.Path(
     os.getenv("OPENROUTER_CONTEXT_DIR", str(DEFAULT_CONTEXT_DIR))
 )
@@ -62,6 +63,95 @@ STICKERS_DIR = ROOT_DIR / "vin_2_data" / "stickers"
 # Fields that come from the CSV/scraper and should not be used to decide
 # whether sticker-derived data is missing.
 NON_STICKER_COLUMNS = {"vin", "stock", "photo_urls", "vehicle_link"}
+
+# Base table columns (from CTI schema)
+BASE_TABLE_COLUMNS = {
+    "vin", "stock", "photo_urls", "vehicle_link", "vehicle_type",
+    "year", "make", "model", "trim", "paint", "interior_color",
+    "interior_material", "body_style", "fuel", "msrp", "base_price",
+    "total_options", "total_vehicle", "destination_delivery", "discount",
+    "optional", "standard", "final_assembly_plant", "method_of_transport",
+    "special_order", "equipment_group", "equipment_group_discount", "address"
+}
+
+# Child table columns for each vehicle type (matching actual DB schema)
+CHILD_TABLE_COLUMNS = {
+    "trucks": {
+        "drivetrain", "engine", "engine_displacement", "cylinder_count",
+        "transmission_type", "transmission_speeds", "mpg", "truck_body_style",
+        "rear_axle_config", "wheelbase", "axle_ratio", "axle_ratio_type",
+        "bed_length", "towing_capacity", "payload_capacity"
+    },
+    "suvs": {
+        "drivetrain", "engine", "engine_displacement", "cylinder_count",
+        "transmission_type", "transmission_speeds", "mpg", "cargo_volume",
+        "third_row_seating", "ground_clearance"
+    },
+    "vans": {
+        "drivetrain", "engine", "engine_displacement", "cylinder_count",
+        "transmission_type", "transmission_speeds", "mpg", "cargo_length",
+        "roof_height"
+    },
+    "coupes": {
+        "drivetrain", "engine", "engine_displacement", "cylinder_count",
+        "transmission_type", "transmission_speeds", "mpg", "horsepower",
+        "torque"
+    },
+    "chassis": {
+        "drivetrain", "engine", "engine_displacement", "cylinder_count",
+        "transmission_type", "transmission_speeds", "mpg", "truck_body_style",
+        "rear_axle_config", "wheelbase", "axle_ratio", "axle_ratio_type",
+        "towing_capacity", "payload_capacity"
+    },
+}
+
+# Vehicle type to child table mapping
+VEHICLE_TYPE_TO_TABLE = {
+    "truck": "trucks",
+    "suv": "suvs",
+    "van": "vans",
+    "coupe": "coupes",
+    "chassis": "chassis",
+}
+
+# Vehicle type classification based on model name
+VEHICLE_TYPE_MAP = {
+    "F-150": "truck", "F-250": "truck", "F-350": "truck", "F-450": "truck",
+    "F-550": "truck", "F-600": "truck", "F-650": "truck", "F-750": "truck",
+    "Ranger": "truck", "Maverick": "truck",
+    "Bronco": "suv", "Bronco Sport": "suv", "Explorer": "suv",
+    "Expedition": "suv", "Edge": "suv", "Escape": "suv", "EcoSport": "suv",
+    "Mustang Mach-E": "suv",
+    "Transit": "van", "E-Transit": "van", "Transit Connect": "van",
+    "Mustang": "coupe", "GT": "coupe",
+    "F-Series": "chassis",
+}
+
+
+def infer_vehicle_type(model: str) -> str:
+    """Determine vehicle type from model name."""
+    if not model:
+        return "unknown"
+    model_normalized = model.strip()
+    if model_normalized in VEHICLE_TYPE_MAP:
+        return VEHICLE_TYPE_MAP[model_normalized]
+    for key in sorted(VEHICLE_TYPE_MAP.keys(), key=len, reverse=True):
+        if model_normalized.startswith(key):
+            return VEHICLE_TYPE_MAP[key]
+    model_lower = model_normalized.lower()
+    if any(t in model_lower for t in ["f-150", "f-250", "f-350", "f-450", "f-550", "ranger", "maverick"]):
+        return "truck"
+    if "mustang mach-e" in model_lower or "mach-e" in model_lower:
+        return "suv"
+    if any(s in model_lower for s in ["bronco", "explorer", "expedition", "edge", "escape"]):
+        return "suv"
+    if "transit" in model_lower:
+        return "van"
+    if "mustang" in model_lower or model_lower == "gt":
+        return "coupe"
+    return "unknown"
+
+
 
 
 @lru_cache(maxsize=4)
@@ -275,6 +365,17 @@ def call_model_for_window_sticker(pdf_text: str, model: str | None = None) -> st
         "others. If a value is unknown or not present on the sticker, "
         "set it to null instead of omitting the field.",
         "",
+        "CRITICAL - Consistent Capitalization Rules:",
+        "- Use Title Case for most string fields (e.g., 'Cloth' not 'CLOTH', 'Oxford White' not 'OXFORD WHITE')",
+        "- For interior_material: Use exactly 'Cloth', 'Vinyl', 'Leather', 'ActiveX', or 'Leather-Trim'",
+        "- For fuel: Use exactly 'Gas', 'Diesel', 'Hybrid', or 'Electric' (not 'Gasoline')",
+        "- For drivetrain: Use exactly '4x2', '4x4', 'RWD', 'AWD', or '4WD'",
+        "- For body_style: Use exactly 'Truck', 'SUV', 'Van', or 'Coupe'",
+        "- For rear_axle_config: Use exactly 'SRW' or 'DRW' (not spelled out)",
+        "- For transmission_type: Use exactly 'Automatic', 'Manual', or 'CVT'",
+        "- NEVER use ALL CAPS for any field values, even if the sticker shows them that way",
+        "- Refer to options.json for canonical values for trim, paint, interior_color, etc.",
+        "",
         "Important output requirements:",
         "- Output a single valid JSON object.",
         "- Do NOT wrap it in Markdown.",
@@ -423,7 +524,164 @@ _LABEL_KEY_ALIASES: dict[str, str] = {
     "transport_method": "method_of_transport",
     "delivery_method": "method_of_transport",
     "dealer_address": "address",
+    # Equipment package aliases
+    "preferred_equipment_pkg": "equipment_group",
+    "preferred_equipment_pkg_cost": "equipment_group_discount",
 }
+
+# Fields that should be normalized against options.json canonical values
+_NORMALIZABLE_FIELDS = {
+    "trim", "paint", "interior_color", "interior_material", "drivetrain",
+    "body_style", "truck_body_style", "rear_axle_config", "engine",
+    "engine_displacement", "fuel", "axle_ratio_type", "transmission_type",
+}
+
+
+@lru_cache(maxsize=1)
+def _load_options_json() -> dict:
+    """Load the canonical options from options.json."""
+    options_path = CONTEXT_DIR / "options.json"
+    if not options_path.exists():
+        return {}
+    try:
+        return json.loads(options_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return {}
+
+
+def _get_canonical_values(field: str, model: str | None = None) -> list[str]:
+    """
+    Get the list of canonical values for a field.
+    If model is provided, use model-specific values; otherwise merge all models.
+    """
+    options = _load_options_json()
+    if not options:
+        return []
+
+    # Map DB column names to options.json field names
+    field_map = {
+        "rear_axle_config": "rear_axle_config",
+        "equipment_group": "preferred_equipment_pkg",
+    }
+    options_field = field_map.get(field, field)
+
+    values: set[str] = set()
+    if model and model in options:
+        model_opts = options[model].get(options_field, [])
+        for v in model_opts:
+            if v is not None and isinstance(v, str):
+                values.add(v)
+    else:
+        # Merge values from all models
+        for model_data in options.values():
+            if isinstance(model_data, dict):
+                for v in model_data.get(options_field, []):
+                    if v is not None and isinstance(v, str):
+                        values.add(v)
+
+    return list(values)
+
+
+def _fuzzy_match(value: str, candidates: list[str], threshold: float = 0.7) -> str | None:
+    """
+    Find the best fuzzy match for a value among candidates.
+    Returns the canonical value if match ratio >= threshold, else None.
+    """
+    if not value or not candidates:
+        return None
+
+    value_lower = value.lower().strip()
+
+    # First try exact case-insensitive match
+    for candidate in candidates:
+        if candidate.lower() == value_lower:
+            return candidate
+
+    # Try matching after stripping common prefixes/suffixes
+    # e.g., "STX CLOTH" should match "Cloth", "Ltr-Trimmed" should match "Leather"
+    value_words = value_lower.split()
+    for candidate in candidates:
+        cand_lower = candidate.lower()
+        # Check if candidate is in value as a word
+        if cand_lower in value_words:
+            return candidate
+        # Check if value contains the candidate
+        if cand_lower in value_lower:
+            return candidate
+
+    # Handle common abbreviations and variations
+    abbreviation_map = {
+        "ltr": "leather",
+        "vnyl": "vinyl",
+        "actx": "activex",
+        "clth": "cloth",
+    }
+    for abbr, full in abbreviation_map.items():
+        if abbr in value_lower:
+            for candidate in candidates:
+                if candidate.lower() == full:
+                    return candidate
+
+    # Try fuzzy matching
+    best_match = None
+    best_ratio = 0.0
+
+    for candidate in candidates:
+        ratio = SequenceMatcher(None, value_lower, candidate.lower()).ratio()
+        if ratio > best_ratio and ratio >= threshold:
+            best_ratio = ratio
+            best_match = candidate
+
+    return best_match
+
+
+def _normalize_value(field: str, value: object, model: str | None = None) -> object:
+    """
+    Normalize a field value to its canonical form using options.json.
+    Returns the original value if no match is found.
+    """
+    if value is None or not isinstance(value, str):
+        return value
+
+    value_str = value.strip()
+    if not value_str:
+        return value
+
+    candidates = _get_canonical_values(field, model)
+    if not candidates:
+        return value
+
+    matched = _fuzzy_match(value_str, candidates)
+    return matched if matched else value
+
+
+def _normalize_extracted_data(data: dict, model: str | None = None) -> dict:
+    """
+    Normalize all applicable fields in extracted data to canonical forms.
+    This ensures consistent capitalization and naming across extractions.
+    """
+    if not isinstance(data, dict):
+        return data
+
+    # Extract model from data if not provided
+    if not model:
+        model = data.get("model")
+        if not model:
+            labels = data.get("labels", {})
+            if isinstance(labels, dict):
+                model = labels.get("model")
+
+    normalized = {}
+    for key, value in data.items():
+        if key == "labels" and isinstance(value, dict):
+            # Recursively normalize labels
+            normalized[key] = _normalize_extracted_data(value, model)
+        elif key in _NORMALIZABLE_FIELDS:
+            normalized[key] = _normalize_value(key, value, model)
+        else:
+            normalized[key] = value
+
+    return normalized
 
 
 def _coerce_for_sqlite(value: object, col_type: str) -> object | None:
@@ -509,7 +767,7 @@ def _labels_to_vehicle_columns(
             if key == "labels":
                 continue
             if isinstance(value, dict):
-                # e.g., annotation.ts -> annotation_ts, annotation.model -> annotation_model
+                # Flatten nested dicts: e.g., {"mpg": {"city": 20}} -> mpg_city
                 for sub_key, sub_val in value.items():
                     flat[f"{key}_{sub_key}"] = sub_val
             else:
@@ -532,6 +790,69 @@ def _labels_to_vehicle_columns(
     return columns
 
 
+def _get_table_column_types(conn: sqlite3.Connection, table: str) -> dict[str, str]:
+    """Return a mapping of table column name -> declared SQLite type."""
+    cur = conn.cursor()
+    cur.execute(f"PRAGMA table_info({table})")
+    return {row[1]: (row[2] or "").upper() for row in cur.fetchall()}
+
+
+def _upsert_vehicle_base(conn: sqlite3.Connection, vin: str, columns: dict) -> None:
+    """Update base vehicles table with extracted data."""
+    cur = conn.cursor()
+    protected_cols = NON_STICKER_COLUMNS
+    # Only update columns that belong to base table
+    update_columns = {
+        k: v for k, v in columns.items()
+        if k not in protected_cols and k in BASE_TABLE_COLUMNS
+    }
+    if update_columns:
+        set_clause = ", ".join(f"{col} = :{col}" for col in update_columns)
+        params = {**update_columns, "vin": vin}
+        cur.execute(f"UPDATE vehicles SET {set_clause} WHERE vin = :vin", params)
+    else:
+        cur.execute("UPDATE vehicles SET vin = vin WHERE vin = :vin", {"vin": vin})
+    if cur.rowcount == 0:
+        insert_cols = ["vin", "stock", *update_columns.keys()]
+        placeholders = [":" + c for c in insert_cols]
+        cur.execute(
+            f"INSERT INTO vehicles ({', '.join(insert_cols)}) VALUES ({', '.join(placeholders)})",
+            {"vin": vin, "stock": "", **update_columns}
+        )
+    conn.commit()
+
+
+def _upsert_vehicle_details(conn: sqlite3.Connection, vin: str, vehicle_type: str, columns: dict) -> None:
+    """Insert or update the appropriate child table based on vehicle_type."""
+    if vehicle_type not in VEHICLE_TYPE_TO_TABLE:
+        return
+    table_name = VEHICLE_TYPE_TO_TABLE[vehicle_type]
+    valid_columns = CHILD_TABLE_COLUMNS.get(table_name, set())
+    child_types = _get_table_column_types(conn, table_name)
+    # Filter and coerce columns for child table
+    update_columns = {}
+    for k, v in columns.items():
+        if k in valid_columns and k in child_types:
+            update_columns[k] = _coerce_for_sqlite(v, child_types[k])
+    if not update_columns:
+        return
+    cur = conn.cursor()
+    cur.execute(f"SELECT vin FROM {table_name} WHERE vin = ?", (vin,))
+    exists = cur.fetchone() is not None
+    if exists:
+        set_clause = ", ".join(f"{col} = :{col}" for col in update_columns)
+        params = {**update_columns, "vin": vin}
+        cur.execute(f"UPDATE {table_name} SET {set_clause} WHERE vin = :vin", params)
+    else:
+        insert_cols = ["vin", *update_columns.keys()]
+        placeholders = [":" + c for c in insert_cols]
+        cur.execute(
+            f"INSERT INTO {table_name} ({', '.join(insert_cols)}) VALUES ({', '.join(placeholders)})",
+            {"vin": vin, **update_columns}
+        )
+    conn.commit()
+
+
 def _upsert_vehicle_from_labels(
     conn: sqlite3.Connection,
     vin: str,
@@ -539,35 +860,21 @@ def _upsert_vehicle_from_labels(
 ) -> None:
     """
     Update an existing vehicle row with extracted data, or insert a new row.
+    Also updates the appropriate child table based on vehicle_type (CTI schema).
     """
-    cur = conn.cursor()
+    # Determine vehicle_type from model if not already set
+    vehicle_type = columns.get("vehicle_type")
+    model = columns.get("model")
+    if not vehicle_type and model:
+        vehicle_type = infer_vehicle_type(str(model))
+        columns["vehicle_type"] = vehicle_type
 
-    # Do not let the enrichment pipeline overwrite these; they are owned by the
-    # scraper/importer.
-    protected_cols = NON_STICKER_COLUMNS
+    # Update base table
+    _upsert_vehicle_base(conn, vin, columns)
 
-    update_columns = {k: v for k, v in columns.items() if k not in protected_cols}
-
-    if update_columns:
-        set_clause = ", ".join(f"{col} = :{col}" for col in update_columns)
-        params = {**update_columns, "vin": vin}
-        cur.execute(f"UPDATE vehicles SET {set_clause} WHERE vin = :vin", params)
-    else:
-        # Nothing to update, but still check if the row exists.
-        cur.execute("UPDATE vehicles SET vin = vin WHERE vin = :vin", {"vin": vin})
-
-    if cur.rowcount == 0:
-        # If the VIN isn't in the table yet, insert a new row with empty stock.
-        insert_cols = ["vin", "stock", *update_columns.keys()]
-        placeholders = [":" + c for c in insert_cols]
-        insert_sql = (
-            f"INSERT INTO vehicles ({', '.join(insert_cols)}) "
-            f"VALUES ({', '.join(placeholders)})"
-        )
-        insert_params = {"vin": vin, "stock": "", **update_columns}
-        cur.execute(insert_sql, insert_params)
-
-    conn.commit()
+    # Update child table if we know the vehicle type
+    if vehicle_type and vehicle_type in VEHICLE_TYPE_TO_TABLE:
+        _upsert_vehicle_details(conn, vin, vehicle_type, columns)
 
 
 def process_all_stickers(
@@ -644,6 +951,9 @@ def process_all_stickers(
                 print(f"  Skipping {pdf_path}: could not parse JSON.", file=sys.stderr)
                 continue
 
+            # Normalize extracted data to canonical forms (consistent capitalization)
+            data = _normalize_extracted_data(data)
+
             # Some outputs may wrap everything under a 'labels' key like your examples.
             labels = data.get("labels") if isinstance(data, dict) else None
             if not isinstance(labels, dict):
@@ -680,15 +990,25 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Update the inventory database using window sticker PDFs that have "
-            "already been downloaded."
+            "already been downloaded. By default, only processes VINs where all "
+            "sticker-derived fields are empty."
         )
+    )
+    parser.add_argument(
+        "--process-all",
+        action="store_true",
+        help=(
+            "Process all sticker PDFs, not just those missing data. "
+            "Overrides the default behavior of only processing VINs with "
+            "empty sticker-derived fields."
+        ),
     )
     parser.add_argument(
         "--only-missing",
         action="store_true",
         help=(
             "Process only vehicles whose sticker-derived fields are missing "
-            "(defaults to checking msrp)."
+            "(defaults to checking msrp). Use --missing-field to specify which fields."
         ),
     )
     parser.add_argument(
@@ -698,15 +1018,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         default=None,
         help=(
             "Database column to use when determining missing sticker data. "
-            "Repeat for multiple fields. Defaults to msrp."
-        ),
-    )
-    parser.add_argument(
-        "--missing-all-sticker-fields",
-        action="store_true",
-        help=(
-            "Process VINs where all sticker-derived fields are empty, ignoring the "
-            "core CSV columns (vin, stock, photo_urls, vehicle_link)."
+            "Repeat for multiple fields. Defaults to msrp. Only used with --only-missing."
         ),
     )
     return parser.parse_args(argv)
@@ -723,7 +1035,10 @@ def main(argv: list[str] | None = None) -> None:
       - Updates or inserts rows in `/root/www/db/inventory.sqlite`
 
     Usage:
-      python sticker_2_data.py [--only-missing] [--missing-field FIELD ...]
+      python sticker_2_data.py [--process-all] [--only-missing] [--missing-field FIELD ...]
+
+    By default, only processes VINs where all sticker-derived fields are empty.
+    Use --process-all to process every sticker PDF.
     """
     if argv is None:
         argv = sys.argv[1:]
@@ -736,15 +1051,19 @@ def main(argv: list[str] | None = None) -> None:
         print("OPENROUTER_API_KEY is not set.", file=sys.stderr)
         sys.exit(1)
 
+    # Default behavior: only process VINs with all sticker fields missing.
+    # --process-all disables this filter and processes everything.
+    # --only-missing uses specific field checks instead of all-fields-missing.
+    missing_all_sticker_fields = not args.process_all and not args.only_missing
+    only_missing = args.only_missing or missing_all_sticker_fields
+
     try:
         with sqlite3.connect(DB_PATH) as conn:
             process_all_stickers(
                 conn,
-                # If the user asked for "all sticker fields missing", implicitly
-                # enable the only-missing path.
-                only_missing=args.only_missing or args.missing_all_sticker_fields,
+                only_missing=only_missing,
                 missing_fields=missing_fields,
-                missing_all_sticker_fields=args.missing_all_sticker_fields,
+                missing_all_sticker_fields=missing_all_sticker_fields,
             )
     except Exception as exc:  # noqa: BLE001
         print(f"Error updating database: {exc}", file=sys.stderr)

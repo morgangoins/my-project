@@ -4,279 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory</title>
+    <!-- Preload critical resources for faster load -->
+    <link rel="preconnect" href="https://rsms.me" crossorigin>
+    <link rel="preconnect" href="https://pictures.dealer.com" crossorigin>
+    <link rel="preload" href="inventory.php?lite=1&per_page=9999" as="fetch" crossorigin>
     <link href="https://rsms.me/inter/inter.css" rel="stylesheet">
     <style>
-        :root {
-            --bg: #f5f5f5;
-            --text: #171a20;
-            --muted: #5c5e62;
-            --border: #e4e4e4;
-            --accent: #3e6ae1;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background: var(--bg);
-            color: var(--text);
-        }
-
-        body {
-            display: flex;
-        }
-
-        .page {
-            min-height: 100vh;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header {
-            padding: 24px 48px 16px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-        }
-
-        .header-title {
-            font-size: 32px;
-            font-weight: 500;
-            letter-spacing: 0.02em;
-        }
-
-        .header-subtitle {
-            font-size: 14px;
-            color: var(--muted);
-            margin-top: 4px;
-        }
-
-        .sort {
-            font-size: 13px;
-            color: var(--muted);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .sort-label {
-            text-transform: none;
-        }
-
-        .sort-select {
-            border: none;
-            background: transparent;
-            font: inherit;
-            color: var(--text);
-            padding: 4px 0;
-            cursor: pointer;
-        }
-
-        .sort-select:focus-visible {
-            outline: none;
-            border-bottom: 1px solid var(--text);
-        }
-
-        .main {
-            flex: 1;
-            display: flex;
-            padding: 24px 48px 48px;
-            gap: 32px;
-            align-items: flex-start;
-        }
-
-        .filters {
-            width: 260px;
-        }
-
-        .filter-section + .filter-section {
-            margin-top: 32px;
-        }
-
-        .filter-title {
-            font-size: 13px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--muted);
-            margin-bottom: 16px;
-        }
-
-        .filter-option {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: var(--text);
-            cursor: pointer;
-        }
-
-        .filter-option input[type="radio"] {
-            accent-color: var(--text);
-            cursor: pointer;
-        }
-
-        .inventory {
-            flex: 1;
-        }
-
-        .results-summary {
-            font-size: 13px;
-            color: var(--muted);
-            margin-bottom: 16px;
-        }
-
-        .results-summary-strong {
-            font-weight: 500;
-            color: var(--text);
-        }
-
-        .cards-grid {
-            display: grid;
-            /* Responsive columns that fill available width, with cards themselves capped in size */
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 24px;
-            justify-items: center;
-        }
-
-        .card {
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 16px 16px 20px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
-            border: 1px solid #e7e7e7;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            /* Keep card width visually consistent across different result counts */
-            width: 100%;
-            max-width: 320px;
-            margin: 0 auto;
-        }
-
-        .card-image-placeholder {
-            background: #f2f2f2;
-            border-radius: 12px 12px 0 0;
-            margin: -16px -16px 12px -16px; /* let image span card edges */
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #b0b3b8;
-            font-size: 13px;
-            font-weight: 500;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            /* Use a fixed height so all vehicle photos appear uniform */
-            height: 200px;
-        }
-
-        .card-image-placeholder img {
-            display: block;
-            width: 100%;
-            /* Fill the fixed-height container and crop larger photos */
-            height: 100%;
-            object-fit: cover;
-            /* Keep the bottom of the vehicle visible; crop from the top */
-            object-position: bottom center;
-        }
-
-        .card-title {
-            font-size: 16px;
-            font-weight: 500;
-            margin-bottom: 4px;
-        }
-
-        .card-subtitle {
-            font-size: 13px;
-            color: var(--muted);
-        }
-
-        .card-meta {
-            font-size: 12px;
-            color: var(--muted);
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .card-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 4px;
-        }
-
-        .tag {
-            font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 999px;
-            background: #f5f5f5;
-            border: 1px solid #e4e4e4;
-            color: var(--muted);
-        }
-
-        .card-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-top: 4px;
-        }
-
-        .price {
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .price span {
-            display: block;
-            font-size: 11px;
-            color: var(--muted);
-            margin-top: 2px;
-        }
-
-        .action {
-            font-size: 12px;
-            color: var(--accent);
-            cursor: pointer;
-        }
-
-        .action:hover {
-            text-decoration: underline;
-        }
-
-        @media (max-width: 800px) {
-            .header {
-                padding: 16px;
-                align-items: flex-start;
-                gap: 12px;
-                flex-direction: column;
-            }
-
-            .main {
-                padding: 16px 16px 32px;
-                flex-direction: column;
-            }
-
-            .filters {
-                width: 100%;
-                display: flex;
-                gap: 24px;
-                overflow-x: auto;
-                padding-bottom: 8px;
-            }
-
-            .filter-section {
-                min-width: 160px;
-            }
+        :root { --bg: #f5f5f5; --text: #171a20; --muted: #5c5e62; --border: #e4e4e4; --accent: #3e6ae1; --accent-light: #e8f0fe; }
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; height: 100%; font-family: Inter, system-ui, sans-serif; background: var(--bg); color: var(--text); }
+        body { display: flex; }
+        .page { min-height: 100vh; width: 100%; display: flex; flex-direction: column; }
+        .header { padding: 24px 48px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-end; }
+        .header-title { font-size: 32px; font-weight: 500; }
+        .header-subtitle { font-size: 14px; color: var(--muted); margin-top: 4px; }
+        .header-right { display: flex; align-items: center; gap: 16px; }
+        .results-count { font-size: 14px; color: var(--muted); }
+        .results-count strong { color: var(--text); font-weight: 600; }
+        .sort { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+        .sort-select { border: none; background: transparent; font: inherit; color: var(--text); padding: 4px 0; cursor: pointer; }
+        .main { flex: 1; display: flex; padding: 24px 48px 48px; gap: 32px; align-items: flex-start; }
+        .filters { width: 280px; flex-shrink: 0; position: sticky; top: 24px; max-height: calc(100vh - 120px); overflow-y: auto; padding-right: 8px; }
+        .filters::-webkit-scrollbar { width: 6px; }
+        .filters::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        .filter-section { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+        .filter-section:last-child { border-bottom: none; }
+        .filter-title { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .filter-clear { font-size: 11px; color: var(--accent); cursor: pointer; text-transform: none; letter-spacing: normal; font-weight: 500; }
+        .filter-clear:hover { text-decoration: underline; }
+        .filter-option { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 14px; cursor: pointer; }
+        .filter-option input { accent-color: var(--accent); cursor: pointer; width: 16px; height: 16px; }
+        .filter-option-label { flex: 1; }
+        .filter-option-desc { font-size: 11px; color: var(--muted); display: block; }
+        .filter-options-scroll { max-height: 200px; overflow-y: auto; }
+        .price-range-inputs { display: flex; gap: 8px; align-items: center; padding: 4px 0; }
+        .price-input { width: 80px; padding: 5px 8px; border: 1px solid var(--border); border-radius: 4px; font: inherit; font-size: 12px; }
+        .price-input:focus { outline: none; border-color: var(--accent); }
+        .price-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .price-input { -moz-appearance: textfield; }
+        .active-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+        .active-filter-tag { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: var(--accent-light); border-radius: 999px; font-size: 12px; color: var(--accent); }
+        .active-filter-tag button { background: none; border: none; padding: 0; cursor: pointer; color: inherit; font-size: 14px; line-height: 1; }
+        .clear-all-filters { font-size: 12px; color: var(--accent); cursor: pointer; padding: 4px 10px; }
+        .clear-all-filters:hover { text-decoration: underline; }
+        .inventory { flex: 1; min-width: 0; }
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+        .card { background: #fff; border-radius: 12px; padding: 16px 16px 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.04); border: 1px solid #e7e7e7; display: flex; flex-direction: column; gap: 12px; cursor: pointer; transition: box-shadow 0.2s, transform 0.2s; }
+        .card:hover { box-shadow: 0 12px 28px rgba(0,0,0,0.08); transform: translateY(-2px); }
+        .card-image-placeholder { background: #f2f2f2; border-radius: 12px 12px 0 0; margin: -16px -16px 12px -16px; overflow: hidden; display: flex; align-items: center; justify-content: center; color: #b0b3b8; font-size: 13px; height: 200px; position: relative; }
+        .in-transit-badge { position: absolute; top: 12px; left: 12px; background: var(--accent); color: #fff; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
+        .card-image-placeholder img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: bottom center; }
+        .card-title { font-size: 16px; font-weight: 500; margin-bottom: 4px; }
+        .card-subtitle { font-size: 13px; color: var(--muted); }
+        .card-meta { font-size: 12px; color: var(--muted); display: flex; flex-direction: column; gap: 2px; }
+        .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+        .tag { font-size: 11px; padding: 2px 8px; border-radius: 999px; background: #f5f5f5; border: 1px solid #e4e4e4; color: var(--muted); }
+        .tag-equipment { background: var(--accent-light); border-color: #c5d9fc; color: var(--accent); }
+        .card-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 4px; }
+        .price { font-size: 14px; font-weight: 500; }
+        .action { font-size: 12px; color: var(--accent); cursor: pointer; }
+        .action:hover { text-decoration: underline; }
+        .loading, .no-results { text-align: center; padding: 48px; color: var(--muted); }
+        .scroll-sentinel { height: 1px; grid-column: 1 / -1; }
+        .load-more { display: flex; justify-content: center; align-items: center; gap: 12px; padding: 32px; grid-column: 1 / -1; color: var(--muted); font-size: 14px; }
+        .loading-spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @media (max-width: 900px) {
+            .header { padding: 16px; flex-direction: column; align-items: flex-start; gap: 12px; }
+            .main { padding: 16px; flex-direction: column; }
+            .filters { width: 100%; position: static; max-height: none; display: flex; gap: 16px; overflow-x: auto; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+            .filter-section { min-width: 180px; flex-shrink: 0; margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
         }
     </style>
 </head>
@@ -287,788 +84,581 @@
                 <div class="header-title">Inventory</div>
                 <div class="header-subtitle" id="last-updated"></div>
             </div>
-            <div class="sort">
-                <span class="sort-label">Price:</span>
-                <select class="sort-select" aria-label="Sort by price">
-                    <option value="asc">low to high</option>
-                    <option value="desc">high to low</option>
-                </select>
+            <div class="header-right">
+                <div class="results-count" id="results-count"></div>
+                <div class="sort"><span>Sort:</span>
+                    <select class="sort-select" id="sort-select">
+                        <option value="stock_asc">Stock #</option>
+                        <option value="price_asc">Price: Low to High</option>
+                        <option value="price_desc">Price: High to Low</option>
+                        <option value="trim_asc">Trim Level</option>
+                    </select>
+                </div>
             </div>
         </header>
-
         <div class="main">
-            <aside class="filters" aria-label="Filters">
+            <aside class="filters">
                 <div class="filter-section">
                     <div class="filter-title">Model</div>
-                    <label class="filter-option">
-                        <input type="radio" name="model" value="all" checked>
-                        <span>All</span>
-                    </label>
-                    <label class="filter-option">
-                        <input type="radio" name="model" value="f150">
-                        <span>F-150</span>
-                    </label>
-                    <label class="filter-option">
-                        <input type="radio" name="model" value="transit">
-                        <span>Transit</span>
-                    </label>
-                    <label class="filter-option">
-                        <input type="radio" name="model" value="bronco">
-                        <span>Bronco</span>
-                    </label>
-                    <label class="filter-option">
-                        <input type="radio" name="model" value="ranger">
-                        <span>Ranger</span>
-                    </label>
-                    <label class="filter-option">
-                        <input type="radio" name="model" value="escape">
-                        <span>Escape</span>
-                    </label>
-                    <label class="filter-option">
-                        <input type="radio" name="model" value="explorer">
-                        <span>Explorer</span>
-                    </label>
-                    <label class="filter-option">
-                        <input type="radio" name="model" value="mustang">
-                        <span>Mustang</span>
-                    </label>
-                    <label class="filter-option">
-                        <input type="radio" name="model" value="expedition">
-                        <span>Expedition</span>
-                    </label>
-                    <label class="filter-option">
-                        <input type="radio" name="model" value="super-duty">
-                        <span>Super Duty</span>
-                    </label>
-                    <label class="filter-option">
-                        <input type="radio" name="model" value="bronco-sport">
-                        <span>Bronco Sport</span>
-                    </label>
-                    <label class="filter-option">
-                        <input type="radio" name="model" value="f150-lightning">
-                        <span>F-150 Lightning</span>
-                    </label>
-                    <label class="filter-option">
-                        <input type="radio" name="model" value="mustang-mach-e">
-                        <span>Mustang Mach-E</span>
-                    </label>
+                    <label class="filter-option"><input type="radio" name="model" value="all" checked><span>All Models</span></label>
+                    <label class="filter-option"><input type="radio" name="model" value="f150"><span>F-150</span></label>
+                    <label class="filter-option"><input type="radio" name="model" value="super-duty"><span>Super Duty</span></label>
+                    <label class="filter-option"><input type="radio" name="model" value="bronco"><span>Bronco</span></label>
+                    <label class="filter-option"><input type="radio" name="model" value="bronco-sport"><span>Bronco Sport</span></label>
+                    <label class="filter-option"><input type="radio" name="model" value="explorer"><span>Explorer</span></label>
+                    <label class="filter-option"><input type="radio" name="model" value="mustang"><span>Mustang</span></label>
+                    <label class="filter-option"><input type="radio" name="model" value="transit"><span>Transit</span></label>
                 </div>
-                <div class="filter-section" id="series-filter-section">
-                    <div class="filter-title">Series</div>
-                    <div id="series-options"></div>
+                <div class="filter-section" id="year-section">
+                    <div class="filter-title">Year <span class="filter-clear" id="clear-year" style="display:none;">Clear</span></div>
+                    <div id="year-options"></div>
                 </div>
-                <div class="filter-section">
-                    <div class="filter-title">Trim</div>
+                <div class="filter-section" id="trim-section" style="display:none;">
+                    <div class="filter-title">Trim <span class="filter-clear" id="clear-trim">Clear</span></div>
                     <div id="trim-options"></div>
                 </div>
-                <div class="filter-section" id="drivetrain-filter-section">
-                    <div class="filter-title">Drivetrain</div>
-                    <div id="drivetrain-options"></div>
-                </div>
-                <div class="filter-section" id="engine-filter-section">
-                    <div class="filter-title">Engine</div>
+                <div class="filter-section" id="engine-section" style="display:none;">
+                    <div class="filter-title">Engine <span class="filter-clear" id="clear-engine">Clear</span></div>
                     <div id="engine-options"></div>
                 </div>
-                <div class="filter-section" id="fuel-filter-section">
-                    <div class="filter-title">Fuel</div>
-                    <div id="fuel-options"></div>
+                <div class="filter-section" id="drivetrain-section" style="display:none;">
+                    <div class="filter-title">Drivetrain <span class="filter-clear" id="clear-drivetrain">Clear</span></div>
+                    <div id="drivetrain-options"></div>
                 </div>
-                <div class="filter-section" id="rear-axle-filter-section">
-                    <div class="filter-title">Rear Axle Config</div>
-                    <div id="rear-axle-options"></div>
+                <div class="filter-section" id="body-style-section" style="display:none;">
+                    <div class="filter-title">Cab Style <span class="filter-clear" id="clear-body-style">Clear</span></div>
+                    <div id="body-style-options"></div>
+                </div>
+                <div class="filter-section" id="equipment-section" style="display:none;">
+                    <div class="filter-title">Optional Equipment <span class="filter-clear" id="clear-equipment">Clear</span></div>
+                    <div id="equipment-options" class="filter-options-scroll"></div>
+                </div>
+                <div class="filter-section" id="color-section" style="display:none;">
+                    <div class="filter-title">Exterior Color <span class="filter-clear" id="clear-color">Clear</span></div>
+                    <div id="color-options" class="filter-options-scroll"></div>
+                </div>
+                <div class="filter-section" id="price-section" style="display:none;">
+                    <div class="filter-title">Price Range</div>
+                    <div class="price-range-inputs">
+                        <input type="number" class="price-input" id="price-min" placeholder="Min" step="1000">
+                        <span style="color:var(--muted)">–</span>
+                        <input type="number" class="price-input" id="price-max" placeholder="Max" step="1000">
+                    </div>
+                </div>
+                <div class="filter-section" id="package-section" style="display:none;">
+                    <div class="filter-title">Package <span class="filter-clear" id="clear-package">Clear</span></div>
+                    <div id="package-options"></div>
                 </div>
             </aside>
-
-            <section class="inventory" aria-label="Vehicle inventory">
-                <div class="cards-grid" id="cards-grid"></div>
-                <div id="debug" style="font-size:12px; color:#5c5e62; margin-top:16px;"></div>
+            <section class="inventory">
+                <div class="active-filters" id="active-filters"></div>
+                <div class="cards-grid" id="cards-grid"><div class="loading">Loading inventory...</div></div>
             </section>
         </div>
     </div>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const grid = document.getElementById('cards-grid');
-        const modelRadios = document.querySelectorAll('input[name="model"]');
-        const seriesContainer = document.getElementById('series-options');
-        const seriesSection = document.getElementById('series-filter-section');
-        const trimContainer = document.getElementById('trim-options');
-        const drivetrainContainer = document.getElementById('drivetrain-options');
-        const drivetrainSection = document.getElementById('drivetrain-filter-section');
-        const engineContainer = document.getElementById('engine-options');
-        const engineSection = document.getElementById('engine-filter-section');
-        const sortSelect = document.querySelector('.sort-select');
-        const fuelContainer = document.getElementById('fuel-options');
-        const fuelSection = document.getElementById('fuel-filter-section');
-        const rearAxleContainer = document.getElementById('rear-axle-options');
-        const rearAxleSection = document.getElementById('rear-axle-filter-section');
-        let vehicles = [];
+document.addEventListener('DOMContentLoaded', function() {
+    let vehicles = [];
+    let filteredVehicles = [];
+    let displayedCount = 0;
+    const ITEMS_PER_PAGE = 24;
+    let selectedFilters = { model: 'all', year: [], trim: [], package: [], engine: [], drivetrain: [], body_style: [], equipment: [], color: [], price_min: null, price_max: null };
+    const grid = document.getElementById('cards-grid');
+    const resultsCount = document.getElementById('results-count');
+    const sortSelect = document.getElementById('sort-select');
+    const activeFiltersContainer = document.getElementById('active-filters');
+    const priceMin = document.getElementById('price-min');
+    const priceMax = document.getElementById('price-max');
 
-        function getSelectedModelKey() {
-            const selected = document.querySelector('input[name="model"]:checked');
-            if (!selected) return null;
-            return selected.value;
-        }
+    const f150Config = {
+        trims: [
+            { value: 'XL', label: 'XL' },
+            { value: 'STX', label: 'STX' },
+            { value: 'XLT', label: 'XLT' },
+            { value: 'Lariat', label: 'Lariat' },
+            { value: 'King Ranch', label: 'King Ranch' },
+            { value: 'Platinum', label: 'Platinum' },
+            { value: 'Tremor', label: 'Tremor' },
+            { value: 'Raptor', label: 'Raptor' }
+        ],
+        packages: {
+            'XL': [{ value: '101A', label: '101A' }, { value: '103A', label: '103A' }],
+            'STX': [{ value: '200A', label: '200A' }, { value: '200B', label: '200B' }, { value: '201A', label: '201A' }],
+            'XLT': [{ value: '300A', label: '300A' }, { value: '301A', label: '301A' }, { value: '302A', label: '302A' }, { value: '303A', label: '303A' }],
+            'Lariat': [{ value: '500A', label: '500A' }, { value: '501A', label: '501A' }, { value: '502A', label: '502A' }],
+            'King Ranch': [{ value: '601A', label: '601A' }],
+            'Platinum': [{ value: '701A', label: '701A' }, { value: '702A', label: '702A' }, { value: '703A', label: '703A' }],
+            'Tremor': [{ value: '401A', label: '401A' }, { value: '402A', label: '402A' }],
+            'Raptor': [{ value: '801A', label: '801A' }, { value: '802A', label: '802A' }, { value: '803A', label: '803A' }]
+        },
+        engines: [
+            { value: '2.7L', label: '2.7L EcoBoost V6' },
+            { value: '3.5L V6 EcoBoost', label: '3.5L EcoBoost V6' },
+            { value: 'PowerBoost', label: '3.5L PowerBoost Hybrid' },
+            { value: '5.0L', label: '5.0L V8' },
+            { value: 'High Output', label: '3.5L High-Output (Raptor)' }
+        ],
+        drivetrains: [{ value: '4x2', label: '4x2 (RWD)' }, { value: '4x4', label: '4x4 (4WD)' }],
+        bodyStyles: [{ value: 'Regular Cab', label: 'Regular Cab' }, { value: 'Super Cab', label: 'Super Cab' }, { value: 'SuperCrew', label: 'SuperCrew' }],
+        equipment: [
+            { value: 'bedliner', label: 'Spray-In Bedliner', keywords: ['bedliner', 'tough bed', 'spray-in'] },
+            { value: 'running_boards', label: 'Running Boards', keywords: ['running board', 'step bar'] },
+            { value: 'moonroof', label: 'Moonroof', keywords: ['moonroof', 'sunroof', 'twin panel'] },
+            { value: 'black_appearance', label: 'Black Appearance Pkg', keywords: ['black appearance'] },
+            { value: 'fx4', label: 'FX4 Off-Road Pkg', keywords: ['fx4', 'off-road'] },
+            { value: 'tow_pkg', label: 'Trailer Tow Pkg', keywords: ['trailer tow', 'max tow'] },
+            { value: '360_camera', label: '360 Camera', keywords: ['360', 'camera'] },
+            { value: 'bluecruise', label: 'BlueCruise', keywords: ['bluecruise'] },
+            { value: 'tonneau', label: 'Tonneau Cover', keywords: ['tonneau'] },
+            { value: 'pro_power', label: 'Pro Power Onboard', keywords: ['pro power'] }
+        ],
+        colors: [
+            { value: 'Agate Black', label: 'Agate Black' }, { value: 'Antimatter Blue', label: 'Antimatter Blue' },
+            { value: 'Carbonized Gray', label: 'Carbonized Gray' }, { value: 'Iconic Silver', label: 'Iconic Silver' },
+            { value: 'Oxford White', label: 'Oxford White' }, { value: 'Rapid Red', label: 'Rapid Red' },
+            { value: 'Star White', label: 'Star White' }, { value: 'Space White', label: 'Space White' },
+            { value: 'Marsh Gray', label: 'Marsh Gray' }, { value: 'Atlas Blue', label: 'Atlas Blue' }
+        ]
+    };
 
-        function normalizeModel(model) {
-            if (!model) return '';
-            const m = String(model).toLowerCase();
-
-            // More specific variants first
-            if (m.includes('f-150 lightning') || m.includes('f150 lightning')) return 'f150-lightning';
-            if (m.includes('mustang mach-e') || m.includes('mustang mach e') || m.includes('mach-e') || m.includes('mach e')) return 'mustang-mach-e';
-            if (m.includes('bronco sport')) return 'bronco-sport';
-
-            if (m.includes('f-150') || m.includes('f150')) return 'f150';
-            if (m.includes('transit')) return 'transit';
-            if (m.includes('bronco')) return 'bronco';
-            if (m.includes('ranger')) return 'ranger';
-            if (m.includes('escape')) return 'escape';
-            if (m.includes('explorer')) return 'explorer';
-            if (m.includes('mustang')) return 'mustang';
-            if (m.includes('expedition')) return 'expedition';
-            if (m.includes('super duty') || m.includes('super-duty') || m.includes('f-250') || m.includes('f250') || m.includes('f-350') || m.includes('f350')) {
-                return 'super-duty';
+    function getColorsWithInventory() {
+        // Start with standard colors
+        const colors = [...f150Config.colors];
+        // Get F-150 vehicles from inventory
+        const f150s = vehicles.filter(v => normalizeModel(v.model) === 'f150');
+        // Collect unique exterior colors from inventory
+        const inventoryColors = new Set();
+        f150s.forEach(v => {
+            if (v.exterior) inventoryColors.add(v.exterior.trim());
+        });
+        // Add any colors from inventory that don't match standard colors
+        inventoryColors.forEach(invColor => {
+            const invLower = invColor.toLowerCase();
+            const isStandard = colors.some(c => invLower.includes(c.value.toLowerCase()) || c.value.toLowerCase().includes(invLower));
+            if (!isStandard) {
+                colors.push({ value: invColor, label: invColor });
             }
-            if (m.includes('maverick')) return 'maverick';
-
-            return m.trim();
-        }
-
-        function normalizeTrim(trim) {
-            if (!trim) return '';
-            return String(trim).toLowerCase().trim();
-        }
-
-        function normalizeDrivetrain(drivetrain) {
-            if (!drivetrain) return '';
-            const d = String(drivetrain).toLowerCase();
-
-            // Treat common 4x4 / 4WD notations as 4x4
-            if (d.includes('4x4') || d.includes('4wd') || d.includes('4-wd') || d.includes('4 wheel')) {
-                return '4x4';
-            }
-
-            // Treat common 4x2 / 2WD notations as 4x2
-            if (d.includes('4x2') || d.includes('2wd') || d.includes('2-wd') || d.includes('2 wheel')) {
-                return '4x2';
-            }
-
-            return d.trim();
-        }
-
-        function normalizeFuel(fuel) {
-            if (!fuel) return '';
-            return String(fuel).toLowerCase().trim();
-        }
-
-        function normalizeRearAxleConfig(axle) {
-            if (!axle) return '';
-            return String(axle).toLowerCase().trim();
-        }
-
-        function normalizeEngine(engine) {
-            if (!engine) return '';
-            return String(engine)
-                .toLowerCase()
-                // Replace punctuation/extra whitespace to make matching resilient
-                .replace(/[.\-]+/g, ' ')
-                .replace(/\s+/g, ' ')
-                .trim();
-        }
-
-        function formatMoney(value) {
-            if (value === null || value === undefined) return '';
-            const cleaned = String(value).replace(/[^0-9.]/g, '');
-            const num = parseFloat(cleaned);
-            if (!isFinite(num)) return '';
-            return num.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
-        }
-
-        function getMsrpNumber(vehicle) {
-            const raw = vehicle && vehicle.msrp ? vehicle.msrp : '';
-            const cleaned = String(raw).replace(/[^0-9.]/g, '');
-            const num = parseFloat(cleaned);
-            return isFinite(num) ? num : Infinity; // push missing/invalid to end
-        }
-
-        function normalizeSeriesFromModel(model) {
-            if (!model) return '';
-            const m = String(model).toLowerCase();
-
-            // Super Duty series
-            if (m.includes('f-250') || m.includes('f250')) return 'f-250';
-            if (m.includes('f-350') || m.includes('f350')) return 'f-350';
-            if (m.includes('f-450') || m.includes('f450')) return 'f-450';
-
-            // Transit series (Transit-150, Transit-250, Transit-350, etc.)
-            if (m.includes('transit') && m.includes('150')) return '150';
-            if (m.includes('transit') && m.includes('250')) return '250';
-            if (m.includes('transit') && m.includes('350')) return '350';
-
-            return '';
-        }
-
-        const trimOptionsByModel = {
-            f150: ['XL', 'STX', 'XLT', 'Lariat', 'Tremor', 'Raptor', 'King Ranch', 'Platinum'],
-            explorer: ['Active', 'ST-Line', 'ST', 'Tremor', 'Platinum'],
-            bronco: ['Base', 'Big Bend', 'Outer Banks', 'Badlands', 'Raptor'],
-            'bronco-sport': ['Big Bend', 'Outer Banks', 'Badlands'],
-            ranger: ['XL', 'XLT', 'Lariat', 'Raptor'],
-            mustang: ['Ecoboost', 'Ecoboost Premium', 'GT', 'GT Premium', 'Dark Horse'],
-            'mustang-mach-e': ['Select', 'Premium', 'GT'],
-            'super-duty': ['XL', 'XLT', 'Lariat', 'King Ranch', 'Platinum', 'Limited'],
-            maverick: ['XL', 'XLT', 'Lobo', 'Lariat']
-        };
-
-        const seriesOptionsByModel = {
-            'super-duty': ['F-250', 'F-350', 'F-450'],
-            transit: ['150', '250', '350']
-        };
-
-        function renderDrivetrainOptions() {
-            if (!drivetrainContainer || !drivetrainSection) return;
-            drivetrainContainer.innerHTML = '';
-
-            const modelKey = getSelectedModelKey();
-
-            // Drivetrain filter only applies to F-150
-            if (modelKey !== 'f150') {
-                drivetrainSection.style.display = 'none';
-                return;
-            }
-
-            drivetrainSection.style.display = 'block';
-
-            function addOption(label, value, checked) {
-                const wrapper = document.createElement('label');
-                wrapper.className = 'filter-option';
-                const input = document.createElement('input');
-                input.type = 'radio';
-                input.name = 'drivetrain';
-                input.value = value;
-                if (checked) input.checked = true;
-                const span = document.createElement('span');
-                span.textContent = label;
-                wrapper.appendChild(input);
-                wrapper.appendChild(span);
-                drivetrainContainer.appendChild(wrapper);
-            }
-
-            addOption('All', 'all', true);
-            addOption('4x2', '4x2', false);
-            addOption('4x4', '4x4', false);
-        }
-
-        function getSelectedDrivetrainKey() {
-            const selected = document.querySelector('input[name="drivetrain"]:checked');
-            if (!selected || selected.value === 'all') return null;
-            return selected.value;
-        }
-
-        function renderEngineOptions() {
-            if (!engineContainer || !engineSection) return;
-            engineContainer.innerHTML = '';
-
-            const modelKey = getSelectedModelKey();
-
-            // Engine filter only applies to F-150
-            if (modelKey !== 'f150') {
-                engineSection.style.display = 'none';
-                return;
-            }
-
-            engineSection.style.display = 'block';
-
-            function addOption(label, value, checked) {
-                const wrapper = document.createElement('label');
-                wrapper.className = 'filter-option';
-                const input = document.createElement('input');
-                input.type = 'radio';
-                input.name = 'engine';
-                input.value = value;
-                if (checked) input.checked = true;
-                const span = document.createElement('span');
-                span.textContent = label;
-                wrapper.appendChild(input);
-                wrapper.appendChild(span);
-                engineContainer.appendChild(wrapper);
-            }
-
-            addOption('All', 'all', true);
-            // Store normalized values to make matching resilient
-            addOption('2.7L V6 EcoBoost', normalizeEngine('2.7L V6 EcoBoost'), false);
-            addOption('3.5L V6 EcoBoost', normalizeEngine('3.5L V6 EcoBoost'), false);
-            addOption('3.5L V6 EcoBoost High Output', normalizeEngine('3.5L EcoBoost High Output'), false);
-            // Drop V6 in value to match "PowerBoost Full Hybrid" rows
-            addOption('3.5L V6 PowerBoost', normalizeEngine('3.5L PowerBoost'), false);
-            addOption('5.0L V8', normalizeEngine('5.0L V8'), false);
-        }
-
-        function getSelectedEngineKey() {
-            const selected = document.querySelector('input[name="engine"]:checked');
-            if (!selected || selected.value === 'all') return null;
-            return normalizeEngine(selected.value);
-        }
-
-        function renderFuelOptions() {
-            if (!fuelContainer || !fuelSection) return;
-            fuelContainer.innerHTML = '';
-
-            const modelKey = getSelectedModelKey();
-
-            // Fuel filter only applies to Super Duty
-            if (modelKey !== 'super-duty') {
-                fuelSection.style.display = 'none';
-                return;
-            }
-
-            fuelSection.style.display = 'block';
-
-            function addOption(label, value, checked) {
-                const wrapper = document.createElement('label');
-                wrapper.className = 'filter-option';
-                const input = document.createElement('input');
-                input.type = 'radio';
-                input.name = 'fuel';
-                input.value = value;
-                if (checked) input.checked = true;
-                const span = document.createElement('span');
-                span.textContent = label;
-                wrapper.appendChild(input);
-                wrapper.appendChild(span);
-                fuelContainer.appendChild(wrapper);
-            }
-
-            addOption('All', 'all', true);
-            addOption('Gas', 'gas', false);
-            addOption('Diesel', 'diesel', false);
-        }
-
-        function getSelectedFuelKey() {
-            const selected = document.querySelector('input[name=\"fuel\"]:checked');
-            if (!selected || selected.value === 'all') return null;
-            return selected.value;
-        }
-
-        function renderRearAxleOptions() {
-            if (!rearAxleContainer || !rearAxleSection) return;
-            rearAxleContainer.innerHTML = '';
-
-            const modelKey = getSelectedModelKey();
-
-            // Rear axle filter only applies to Super Duty
-            if (modelKey !== 'super-duty') {
-                rearAxleSection.style.display = 'none';
-                return;
-            }
-
-            rearAxleSection.style.display = 'block';
-
-            function addOption(label, value, checked) {
-                const wrapper = document.createElement('label');
-                wrapper.className = 'filter-option';
-                const input = document.createElement('input');
-                input.type = 'radio';
-                input.name = 'rear-axle';
-                input.value = value;
-                if (checked) input.checked = true;
-                const span = document.createElement('span');
-                span.textContent = label;
-                wrapper.appendChild(input);
-                wrapper.appendChild(span);
-                rearAxleContainer.appendChild(wrapper);
-            }
-
-            addOption('All', 'all', true);
-            addOption('SRW', 'srw', false);
-            addOption('DRW', 'drw', false);
-        }
-
-        function getSelectedRearAxleKey() {
-            const selected = document.querySelector('input[name=\"rear-axle\"]:checked');
-            if (!selected || selected.value === 'all') return null;
-            return selected.value;
-        }
-
-        function renderSeriesOptions() {
-            if (!seriesContainer || !seriesSection) return;
-            seriesContainer.innerHTML = '';
-
-            const modelKey = getSelectedModelKey();
-            const seriesList = seriesOptionsByModel[modelKey] || [];
-
-            if (!seriesList.length) {
-                seriesSection.style.display = 'none';
-                return;
-            }
-
-            seriesSection.style.display = 'block';
-
-            function addOption(label, value, checked) {
-                const wrapper = document.createElement('label');
-                wrapper.className = 'filter-option';
-                const input = document.createElement('input');
-                input.type = 'radio';
-                input.name = 'series';
-                input.value = value;
-                if (checked) input.checked = true;
-                const span = document.createElement('span');
-                span.textContent = label;
-                wrapper.appendChild(input);
-                wrapper.appendChild(span);
-                seriesContainer.appendChild(wrapper);
-            }
-
-            addOption('All', 'all', true);
-            seriesList.forEach(function (series) {
-                addOption(series, series.toLowerCase(), false);
-            });
-        }
-
-        function getSelectedSeriesKey() {
-            const selected = document.querySelector('input[name="series"]:checked');
-            if (!selected || selected.value === 'all') return null;
-            return selected.value;
-        }
-
-        function renderTrimOptions() {
-            if (!trimContainer) return;
-            trimContainer.innerHTML = '';
-
-            const modelKey = getSelectedModelKey();
-            const trims = trimOptionsByModel[modelKey] || [];
-
-            if (!trims.length) {
-                trimContainer.style.display = 'none';
-                return;
-            }
-
-            trimContainer.style.display = 'block';
-
-            function addOption(label, value, checked) {
-                const wrapper = document.createElement('label');
-                wrapper.className = 'filter-option';
-                const input = document.createElement('input');
-                input.type = 'radio';
-                input.name = 'trim';
-                input.value = value;
-                if (checked) input.checked = true;
-                const span = document.createElement('span');
-                span.textContent = label;
-                wrapper.appendChild(input);
-                wrapper.appendChild(span);
-                trimContainer.appendChild(wrapper);
-            }
-
-            addOption('All', 'all', true);
-            trims.forEach(function (trim) {
-                addOption(trim, normalizeTrim(trim), false);
-            });
-        }
-
-        function getSelectedTrimKey() {
-            const selected = document.querySelector('input[name="trim"]:checked');
-            if (!selected || selected.value === 'all') return null;
-            return selected.value;
-        }
-
-        function createCard(vehicle) {
-            const article = document.createElement('article');
-            article.className = 'card';
-            article.dataset.model = vehicle.model || '';
-
-            const imageDiv = document.createElement('div');
-            imageDiv.className = 'card-image-placeholder';
-
-            const exteriorPhoto = vehicle.photo || '';
-            const interiorPhoto = vehicle.photo_interior || '';
-
-            if (exteriorPhoto) {
-                const img = document.createElement('img');
-                img.src = exteriorPhoto;
-                img.alt = (vehicle.year ? vehicle.year + ' ' : '') + (vehicle.model || 'Vehicle');
-                img.loading = 'lazy';
-                imageDiv.textContent = '';
-                imageDiv.appendChild(img);
-
-                if (interiorPhoto && interiorPhoto !== exteriorPhoto) {
-                    imageDiv.addEventListener('mouseenter', function () {
-                        img.src = interiorPhoto;
-                    });
-                    imageDiv.addEventListener('mouseleave', function () {
-                        img.src = exteriorPhoto;
-                    });
+        });
+        return colors;
+    }
+
+    function normalizeModel(model) {
+        if (!model) return '';
+        const m = String(model).toLowerCase();
+        if (m.includes('f-150 lightning')) return 'f150-lightning';
+        if (m.includes('mustang mach-e') || m.includes('mach-e')) return 'mustang-mach-e';
+        if (m.includes('bronco sport')) return 'bronco-sport';
+        if (m.includes('f-150') || m.includes('f150')) return 'f150';
+        if (m.includes('transit')) return 'transit';
+        if (m.includes('bronco')) return 'bronco';
+        if (m.includes('explorer')) return 'explorer';
+        if (m.includes('mustang')) return 'mustang';
+        if (m.includes('super duty') || m.includes('f-250') || m.includes('f-350') || m.includes('f-450')) return 'super-duty';
+        return m.trim();
+    }
+
+    function formatMoney(value) {
+        if (!value) return '';
+        const num = parseFloat(String(value).replace(/[^0-9.]/g, ''));
+        if (!isFinite(num)) return '';
+        return num.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+    }
+
+    function getPrice(v) {
+        const raw = v.retail_price || v.msrp || '';
+        const num = parseFloat(String(raw).replace(/[^0-9.]/g, ''));
+        return isFinite(num) ? num : Infinity;
+    }
+
+    function renderCheckboxOptions(container, options, filterKey, showDesc) {
+        container.innerHTML = '';
+        options.forEach(opt => {
+            const label = document.createElement('label');
+            label.className = 'filter-option';
+            const input = document.createElement('input');
+            input.type = 'checkbox';
+            input.value = opt.value;
+            input.checked = selectedFilters[filterKey].includes(opt.value);
+            input.addEventListener('change', () => {
+                if (input.checked) {
+                    if (!selectedFilters[filterKey].includes(opt.value)) selectedFilters[filterKey].push(opt.value);
+                } else {
+                    selectedFilters[filterKey] = selectedFilters[filterKey].filter(v => v !== opt.value);
                 }
-            } else {
-                imageDiv.textContent = 'Vehicle Image';
+                if (filterKey === 'trim') updateFilterVisibility();
+                applyFilters();
+            });
+            const span = document.createElement('span');
+            span.className = 'filter-option-label';
+            span.textContent = opt.label;
+            if (showDesc && opt.description) {
+                const desc = document.createElement('span');
+                desc.className = 'filter-option-desc';
+                desc.textContent = opt.description;
+                span.appendChild(desc);
             }
+            label.appendChild(input);
+            label.appendChild(span);
+            container.appendChild(label);
+        });
+    }
 
-            const titleContainer = document.createElement('div');
-            const title = document.createElement('div');
-            title.className = 'card-title';
-            title.textContent =
-                (vehicle.year ? vehicle.year + ' ' : '') +
-                (vehicle.model || '') +
-                (vehicle.trim ? ' ' + vehicle.trim : '');
-            const subtitle = document.createElement('div');
-            subtitle.className = 'card-subtitle';
-            subtitle.textContent = [vehicle.drive_line].filter(Boolean).join(' \u00b7 ');
-            titleContainer.appendChild(title);
-            titleContainer.appendChild(subtitle);
+    function updatePackageOptions() {
+        let pkgs = [];
+        if (selectedFilters.trim.length === 0) {
+            Object.values(f150Config.packages).forEach(p => pkgs = pkgs.concat(p));
+        } else {
+            selectedFilters.trim.forEach(t => { if (f150Config.packages[t]) pkgs = pkgs.concat(f150Config.packages[t]); });
+        }
+        pkgs = pkgs.filter((p, i, arr) => arr.findIndex(x => x.value === p.value) === i);
+        selectedFilters.package = selectedFilters.package.filter(p => pkgs.some(x => x.value === p));
+        renderCheckboxOptions(document.getElementById('package-options'), pkgs, 'package');
+    }
 
-            const meta = document.createElement('div');
-            meta.className = 'card-meta';
-            const condition = vehicle.condition || 'New';
-            const line1 = document.createElement('span');
-            line1.textContent = condition;
-            const line2 = document.createElement('span');
-            line2.textContent = vehicle.body_style || '';
-            const stock = vehicle.stock || '';
+    function updateFilterVisibility() {
+        const isF150 = selectedFilters.model === 'f150';
+        const hasTrimSelected = selectedFilters.trim.length > 0;
+        // Show main filters when F-150 is selected
+        ['trim', 'engine', 'drivetrain', 'body-style', 'equipment', 'color', 'price'].forEach(id => {
+            document.getElementById(id + '-section').style.display = isF150 ? 'block' : 'none';
+        });
+        // Only show package filter when a trim is selected
+        document.getElementById('package-section').style.display = (isF150 && hasTrimSelected) ? 'block' : 'none';
+        if (isF150) {
+            renderCheckboxOptions(document.getElementById('trim-options'), f150Config.trims, 'trim');
+            updatePackageOptions();
+            renderCheckboxOptions(document.getElementById('engine-options'), f150Config.engines, 'engine');
+            renderCheckboxOptions(document.getElementById('drivetrain-options'), f150Config.drivetrains, 'drivetrain');
+            renderCheckboxOptions(document.getElementById('body-style-options'), f150Config.bodyStyles, 'body_style');
+            renderCheckboxOptions(document.getElementById('equipment-options'), f150Config.equipment, 'equipment');
+            // Get all colors including any from inventory not in standard list
+            const allColors = getColorsWithInventory();
+            renderCheckboxOptions(document.getElementById('color-options'), allColors, 'color');
+        }
+    }
 
-            // Order: condition ("New"), then stock number, then body style
-            meta.appendChild(line1);
-            if (stock) {
-                const stockLine = document.createElement('span');
-                stockLine.textContent = stock;
-                meta.appendChild(stockLine);
-            }
-            meta.appendChild(line2);
+    function clearFilter(key) {
+        selectedFilters[key] = [];
+        if (key === 'trim') {
+            selectedFilters.package = []; // Clear package when trim is cleared
+        }
+        updateFilterVisibility();
+        applyFilters();
+    }
 
-            const tags = document.createElement('div');
-            tags.className = 'card-tags';
-            const modelKey = normalizeModel(vehicle.model);
-            // Mustangs/Broncos show transmission; Super Duty shows fuel; others show MPG
-            const showTransmission = modelKey === 'mustang' || modelKey === 'mustang-mach-e' || modelKey === 'bronco';
-            const showFuel = modelKey === 'super-duty';
-            const tagValues = showTransmission
-                ? [vehicle.exterior, vehicle.engine, vehicle.transmission]
-                : showFuel
-                    ? [vehicle.exterior, vehicle.engine, vehicle.fuel_type]
-                    : [vehicle.exterior, vehicle.engine, vehicle.fuel_economy];
-            tagValues.forEach(function (value) {
-                if (!value) return;
+    function renderActiveFilters() {
+        activeFiltersContainer.innerHTML = '';
+        const labels = { year: 'Year', trim: 'Trim', package: 'Pkg', engine: 'Engine', drivetrain: 'Drive', body_style: 'Cab', equipment: 'Equip', color: 'Color' };
+        let hasFilters = false;
+        Object.keys(labels).forEach(key => {
+            selectedFilters[key].forEach(val => {
+                hasFilters = true;
                 const tag = document.createElement('span');
-                tag.className = 'tag';
-                tag.textContent = value;
-                tags.appendChild(tag);
+                tag.className = 'active-filter-tag';
+                let label = val;
+                if (key === 'equipment') { const found = f150Config.equipment.find(e => e.value === val); if (found) label = found.label; }
+                tag.innerHTML = labels[key] + ': ' + label + ' <button>&times;</button>';
+                tag.querySelector('button').onclick = () => { 
+                    selectedFilters[key] = selectedFilters[key].filter(v => v !== val); 
+                    if (key === 'year') { updateYearOptions(); document.getElementById('clear-year').style.display = selectedFilters.year.length ? 'inline' : 'none'; }
+                    updateFilterVisibility(); 
+                    applyFilters(); 
+                };
+                activeFiltersContainer.appendChild(tag);
             });
-            meta.appendChild(tags);
-
-            const footer = document.createElement('div');
-            footer.className = 'card-footer';
-            const price = document.createElement('div');
-            price.className = 'price';
-            const msrpText = formatMoney(vehicle.msrp) || (vehicle.msrp || '');
-            price.textContent = msrpText || 'See dealer';
-
-            const action = document.createElement('div');
-            action.className = 'action';
-
-            // Always prefer internal detail page; fall back to VIN if stock is missing
-            const detailKey = vehicle.stock || vehicle.vin || '';
-            const detailUrl = detailKey ? 'vehicle.php?stock=' + encodeURIComponent(detailKey) : null;
-
-            action.textContent = 'View details';
-
-            if (detailUrl) {
-                action.addEventListener('click', function (event) {
-                    event.stopPropagation();
-                    window.location.href = detailUrl;
-                });
-                article.addEventListener('click', function () {
-                    window.location.href = detailUrl;
-                });
-            }
-
-            footer.appendChild(price);
-            footer.appendChild(action);
-
-            article.appendChild(imageDiv);
-            article.appendChild(titleContainer);
-            article.appendChild(meta);
-            article.appendChild(footer);
-
-            return article;
+        });
+        if (selectedFilters.price_min || selectedFilters.price_max) {
+            hasFilters = true;
+            const tag = document.createElement('span');
+            tag.className = 'active-filter-tag';
+            tag.innerHTML = 'Price: ' + (formatMoney(selectedFilters.price_min) || 'Any') + ' - ' + (formatMoney(selectedFilters.price_max) || 'Any') + ' <button>&times;</button>';
+            tag.querySelector('button').onclick = () => { selectedFilters.price_min = null; selectedFilters.price_max = null; priceMin.value = ''; priceMax.value = ''; applyFilters(); };
+            activeFiltersContainer.appendChild(tag);
         }
+        if (hasFilters) {
+            const clear = document.createElement('span');
+            clear.className = 'clear-all-filters';
+            clear.textContent = 'Clear all';
+            clear.onclick = () => {
+                ['trim', 'package', 'engine', 'drivetrain', 'body_style', 'equipment', 'color'].forEach(k => selectedFilters[k] = []);
+                selectedFilters.price_min = null; selectedFilters.price_max = null; priceMin.value = ''; priceMax.value = '';
+                updateFilterVisibility(); applyFilters();
+            };
+            activeFiltersContainer.appendChild(clear);
+        }
+    }
 
-        function renderCards() {
-            if (!grid) return;
+    function updateYearOptions() {
+        const years = [...new Set(vehicles.map(v => v.year).filter(Boolean))].sort((a, b) => b - a);
+        const container = document.getElementById('year-options');
+        container.innerHTML = '';
+        years.forEach(year => {
+            const label = document.createElement('label');
+            label.className = 'filter-option';
+            const input = document.createElement('input');
+            input.type = 'checkbox';
+            input.value = year;
+            input.checked = selectedFilters.year.includes(String(year));
+            input.addEventListener('change', () => {
+                const yearStr = String(year);
+                if (input.checked) {
+                    if (!selectedFilters.year.includes(yearStr)) selectedFilters.year.push(yearStr);
+                } else {
+                    selectedFilters.year = selectedFilters.year.filter(y => y !== yearStr);
+                }
+                document.getElementById('clear-year').style.display = selectedFilters.year.length ? 'inline' : 'none';
+                applyFilters();
+            });
+            const span = document.createElement('span');
+            span.textContent = year;
+            label.appendChild(input);
+            label.appendChild(span);
+            container.appendChild(label);
+        });
+    }
+
+    function applyFilters() {
+        filteredVehicles = vehicles.filter(v => {
+            if (selectedFilters.year.length && !selectedFilters.year.includes(String(v.year))) return false;
+            if (selectedFilters.model !== 'all' && normalizeModel(v.model) !== selectedFilters.model) return false;
+            if (selectedFilters.model === 'f150') {
+                if (selectedFilters.trim.length && !selectedFilters.trim.some(t => (v.trim || '').toLowerCase().includes(t.toLowerCase()))) return false;
+                if (selectedFilters.package.length && !selectedFilters.package.includes(v.equipment_pkg)) return false;
+                if (selectedFilters.engine.length && !selectedFilters.engine.some(e => (v.engine || '').toLowerCase().includes(e.toLowerCase()))) return false;
+                if (selectedFilters.drivetrain.length && !selectedFilters.drivetrain.some(d => (v.drive_line || '').toLowerCase().includes(d.toLowerCase()))) return false;
+                if (selectedFilters.body_style.length) {
+                    const vBodyNorm = (v.body_style || '').toLowerCase().replace(/\s+/g, '');
+                    if (!selectedFilters.body_style.some(b => {
+                        const bNorm = b.toLowerCase().replace(/\s+/g, '');
+                        return vBodyNorm.includes(bNorm) || bNorm.includes(vBodyNorm);
+                    })) return false;
+                }
+                if (selectedFilters.color.length && !selectedFilters.color.some(c => (v.exterior || '').toLowerCase().includes(c.toLowerCase()))) return false;
+                if (selectedFilters.equipment.length) {
+                    const optText = JSON.stringify(v.optional_equipment || []).toLowerCase();
+                    if (!selectedFilters.equipment.every(eq => { const cfg = f150Config.equipment.find(e => e.value === eq); return cfg && cfg.keywords.some(kw => optText.includes(kw.toLowerCase())); })) return false;
+                }
+                const price = getPrice(v);
+                if (selectedFilters.price_min && price < selectedFilters.price_min) return false;
+                if (selectedFilters.price_max && price > selectedFilters.price_max) return false;
+            }
+            return true;
+        });
+        const sort = sortSelect.value;
+        filteredVehicles.sort((a, b) => {
+            if (sort === 'price_asc') return getPrice(a) - getPrice(b);
+            if (sort === 'price_desc') return getPrice(b) - getPrice(a);
+            if (sort === 'trim_asc') return (a.trim || '').localeCompare(b.trim || '');
+            return (a.stock || '').localeCompare(b.stock || '');
+        });
+        resultsCount.innerHTML = '<strong>' + filteredVehicles.length + '</strong> vehicles';
+        displayedCount = 0;
+        renderCards(true);
+        renderActiveFilters();
+    }
+
+    function loadMore() {
+        renderCards(false);
+    }
+
+    function createCard(v) {
+        const card = document.createElement('article');
+        card.className = 'card';
+        const img = document.createElement('div');
+        img.className = 'card-image-placeholder';
+        if (v.photo) {
+            const imgEl = document.createElement('img');
+            imgEl.src = v.photo;
+            imgEl.alt = [v.year, v.model].filter(Boolean).join(' ');
+            imgEl.loading = 'lazy';
+            img.appendChild(imgEl);
+            if (v.photo_interior && v.photo_interior !== v.photo) {
+                img.onmouseenter = () => imgEl.src = v.photo_interior;
+                img.onmouseleave = () => imgEl.src = v.photo;
+            }
+        } else { img.textContent = 'No Image'; }
+        if (!v.stock) {
+            const badge = document.createElement('span');
+            badge.className = 'in-transit-badge';
+            badge.textContent = 'In Transit';
+            img.appendChild(badge);
+        }
+        const titleDiv = document.createElement('div');
+        const title = document.createElement('div');
+        title.className = 'card-title';
+        title.textContent = [v.year, v.model, v.trim].filter(Boolean).join(' ');
+        const sub = document.createElement('div');
+        sub.className = 'card-subtitle';
+        sub.textContent = [v.drive_line, v.equipment_pkg].filter(Boolean).join(' · ');
+        titleDiv.appendChild(title);
+        titleDiv.appendChild(sub);
+        const meta = document.createElement('div');
+        meta.className = 'card-meta';
+        meta.innerHTML = '<span>' + (v.condition || 'New') + '</span>' + (v.stock ? '<span>' + v.stock + '</span>' : '') + (v.body_style ? '<span>' + v.body_style + '</span>' : '');
+        const tags = document.createElement('div');
+        tags.className = 'card-tags';
+        [v.exterior, v.engine].filter(Boolean).forEach(t => { const tag = document.createElement('span'); tag.className = 'tag'; tag.textContent = t; tags.appendChild(tag); });
+        if (selectedFilters.equipment.length && v.optional_equipment) {
+            const optText = JSON.stringify(v.optional_equipment).toLowerCase();
+            selectedFilters.equipment.forEach(eq => {
+                const cfg = f150Config.equipment.find(e => e.value === eq);
+                if (cfg && cfg.keywords.some(kw => optText.includes(kw.toLowerCase()))) {
+                    const tag = document.createElement('span');
+                    tag.className = 'tag tag-equipment';
+                    tag.textContent = cfg.label;
+                    tags.appendChild(tag);
+                }
+            });
+        }
+        meta.appendChild(tags);
+        const footer = document.createElement('div');
+        footer.className = 'card-footer';
+        const price = document.createElement('div');
+        price.className = 'price';
+        price.textContent = formatMoney(v.retail_price || v.msrp) || 'Contact for price';
+        const action = document.createElement('div');
+        action.className = 'action';
+        action.textContent = 'View details';
+        footer.appendChild(price);
+        footer.appendChild(action);
+        card.appendChild(img);
+        card.appendChild(titleDiv);
+        card.appendChild(meta);
+        card.appendChild(footer);
+        if (v.stock) card.onclick = () => window.location.href = 'vehicle.php?stock=' + encodeURIComponent(v.stock);
+        return card;
+    }
+
+    // Infinite scroll observer
+    let scrollObserver = null;
+    let isLoading = false;
+    
+    function setupInfiniteScroll() {
+        if (scrollObserver) scrollObserver.disconnect();
+        
+        scrollObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !isLoading && displayedCount < filteredVehicles.length) {
+                    loadMoreCards();
+                }
+            });
+        }, { rootMargin: '200px' }); // Start loading 200px before reaching the sentinel
+        
+        const sentinel = grid.querySelector('.scroll-sentinel');
+        if (sentinel) scrollObserver.observe(sentinel);
+    }
+    
+    function loadMoreCards() {
+        if (isLoading || displayedCount >= filteredVehicles.length) return;
+        isLoading = true;
+        
+        // Show loading indicator
+        const loadingDiv = grid.querySelector('.load-more');
+        if (loadingDiv) {
+            loadingDiv.innerHTML = '<span class="loading-spinner"></span> Loading more...';
+        }
+        
+        // Small delay for smooth UX
+        setTimeout(() => {
+            const sentinel = grid.querySelector('.scroll-sentinel');
+            const loadMore = grid.querySelector('.load-more');
+            if (sentinel) sentinel.remove();
+            if (loadMore) loadMore.remove();
+            
+            const nextBatch = filteredVehicles.slice(displayedCount, displayedCount + ITEMS_PER_PAGE);
+            nextBatch.forEach(v => grid.appendChild(createCard(v)));
+            displayedCount += nextBatch.length;
+            
+            // Add sentinel and loading indicator if more items
+            if (displayedCount < filteredVehicles.length) {
+                const remaining = filteredVehicles.length - displayedCount;
+                const loadMoreDiv = document.createElement('div');
+                loadMoreDiv.className = 'load-more';
+                loadMoreDiv.innerHTML = '<span class="loading-spinner"></span> ' + remaining + ' more vehicles...';
+                grid.appendChild(loadMoreDiv);
+                
+                const newSentinel = document.createElement('div');
+                newSentinel.className = 'scroll-sentinel';
+                grid.appendChild(newSentinel);
+                scrollObserver.observe(newSentinel);
+            }
+            
+            isLoading = false;
+        }, 100);
+    }
+
+    function renderCards(reset) {
+        if (reset) {
             grid.innerHTML = '';
-            const selectedKey = getSelectedModelKey();
-            const selectedSeries = getSelectedSeriesKey();
-            const selectedTrim = getSelectedTrimKey();
-            const selectedDrivetrain = getSelectedDrivetrainKey();
-            const selectedEngine = getSelectedEngineKey();
-            const selectedFuel = getSelectedFuelKey();
-            const selectedRearAxle = getSelectedRearAxleKey();
-            const sortDirection = sortSelect && sortSelect.value === 'desc' ? 'desc' : 'asc';
-
-            const filtered = vehicles.filter(function (v) {
-                if (selectedKey === 'all') return true;
-                if (!selectedKey) return true;
-                const modelNorm = normalizeModel(v.model);
-                if (modelNorm !== selectedKey) return false;
-
-                if ((selectedKey === 'super-duty' || selectedKey === 'transit') && selectedSeries) {
-                    const seriesNorm = normalizeSeriesFromModel(v.model);
-                    if (!seriesNorm || seriesNorm !== selectedSeries) return false;
-                }
-
-                if (selectedTrim && normalizeTrim(v.trim) !== selectedTrim) return false;
-
-                // Drivetrain filter only applies to F-150
-                if (selectedKey === 'f150' && selectedDrivetrain) {
-                    const driveNorm = normalizeDrivetrain(v.drive_line);
-                    if (!driveNorm || driveNorm !== selectedDrivetrain) return false;
-                }
-
-                // Engine filter only applies to F-150
-                if (selectedKey === 'f150' && selectedEngine) {
-                    const engineNorm = normalizeEngine(v.engine);
-                    // Allow contains match for resilience (e.g., V6 ordering/punctuation)
-                    if (!engineNorm || (!engineNorm.includes(selectedEngine) && !selectedEngine.includes(engineNorm))) return false;
-                }
-
-                // Fuel filter only applies to Super Duty
-                if (selectedKey === 'super-duty' && selectedFuel) {
-                    const fuelNorm = normalizeFuel(v.fuel_type);
-                    if (!fuelNorm || fuelNorm !== selectedFuel) return false;
-                }
-
-                // Rear axle filter only applies to Super Duty
-                if (selectedKey === 'super-duty' && selectedRearAxle) {
-                    const axleNorm = normalizeRearAxleConfig(v.rear_axle_config);
-                    if (!axleNorm || axleNorm !== selectedRearAxle) return false;
-                }
-
-                return true;
-            });
-
-            const sorted = filtered.slice().sort(function (a, b) {
-                const aNum = getMsrpNumber(a);
-                const bNum = getMsrpNumber(b);
-                if (aNum === bNum) return 0;
-                return sortDirection === 'desc' ? bNum - aNum : aNum - bNum;
-            });
-
-            if (!sorted.length) {
-                const empty = document.createElement('div');
-                empty.style.fontSize = '13px';
-                empty.style.color = '#5c5e62';
-                empty.textContent = 'No vehicles match this model right now.';
-                grid.appendChild(empty);
-                return;
-            }
-
-            sorted.forEach(function (vehicle) {
-                grid.appendChild(createCard(vehicle));
-            });
+            displayedCount = 0;
+            isLoading = false;
         }
-
-        function attachFilterHandlers() {
-            modelRadios.forEach(function (radio) {
-                radio.addEventListener('change', function () {
-                    renderSeriesOptions();
-                    renderTrimOptions();
-                    renderDrivetrainOptions();
-                    renderEngineOptions();
-                    renderFuelOptions();
-                    renderRearAxleOptions();
-                    renderCards();
-                });
-            });
-
-            if (sortSelect) {
-                sortSelect.addEventListener('change', function () {
-                    renderCards();
-                });
-            }
-
-            if (trimContainer) {
-                trimContainer.addEventListener('change', function (event) {
-                    if (event.target && event.target.name === 'trim') {
-                        renderCards();
-                    }
-                });
-            }
-
-            if (seriesContainer) {
-                seriesContainer.addEventListener('change', function (event) {
-                    if (event.target && event.target.name === 'series') {
-                        renderCards();
-                    }
-                });
-            }
-
-            if (drivetrainContainer) {
-                drivetrainContainer.addEventListener('change', function (event) {
-                    if (event.target && event.target.name === 'drivetrain') {
-                        renderCards();
-                    }
-                });
-            }
-
-            if (engineContainer) {
-                engineContainer.addEventListener('change', function (event) {
-                    if (event.target && event.target.name === 'engine') {
-                        renderCards();
-                    }
-                });
-            }
-
-            if (fuelContainer) {
-                fuelContainer.addEventListener('change', function (event) {
-                    if (event.target && event.target.name === 'fuel') {
-                        renderCards();
-                    }
-                });
-            }
-
-            if (rearAxleContainer) {
-                rearAxleContainer.addEventListener('change', function (event) {
-                    if (event.target && event.target.name === 'rear-axle') {
-                        renderCards();
-                    }
-                });
-            }
+        
+        if (!filteredVehicles.length) { 
+            grid.innerHTML = '<div class="no-results">No vehicles match your filters.</div>'; 
+            return; 
         }
+        
+        // Add first batch of cards
+        const nextBatch = filteredVehicles.slice(displayedCount, displayedCount + ITEMS_PER_PAGE);
+        nextBatch.forEach(v => grid.appendChild(createCard(v)));
+        displayedCount += nextBatch.length;
+        
+        // Add sentinel and loading indicator for infinite scroll
+        if (displayedCount < filteredVehicles.length) {
+            const remaining = filteredVehicles.length - displayedCount;
+            const loadMoreDiv = document.createElement('div');
+            loadMoreDiv.className = 'load-more';
+            loadMoreDiv.innerHTML = '<span class="loading-spinner"></span> ' + remaining + ' more vehicles...';
+            grid.appendChild(loadMoreDiv);
+            
+            const sentinel = document.createElement('div');
+            sentinel.className = 'scroll-sentinel';
+            grid.appendChild(sentinel);
+            
+            setupInfiniteScroll();
+        }
+    }
 
-        fetch('inventory.php')
-            .then(function (response) {
-                return response.json();
-            })
-            .then(function (data) {
-                vehicles = (data && data.vehicles) ? data.vehicles : [];
-                const debugEl = document.getElementById('debug');
-                if (debugEl) {
-                    const firstNorm = vehicles.length > 0 ? normalizeModel(vehicles[0].model) : 'n/a';
-                    const dbg = data && data.debug ? data.debug : {};
-                    const fileInfo = dbg.fileCount !== undefined ? ` | CSV files seen: ${dbg.fileCount}` : '';
-                    const latestInfo = dbg.latestFile ? ` | Latest file: ${dbg.latestFile}` : '';
-                    debugEl.textContent = `Debug: Loaded ${vehicles.length} vehicles. First model normalized to: ${firstNorm}${fileInfo}${latestInfo}`;
-                }
-
-                const updatedEl = document.getElementById('last-updated');
-                if (updatedEl && data && data.lastUpdated) {
-                    updatedEl.textContent = 'Updated ' + data.lastUpdated;
-                }
-
-                renderSeriesOptions();
-                renderTrimOptions();
-                renderDrivetrainOptions();
-                renderEngineOptions();
-                renderFuelOptions();
-                renderRearAxleOptions();
-                renderCards();
-                attachFilterHandlers();
-            })
-            .catch(function (error) {
-                console.error('Failed to load inventory', error);
-                if (grid) {
-                    grid.innerHTML = '<p style="font-size:13px;color:#5c5e62;">Unable to load inventory right now.</p>';
-                }
-            });
+    document.querySelectorAll('input[name="model"]').forEach(r => {
+        r.onchange = e => {
+            selectedFilters.model = e.target.value;
+            if (e.target.value !== 'f150') {
+                ['trim', 'package', 'engine', 'drivetrain', 'body_style', 'equipment', 'color'].forEach(k => selectedFilters[k] = []);
+                selectedFilters.price_min = null; selectedFilters.price_max = null; priceMin.value = ''; priceMax.value = '';
+            }
+            updateFilterVisibility();
+            applyFilters();
+        };
     });
+
+    sortSelect.onchange = applyFilters;
+    let priceTimeout;
+    priceMin.oninput = () => { clearTimeout(priceTimeout); priceTimeout = setTimeout(() => { selectedFilters.price_min = priceMin.value ? parseFloat(priceMin.value) : null; applyFilters(); }, 500); };
+    priceMax.oninput = () => { clearTimeout(priceTimeout); priceTimeout = setTimeout(() => { selectedFilters.price_max = priceMax.value ? parseFloat(priceMax.value) : null; applyFilters(); }, 500); };
+
+    document.getElementById('clear-year').onclick = () => { clearFilter('year'); updateYearOptions(); document.getElementById('clear-year').style.display = 'none'; };
+    document.getElementById('clear-trim').onclick = () => clearFilter('trim');
+    document.getElementById('clear-package').onclick = () => clearFilter('package');
+    document.getElementById('clear-engine').onclick = () => clearFilter('engine');
+    document.getElementById('clear-drivetrain').onclick = () => clearFilter('drivetrain');
+    document.getElementById('clear-body-style').onclick = () => clearFilter('body_style');
+    document.getElementById('clear-equipment').onclick = () => clearFilter('equipment');
+    document.getElementById('clear-color').onclick = () => clearFilter('color');
+
+    // Load all vehicles for client-side filtering, but render progressively
+    fetch('inventory.php?lite=1&per_page=9999')
+        .then(r => r.json())
+        .then(data => {
+            vehicles = data.vehicles || [];
+            const upd = document.getElementById('last-updated');
+            if (upd && data.lastUpdated) upd.textContent = 'Updated ' + data.lastUpdated;
+            updateYearOptions();
+            updateFilterVisibility();
+            applyFilters();
+        })
+        .catch(e => { console.error(e); grid.innerHTML = '<div class="no-results">Unable to load inventory.</div>'; });
+});
 </script>
 </body>
 </html>

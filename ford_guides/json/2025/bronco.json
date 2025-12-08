@@ -1,0 +1,515 @@
+{
+    "metadata": {
+      "model_year": "2025",
+      "model": "Ford Bronco",
+      "document_date": "2025-08-01",
+      "version": "Job 2",
+      "notes": "Includes Job 2 updates effective 05/27/2025. Mid Package is now optional on Big Bend and Badlands. Black Diamond, Wildtrak, Everglades, and Heritage Limited series are deleted."
+    },
+    "global_components": {
+      "paint_colors": {
+        "velocity_blue_metallic": {
+          "code": "E7",
+          "availability": [
+            "Base",
+            "Big_Bend",
+            "Badlands",
+            "Raptor"
+          ],
+          "notes": "Extra Cost Paint"
+        },
+        "eruption_green_metallic": {
+          "code": "FA",
+          "availability": [
+            "Base",
+            "Big_Bend",
+            "Outer_Banks",
+            "Badlands"
+          ],
+          "notes": "Extra Cost Paint"
+        },
+        "shadow_black": {
+          "code": "G1",
+          "availability": [
+            "Base",
+            "Big_Bend",
+            "Outer_Banks",
+            "Badlands",
+            "Stroppe_Edition",
+            "Raptor",
+            "Heritage_Edition"
+          ],
+          "notes": "Available on all trims"
+        },
+        "azure_gray_metallic_tri_coat": {
+          "code": "G4",
+          "availability": [
+            "Base",
+            "Big_Bend",
+            "Outer_Banks",
+            "Badlands",
+            "Stroppe_Edition",
+            "Raptor",
+            "Heritage_Edition"
+          ],
+          "notes": "Extra Cost Paint"
+        },
+        "carbonized_gray_metallic": {
+          "code": "M7",
+          "availability": [
+            "Big_Bend",
+            "Outer_Banks",
+            "Badlands",
+            "Heritage_Edition"
+          ],
+          "notes": "Not available on Base, Stroppe, or Raptor"
+        },
+        "ruby_red_metallic_tinted_clearcoat": {
+          "code": "RR",
+          "availability": [
+            "Base",
+            "Big_Bend",
+            "Outer_Banks",
+            "Badlands",
+            "Raptor",
+            "Heritage_Edition"
+          ],
+          "notes": "New for 2025; Extra Cost Paint"
+        },
+        "marsh_gray": {
+          "code": "T9",
+          "availability": [
+            "Base",
+            "Big_Bend",
+            "Outer_Banks",
+            "Badlands",
+            "Raptor"
+          ],
+          "notes": "New for 2025; Extra Cost Paint"
+        },
+        "desert_sand": {
+          "code": "VA",
+          "availability": [
+            "Base",
+            "Big_Bend",
+            "Outer_Banks",
+            "Badlands",
+            "Raptor"
+          ],
+          "notes": "New for 2025; Extra Cost Paint"
+        },
+        "oxford_white": {
+          "code": "YZ",
+          "availability": [
+            "Base",
+            "Big_Bend",
+            "Outer_Banks",
+            "Badlands",
+            "Raptor",
+            "Heritage_Edition"
+          ],
+          "notes": "Available on all trims"
+        },
+        "robins_egg_blue": {
+          "code": "CW",
+          "availability": [
+            "Heritage_Edition"
+          ],
+          "notes": "Heritage Edition Only; Extra Cost Paint"
+        },
+        "shelter_green_metallic": {
+          "code": "DB",
+          "availability": [
+            "Raptor"
+          ],
+          "notes": "Raptor Only; Extra Cost Paint"
+        }
+      },
+      "powertrains": {
+        "2.3L_EcoBoost_I4": {
+          "code": "99H",
+          "default_transmission": "44Q",
+          "availability": {
+            "Standard": [
+              "Base",
+              "Big_Bend",
+              "Badlands",
+              "Heritage_Edition"
+            ],
+            "Optional": []
+          },
+          "restrictions": "Standard with 7-Speed Manual (44Q). Optional 10-Speed Auto (44T) available on Base, Big Bend, Badlands. Heritage Edition is Manual only with 2.3L."
+        },
+        "2.7L_EcoBoost_V6": {
+          "code": "99P",
+          "default_transmission": "44T",
+          "availability": {
+            "Standard": [
+              "Stroppe_Edition"
+            ],
+            "Optional": [
+              "Outer_Banks",
+              "Badlands",
+              "Heritage_Edition"
+            ]
+          },
+          "restrictions": "Requires 10-Speed Automatic Transmission (44T). On Badlands, requires 4-Door. On Outer Banks and Heritage, available on 4-Door."
+        },
+        "3.0L_EcoBoost_V6": {
+          "code": "99R",
+          "default_transmission": "44T",
+          "availability": {
+            "Standard": [
+              "Raptor"
+            ],
+            "Optional": []
+          },
+          "restrictions": "Standard on Raptor."
+        }
+      },
+      "safety_technology": {
+        "Ford_Co-Pilot360_Standard": {
+          "description": "Standard safety features included on Base series.",
+          "features": [
+            "Auto High-Beam Headlamps",
+            "Hill Start Assist",
+            "Post-Collision Braking",
+            "Pre-Collision Assist with Automatic Emergency Braking (AEB)",
+            "Rear View Camera with Backup Assist Grid Lines",
+            "Hill Descent Control (Manual Trans only)"
+          ]
+        },
+        "Ford_Co-Pilot360_Mid": {
+          "description": "Mid Package features.",
+          "features": [
+            "BLIS (Blind Spot Information System) with Cross-Traffic Alert",
+            "Lane-Keeping System (Alert, Aid, Driver Alert)",
+            "Auto High-Beam Headlamps",
+            "Rear View Camera with Backup Assist Grid Lines",
+            "Rear Parking Sensors"
+          ]
+        },
+        "Ford_Co-Pilot360_Lux": {
+          "description": "Lux Package features (Incremental to Mid).",
+          "features": [
+            "360-Degree Camera",
+            "Adaptive Cruise Control",
+            "Evasive Steering Assist",
+            "Front Parking Sensors"
+          ]
+        }
+      },
+      "accessories": {
+        "exterior_accessories": {
+          "splash_guards": {
+            "code": "17B",
+            "description": "Splash Guards - Front and Rear",
+            "availability": "Optional on Base, Big Bend, Outer Banks. NA w/ Sasquatch or Side Steps."
+          },
+          "paint_protection_film": {
+            "code": "96B",
+            "description": "Paint Protection Film",
+            "availability": "Optional. NA w/ Sasquatch Graphics, Free Wheeling, Black Diamond Graphics, or Matte Film."
+          },
+          "tube_doors_2dr": {
+            "code": "DIO",
+            "description": "Tube Doors - 2-Door",
+            "availability": "Dealer Installed Option (DIO) on 2-Door models."
+          },
+          "tube_doors_4dr": {
+            "code": "DIO",
+            "description": "Tube Doors - 4-Door",
+            "availability": "Dealer Installed Option (DIO) on 4-Door models."
+          },
+          "slide_out_tailgate": {
+            "code": "90F",
+            "description": "Slide-Out Tailgate",
+            "availability": "Optional on 4-Door models. NA w/ Sasquatch on Big Bend/OBX."
+          }
+        },
+        "towing": {
+          "trailer_tow_prep_pack": {
+            "code": "Standard",
+            "description": "Trailer Tow Prep Pack",
+            "availability": "Standard on Base."
+          },
+          "trailer_tow_package": {
+            "code": "DIO",
+            "description": "Trailer Tow Package",
+            "availability": "Dealer Installed Option."
+          }
+        }
+      }
+    },
+    "series_build_rules": [
+      {
+        "series": "Base",
+        "description": "Rugged 4x4 medium utility entry trim.",
+        "body_codes": [
+          "E6A (2-Door)",
+          "E6B (4-Door)"
+        ],
+        "equipment_groups": {
+          "101A": "Standard Package"
+        },
+        "safety_and_technology": {
+          "Ford_Co-Pilot360": "Standard (Pre-Collision Assist, AEB, Rear Camera)",
+          "Mid_Package": "Not Available",
+          "Lux_Package": "Not Available"
+        },
+        "standard_equipment": [
+          "2.3L EcoBoost I-4 Engine",
+          "7-Speed Manual Transmission",
+          "4x4 with Part Time Selectable Engagement",
+          "12-inch Color Digital Cluster Screen",
+          "SYNC 4 with 12-inch LCD Touchscreen",
+          "LED Headlamps",
+          "Terrain Management System with G.O.A.T. Modes"
+        ],
+        "packages": {
+          "Sasquatch_Package": {
+            "code": "765",
+            "availability": "Optional",
+            "features": [
+              "Advanced 4x4 with Automatic On Demand Engagement",
+              "17-inch Carbonized Gray-Painted Alloy Wheels",
+              "4.7 Final Drive Ratio with Electronic-locking Front and Rear Axle",
+              "High Clearance Suspension",
+              "35-inch Tires (LT315/70R17)"
+            ]
+          }
+        },
+        "options": {
+          "10_speed_auto_trans": "44T",
+          "aux_switches": "Replaces sunglass storage where available.",
+          "roof_rails_black": "863"
+        }
+      },
+      {
+        "series": "Big_Bend",
+        "description": "Added comfort and features over Base. 4-Door only for 2025.",
+        "body_codes": [
+          "E7B (4-Door)"
+        ],
+        "equipment_groups": {
+          "221A": "Standard Package",
+          "222A": "Mid Package"
+        },
+        "safety_and_technology": {
+          "Ford_Co-Pilot360": "Standard",
+          "Mid_Package": "Optional (Job 2 Change: Previous Mid Package Standard is now Optional 222A)",
+          "Lux_Package": "Not Available"
+        },
+        "standard_equipment": [
+          "17-inch Carbonized Gray-Painted Aluminum Wheels",
+          "Leather-Wrapped Steering Wheel",
+          "Privacy Glass",
+          "32-inch All-Terrain Tires"
+        ],
+        "packages": {
+          "Black_Diamond_Package": {
+            "code": "51D",
+            "availability": "Optional",
+            "features": [
+              "Advanced 4x4",
+              "Steel Bumpers & Bash Plates",
+              "Rock Rails",
+              "LED Fog Lamps",
+              "Auxiliary Switches"
+            ]
+          },
+          "Sasquatch_Package": {
+            "code": "765",
+            "availability": "Optional. Requires Black Diamond Package (51D).",
+            "features": "Includes High Clearance Fender Flares and Suspension, 35-inch Tires."
+          },
+          "Free_Wheeling_Package": {
+            "code": "51F",
+            "availability": "Optional",
+            "features": [
+              "Reflective Graphics",
+              "Silver/Red Grille",
+              "Marine Grade Vinyl/Cloth Seats",
+              "17-inch Black High Gloss-Painted Steel Wheels"
+            ]
+          },
+          "Black_Appearance_Package": {
+            "code": "51E",
+            "availability": "Optional",
+            "features": [
+              "Black Molded-in-Color details",
+              "Shadow Black Hard Top",
+              "Black Appearance Graphics Package"
+            ]
+          }
+        },
+        "options": {
+          "rear_locking_diff": "Optional (Code X4L implied by Axle Chart availability)",
+          "aux_switches": "Included in Black Diamond Package (51D)."
+        }
+      },
+      {
+        "series": "Outer_Banks",
+        "description": "Off-road capability with style and technology. 4-Door only.",
+        "body_codes": [
+          "E8B (4-Door)"
+        ],
+        "equipment_groups": {
+          "312A": "Mid Package (Standard)",
+          "314A": "Lux Package"
+        },
+        "safety_and_technology": {
+          "Mid_Package": "Standard (312A)",
+          "Lux_Package": "Optional (314A)"
+        },
+        "standard_equipment": [
+          "10-Speed Automatic Transmission",
+          "Body-Color Fender Flares",
+          "Heated Steering Wheel",
+          "Leather-Trimmed/Vinyl Seats",
+          "18-inch Bright Machined Black High Gloss-Painted Aluminum Wheels"
+        ],
+        "packages": {
+          "Sasquatch_Package": {
+            "code": "765",
+            "availability": "Optional",
+            "features": "Includes High Clearance Fender Flares (replaces Body Color)."
+          },
+          "Black_Appearance_Package": {
+            "code": "51E",
+            "availability": "Optional"
+          }
+        },
+        "options": {
+          "2.7L_Engine": "99P",
+          "dual_tops": "43Z (Carbonized/Black), 43A (Body Color/Black), 43B (Black/Black)"
+        }
+      },
+      {
+        "series": "Badlands",
+        "description": "Extreme off-road capability.",
+        "body_codes": [
+          "E9A (2-Door)",
+          "E9B (4-Door)"
+        ],
+        "equipment_groups": {
+          "331A": "Standard Package",
+          "332A": "Mid Package",
+          "334A": "Lux Package"
+        },
+        "safety_and_technology": {
+          "Mid_Package": "Optional (Job 2 Change: Previous Mid Package Standard is now Optional 332A)",
+          "Lux_Package": "Optional (334A)"
+        },
+        "standard_equipment": [
+          "Advanced 4x4",
+          "HOSS 2.0 Suspension with Bilstein Dampers",
+          "Front Stabilizer Bar Disconnect",
+          "Marine Grade Vinyl Seats",
+          "Rubberized Flooring with Drain Plugs",
+          "Auxiliary Switches"
+        ],
+        "packages": {
+          "Sasquatch_Package": {
+            "code": "765",
+            "availability": "Optional"
+          },
+          "Black_Appearance_Package": {
+            "code": "51E",
+            "availability": "Optional"
+          }
+        },
+        "options": {
+          "HOSS_3.0_Suspension": "52Z (Requires Sasquatch 765; NA on 4-door with 2.3L Auto)",
+          "2.7L_Engine": "99P (4-Door Only)"
+        }
+      },
+      {
+        "series": "Stroppe_Edition",
+        "description": "Fleet Available to Military Personnel Sales (WAFAC). 2-Door Only.",
+        "body_codes": [
+          "E0A (2-Door)"
+        ],
+        "equipment_groups": {
+          "564A": "Stroppe Edition"
+        },
+        "safety_and_technology": {
+          "Mid_Package": "Standard",
+          "Lux_Package": "Standard",
+          "Sasquatch_Package": "Standard"
+        },
+        "standard_equipment": [
+          "2.7L EcoBoost V6",
+          "Matte Black Hood Wrap",
+          "Code Orange Accents",
+          "HOSS 3.0 Suspension"
+        ],
+        "packages": {},
+        "options": {
+          "engine_block_heater": "41H"
+        }
+      },
+      {
+        "series": "Raptor",
+        "description": "High-performance off-road. 4-Door Only.",
+        "body_codes": [
+          "E0R (4-Door)"
+        ],
+        "equipment_groups": {
+          "374A": "Raptor Series"
+        },
+        "safety_and_technology": {
+          "Mid_Package": "Standard",
+          "Lux_Package": "Standard (Included in 374A)"
+        },
+        "standard_equipment": [
+          "3.0L EcoBoost V6",
+          "HOSS 4.0 with FOX Live Valve Dampers",
+          "37-inch All-Terrain Tires",
+          "Full Digital Cluster"
+        ],
+        "packages": {
+          "Raptor_Code_Orange_Appearance": {
+            "code": "51A",
+            "availability": "Optional"
+          },
+          "Raptor_Black_Appearance": {
+            "code": "51B",
+            "availability": "Optional"
+          },
+          "Raptor_Shadow_Black_Appearance": {
+            "code": "51C",
+            "availability": "Optional"
+          }
+        },
+        "options": {
+          "full_display_rearview_mirror": "55C (Job 2 Added: Optional on Raptor)"
+        }
+      },
+      {
+        "series": "Heritage_Edition",
+        "description": "Classic styling cues. 4-Door Only.",
+        "body_codes": [
+          "E4D (4-Door)"
+        ],
+        "equipment_groups": {
+          "662A": "Heritage Edition"
+        },
+        "safety_and_technology": {
+          "Mid_Package": "Standard",
+          "Sasquatch_Package": "Standard"
+        },
+        "standard_equipment": [
+          "Oxford White Painted Hard Top",
+          "White Grille with Red FORD Lettering",
+          "Plaid Cloth Seats",
+          "Unique Floor Liners"
+        ],
+        "packages": {},
+        "options": {
+          "2.7L_Engine": "99P (Requires Auto)",
+          "dual_tops": "43X (Oxford White Hard Top + Black Soft Top)"
+        }
+      }
+    ]
+  }

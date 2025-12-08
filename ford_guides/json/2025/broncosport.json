@@ -1,0 +1,523 @@
+{
+    "metadata": {
+      "model_year": "2025",
+      "model": "Bronco Sport",
+      "document_date": "2025-10-27",
+      "version": "Job 3 Order Guide",
+      "notes": "Effective on all vehicles built on or after Job #2 (06/23/2025). Major changes include the deletion of the Free Wheeling series, updated emissions standards for Badlands, and revised wheel availability options."
+    },
+    "global_components": {
+      "paint_colors": {
+        "velocity_blue_metallic": {
+          "code": "E7",
+          "availability": [
+            "Big Bend",
+            "Heritage",
+            "Outer Banks",
+            "Badlands"
+          ],
+          "notes": "New for 2025; Extra Charge Paint"
+        },
+        "ruby_red_metallic_tinted_clearcoat": {
+          "code": "RR",
+          "availability": [
+            "Big Bend",
+            "Heritage",
+            "Outer Banks",
+            "Badlands"
+          ],
+          "notes": "New for 2025; Extra Charge Paint"
+        },
+        "eruption_green_metallic": {
+          "code": "FA",
+          "availability": [
+            "Big Bend",
+            "Heritage",
+            "Outer Banks",
+            "Badlands"
+          ],
+          "notes": "Extra Charge Paint"
+        },
+        "azure_gray_metallic_tri_coat": {
+          "code": "G4",
+          "availability": [
+            "Big Bend",
+            "Heritage",
+            "Outer Banks",
+            "Badlands"
+          ],
+          "notes": "Extra Charge Paint"
+        },
+        "desert_sand": {
+          "code": "VA",
+          "availability": [
+            "Big Bend",
+            "Outer Banks",
+            "Badlands"
+          ],
+          "notes": "Extra Charge Paint; Not available on Heritage"
+        },
+        "shadow_black": {
+          "code": "G1",
+          "availability": [
+            "Big Bend",
+            "Heritage",
+            "Outer Banks",
+            "Badlands"
+          ],
+          "notes": "Not available with Painted Shadow Black Roof options"
+        },
+        "carbonized_gray_metallic": {
+          "code": "M7",
+          "availability": [
+            "Big Bend",
+            "Heritage",
+            "Outer Banks",
+            "Badlands"
+          ],
+          "notes": ""
+        },
+        "oxford_white": {
+          "code": "YZ",
+          "availability": [
+            "Big Bend",
+            "Heritage",
+            "Outer Banks",
+            "Badlands"
+          ],
+          "notes": ""
+        },
+        "robins_egg_blue": {
+          "code": "CW",
+          "availability": [
+            "Heritage"
+          ],
+          "notes": "Heritage only; Extra Charge Paint"
+        }
+      },
+      "powertrains": {
+        "1.5L_ecoboost": {
+          "code": "99N",
+          "default_transmission": {
+            "code": "448",
+            "description": "8-Speed Automatic"
+          },
+          "availability": {
+            "standard": [
+              "Big Bend",
+              "Heritage",
+              "Outer Banks"
+            ],
+            "optional": []
+          },
+          "restrictions": "Includes Auto Start-Stop Technology"
+        },
+        "2.0L_ecoboost": {
+          "code": "99A",
+          "default_transmission": {
+            "code": "448",
+            "description": "8-Speed Automatic with SelectShift and Paddle Shifters"
+          },
+          "availability": {
+            "standard": [
+              "Badlands"
+            ],
+            "optional": []
+          },
+          "restrictions": "Includes Auto Start-Stop Technology; Includes Twin Clutch Rear Drive Unit"
+        }
+      },
+      "safety_technology": {
+        "ford_co_pilot360_assist_plus": {
+          "description": "Standard driver-assist suite for Big Bend, Heritage, and Outer Banks",
+          "features": [
+            "Adaptive Cruise Control with Stop-and-Go and Lane Centering",
+            "Evasive Steering Assist",
+            "BLIS (Blind Spot Information System) with Cross-Traffic Alert",
+            "Pre-Collision Assist with Automatic Emergency Braking (AEB)",
+            "Rear Parking Sensors",
+            "Rear View Camera"
+          ]
+        },
+        "ford_co_pilot360_assist_2.0": {
+          "description": "Standard on Badlands; Optional on Outer Banks (via Tech Package)",
+          "features": [
+            "360-Degree Camera (with Trail & Split View)",
+            "Reverse Brake Assist",
+            "Front Parking Sensors",
+            "Sideview Mirrors - Memory"
+          ]
+        }
+      },
+      "accessories": {
+        "wheels": {
+          "17_carbonized_gray_high_gloss": {
+            "code": "Standard",
+            "description": "17\" Carbonized Gray-Painted High Gloss Aluminum",
+            "availability": [
+              "Big Bend (Standard)"
+            ]
+          },
+          "18_mid_gloss_dark_gravity_gray": {
+            "code": "64M",
+            "description": "18\" Mid-Gloss Dark Gravity Gray-Painted Aluminum",
+            "availability": [
+              "Big Bend (Optional)"
+            ],
+            "notes": "Not available with Black Diamond (67C) or Black Appearance (67G)"
+          },
+          "17_carbonized_gray_painted": {
+            "code": "64U",
+            "description": "17\" Carbonized Gray-Painted Aluminum",
+            "availability": [
+              "Big Bend (Optional or Included in Black Diamond 67C)"
+            ],
+            "notes": "Included in Black Diamond Package (67C); Optional as standalone on Big Bend (Job 3 Update)"
+          },
+          "17_matte_black_painted": {
+            "code": "Included/Standard",
+            "description": "17\" Matte Black-Painted Aluminum",
+            "availability": [
+              "Big Bend (Included in Black Appearance 67G)",
+              "Badlands (Standard)"
+            ]
+          },
+          "18_machined_face_ebony_black": {
+            "code": "Standard",
+            "description": "18\" Machined-Face Ebony Black-Painted Aluminum",
+            "availability": [
+              "Outer Banks (Standard)"
+            ]
+          },
+          "17_ebony_black_painted": {
+            "code": "Included",
+            "description": "17\" Ebony Black-Painted Aluminum",
+            "availability": [
+              "Outer Banks (Included in Sasquatch 67A)",
+              "Badlands (Included in Sasquatch 67B)"
+            ]
+          },
+          "17_oxford_white_painted": {
+            "code": "Standard",
+            "description": "17\" Oxford White-Painted Aluminum",
+            "availability": [
+              "Heritage (Standard)"
+            ]
+          }
+        },
+        "exterior_accessories": {
+          "splash_guards": {
+            "code": "63B",
+            "name": "Front and Rear Splash Guards",
+            "availability": "Optional on all trims (Restrictions apply w/ Fender Flares/Mudflaps)"
+          },
+          "engine_block_heater": {
+            "code": "41H",
+            "name": "Engine Block Heater",
+            "availability": "Optional on all trims"
+          },
+          "fender_flare_kit_dio": {
+            "code": "DIO",
+            "name": "Fender Flare Kit (Pocket Style)",
+            "availability": "Dealer Installed Option on all trims (Restrictions apply)"
+          },
+          "front_license_plate_bracket": {
+            "code": "153",
+            "name": "Front License Plate Bracket",
+            "availability": "Standard in states requiring two plates, optional in others"
+          }
+        },
+        "graphics": {
+          "black_diamond_graphic": {
+            "code": "85B",
+            "name": "Black Diamond Graphic Package",
+            "availability": "Optional on Big Bend (Requires Black Diamond 67C)"
+          },
+          "elevation_graphic": {
+            "code": "85G",
+            "name": "Elevation Graphic Package",
+            "availability": "Optional on Big Bend, Outer Banks, Badlands"
+          },
+          "topo_graphic": {
+            "code": "85C",
+            "name": "Topo Graphic Package",
+            "availability": "Optional on Big Bend, Outer Banks, Badlands"
+          },
+          "sasquatch_graphic": {
+            "code": "85F",
+            "name": "Sasquatch Graphic Package",
+            "availability": "Optional on Outer Banks (Req 67A) and Badlands (Req 67B)"
+          }
+        }
+      },
+      "emissions": {
+        "federal_non_california": {
+          "code": "Standard",
+          "description": "Standard on Badlands series (Job 3 Update)"
+        },
+        "50_state_emissions": {
+          "code": "425",
+          "description": "Optional on Badlands series (Job 3 Update)"
+        },
+        "50_state_exemptions": {
+          "code": "423/936",
+          "description": "Exemption codes added for Badlands series (Job 3 Update)"
+        }
+      }
+    },
+    "series_build_rules": [
+      {
+        "series": "Big Bend",
+        "code": "R9B",
+        "description": "The entry-level adventure-ready SUV, offering rugged capability and stylish design.",
+        "equipment_groups": {
+          "200A": "Standard Package"
+        },
+        "safety_and_technology": {
+          "co_pilot360_assist_plus": "Standard",
+          "co_pilot360_assist_2.0": "Not Available",
+          "360_camera": "Not Available"
+        },
+        "standard_equipment": [
+          "1.5L EcoBoost Engine",
+          "4x4",
+          "12.3\" Screen in Instrument Panel Cluster",
+          "13.2\" LCD Center Stack Screen with SYNC 4",
+          "Wireless Apple CarPlay/Android Auto",
+          "Carpeted Cargo Floor",
+          "LED Headlamps",
+          "Manual Liftgate with Flip-up Glass"
+        ],
+        "packages": {
+          "black_diamond_off_road_package": {
+            "code": "67C",
+            "name": "Black Diamond Off-Road Package",
+            "includes": [
+              "Underbody Protection (Skid Plates)",
+              "17\" Carbonized Gray-Painted Aluminum Wheels (64U)",
+              "225/65R17 All-Terrain Tires",
+              "Class II Trailer Tow Package with Trailer Sway Control",
+              "Front/Rear Recovery Hooks",
+              "Cargo Management System"
+            ],
+            "restrictions": "Not available with Black Appearance Package (67G) or 18\" Wheels (64M). Deletes standard Tire Inflator and Sealant Kit."
+          },
+          "black_appearance_package": {
+            "code": "67G",
+            "name": "Black Appearance Package",
+            "includes": [
+              "17\" Matte Black-Painted Aluminum Wheels",
+              "Painted Shadow Black Roof",
+              "Sport Contour Buckets (Premium Trimmed)",
+              "Matte Black Hood Graphic",
+              "Floor Liners (Front & Rear)"
+            ],
+            "restrictions": "Not available with Black Diamond Package (67C) or 18\" Wheels (64M)"
+          },
+          "convenience_package": {
+            "code": "96P",
+            "name": "Convenience Package",
+            "includes": [
+              "8-way Power Driver's Seat",
+              "Heated Front Seats",
+              "LED Fog Lamps",
+              "Premium Wrapped Steering Wheel",
+              "Universal Garage Door Opener",
+              "Wireless Charging Pad"
+            ]
+          }
+        },
+        "options": {
+          "power_moonroof": {
+            "code": "17B",
+            "name": "Power Moonroof",
+            "restrictions": "Requires Convenience Package (96P)"
+          },
+          "18_inch_wheels": {
+            "code": "64M",
+            "name": "18\" Mid-Gloss Dark Gravity Gray-Painted Aluminum Wheel",
+            "restrictions": "Not available with 67C or 67G"
+          },
+          "17_inch_carbonized_gray_wheels": {
+            "code": "64U",
+            "name": "17\" Carbonized Gray-painted Aluminum",
+            "restrictions": "Optional on Big Bend (Job 3); Included in 67C"
+          }
+        }
+      },
+      {
+        "series": "Heritage",
+        "code": "R9G",
+        "description": "Retro-styled trim with classic Bronco aesthetics. Not available to Fleet.",
+        "equipment_groups": {
+          "250A": "Standard Package"
+        },
+        "safety_and_technology": {
+          "co_pilot360_assist_plus": "Standard",
+          "co_pilot360_assist_2.0": "Not Available",
+          "360_camera": "Not Available"
+        },
+        "standard_equipment": [
+          "Painted Oxford White Roof",
+          "Grille - Oxford White with Bronco Molded in Red",
+          "17\" Oxford White-Painted Aluminum Wheels",
+          "Plaid Cloth Seats",
+          "Navy Pier Instrument Panel Surround",
+          "225/65R17 All-Terrain Tires",
+          "Standard Equipment of Big Bend included"
+        ],
+        "packages": {
+          "convenience_package": {
+            "code": "96P",
+            "name": "Convenience Package",
+            "includes": [
+              "8-way Power Driver's Seat",
+              "Heated Front Seats",
+              "LED Fog Lamps",
+              "Premium Wrapped Steering Wheel",
+              "Universal Garage Door Opener"
+            ]
+          }
+        },
+        "options": {
+          "power_moonroof": {
+            "code": "17B",
+            "name": "Power Moonroof",
+            "restrictions": "Requires Convenience Package (96P)"
+          },
+          "cargo_management_system": {
+            "code": "90A",
+            "name": "Cargo Management System (Shelf/Divider/Table)",
+            "availability": "Optional"
+          }
+        }
+      },
+      {
+        "series": "Outer Banks",
+        "code": "R9C",
+        "description": "Refined comfort and style with advanced technology and premium finishes.",
+        "equipment_groups": {
+          "300A": "Standard Package"
+        },
+        "safety_and_technology": {
+          "co_pilot360_assist_plus": "Standard",
+          "co_pilot360_assist_2.0": "Optional (Requires Tech Package 96T)",
+          "360_camera": "Optional (Requires Tech Package 96T)"
+        },
+        "standard_equipment": [
+          "18\" Machined-Face Ebony Black-Painted Wheels",
+          "Premium-Trimmed Sport Contour Bucket Seats",
+          "Remote Start System",
+          "Heated Steering Wheel",
+          "Rain-Sensing Wipers (Front Only)",
+          "Painted Shadow Black Roof",
+          "Dual-Zone Electronic Automatic Temperature Control (DEATC)",
+          "Memory Driver's Seat"
+        ],
+        "packages": {
+          "outer_banks_tech_package": {
+            "code": "96T",
+            "name": "Outer Banks Tech Package",
+            "includes": [
+              "Ford Co-Pilot360 Assist 2.0",
+              "360-Degree Camera (Split View)",
+              "B&O Sound System (10 Speakers)",
+              "HD Radio",
+              "Connected Navigation (1-Year Subscription)"
+            ]
+          },
+          "sasquatch_package": {
+            "code": "67A",
+            "name": "Sasquatch Outer Banks Package",
+            "availability": "Late Availability",
+            "includes": [
+              "HOSS 2.0 Off-Road Suspension",
+              "Advanced 4x4 with Twin Clutch Rear Drive Unit",
+              "High Clearance Fender Flares",
+              "17\" Ebony Black-Painted Aluminum Wheels",
+              "235/65R17 All-Terrain Tires",
+              "Front/Rear Recovery Hooks",
+              "Underbody Protection (Skid Plates)",
+              "Brush Guard",
+              "Class II Trailer Tow Package"
+            ],
+            "restrictions": "Requires Outer Banks Tech Package (96T). Deletes standard Tire Inflator."
+          }
+        },
+        "options": {
+          "power_moonroof": {
+            "code": "17B",
+            "name": "Power Moonroof",
+            "restrictions": "Requires Tech Package (96T)"
+          },
+          "cargo_management_system": {
+            "code": "90A",
+            "name": "Cargo Management System",
+            "availability": "Optional"
+          }
+        }
+      },
+      {
+        "series": "Badlands",
+        "code": "R9D",
+        "description": "The pinnacle of off-road capability in the Bronco Sport lineup.",
+        "equipment_groups": {
+          "400A": "Standard Package"
+        },
+        "safety_and_technology": {
+          "co_pilot360_assist_plus": "Included",
+          "co_pilot360_assist_2.0": "Standard",
+          "360_camera": "Standard (with Trail & Split View)"
+        },
+        "standard_equipment": [
+          "2.0L EcoBoost Engine",
+          "Advanced 4x4 with Twin Clutch Rear Drive Unit",
+          "HOSS 2.0 Off-Road Suspension",
+          "Class II Trailer Tow Package",
+          "Rubberized Flooring",
+          "Under Seat Storage",
+          "Front Tow Hooks (D-Ring)",
+          "Front 180-Degree Camera (part of 360 system)",
+          "SelectShift with Paddle Shifters",
+          "17\" Matte Black-Painted Aluminum Wheels"
+        ],
+        "packages": {
+          "badlands_tech_package": {
+            "code": "96X",
+            "name": "Badlands Tech Package",
+            "includes": [
+              "B&O Sound System (10 Speakers)",
+              "HD Radio",
+              "Connected Navigation",
+              "Noise Reduction Module"
+            ]
+          },
+          "sasquatch_package": {
+            "code": "67B",
+            "name": "Sasquatch Badlands Package",
+            "availability": "Late Availability",
+            "includes": [
+              "HOSS 3.0 Off-Road Suspension (Bilstein Dampers)",
+              "High Clearance Fender Flares",
+              "17\" Ebony Black-Painted Aluminum Wheels",
+              "235/65R17 All-Terrain Tires",
+              "Brush Guard",
+              "Rear Bumper - Black MIC with Steel Plates"
+            ]
+          }
+        },
+        "options": {
+          "power_moonroof": {
+            "code": "17B",
+            "name": "Power Moonroof",
+            "restrictions": "Requires Badlands Tech Package (96X)"
+          },
+          "cargo_management_system": {
+            "code": "90A",
+            "name": "Cargo Management System",
+            "availability": "Optional"
+          }
+        }
+      }
+    ]
+  }

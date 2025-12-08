@@ -1,0 +1,389 @@
+{
+  "metadata": {
+    "model_year": "2025",
+    "model": "Super Duty (F-250 / F-350 / F-450)",
+    "document_date": "2025-07-01",
+    "version": "Job 2 / Mid-Year Update",
+    "notes": "Limited Trim deleted. Platinum Plus Package added. Sport Appearance Package deleted. 6.8L Gas standard on Lariat. XLT Premium Package now requires Black Appearance Package."
+  },
+  "global_components": {
+    "paint_colors": {
+      "agate_black_metallic": {
+        "code": "UM",
+        "availability": ["XL", "XLT", "Lariat", "King_Ranch", "Platinum", "Platinum_Plus"],
+        "notes": "Standard"
+      },
+      "antimatter_blue_metallic": {
+        "code": "HX",
+        "availability": ["XL", "XLT", "Lariat", "King_Ranch", "Platinum", "Platinum_Plus"],
+        "notes": "Standard"
+      },
+      "carbonized_gray_metallic": {
+        "code": "M7",
+        "availability": ["XL", "XLT", "Lariat", "Platinum", "Platinum_Plus"],
+        "notes": "Not available on King Ranch"
+      },
+      "avalanche": {
+        "code": "DR",
+        "availability": ["XL", "XLT", "Lariat", "Platinum", "Platinum_Plus"],
+        "notes": "New Color; Not available on King Ranch"
+      },
+      "oxford_white": {
+        "code": "Z1",
+        "availability": ["XL", "XLT", "Lariat", "King_Ranch"],
+        "notes": "Not available on Platinum"
+      },
+      "race_red": {
+        "code": "PQ",
+        "availability": ["XL", "XLT", "Lariat"],
+        "notes": "Standard"
+      },
+      "ruby_red_metallic_tinted_clearcoat": {
+        "code": "RR",
+        "availability": ["XLT", "Lariat", "King_Ranch", "Platinum", "Platinum_Plus"],
+        "notes": "New Color; Extra Charge"
+      },
+      "darkened_bronze_metallic": {
+        "code": "LJ",
+        "availability": ["XLT", "Lariat", "King_Ranch", "Platinum_Plus"],
+        "notes": "Extra Charge; Not available on standard Platinum"
+      },
+      "star_white_metallic_tri_coat": {
+        "code": "AZ",
+        "availability": ["Lariat", "King_Ranch", "Platinum", "Platinum_Plus"],
+        "notes": "Extra Charge"
+      },
+      "glacier_gray_metallic_tri_coat": {
+        "code": "R7",
+        "availability": ["Lariat", "King_Ranch_Chrome", "Platinum", "Platinum_Plus"],
+        "notes": "Extra Charge"
+      },
+      "fleet_only_colors": {
+        "green": { "code": "GR", "availability": ["XL", "XLT"] },
+        "green_gem": { "code": "W6", "availability": ["XL", "XLT"] },
+        "orange": { "code": "MB", "availability": ["XL", "XLT"] },
+        "school_bus_yellow": { "code": "BY", "availability": ["XL", "XLT"] },
+        "vermillion_red": { "code": "E4", "availability": ["XL", "XLT"] },
+        "yellow": { "code": "AT", "availability": ["XL", "XLT"], "notes": "Fleet only, requires valid FIN code" }
+      }
+    },
+    "powertrains": {
+      "6.8L_V8_Gas": {
+        "code": "99A",
+        "type": "Gas",
+        "default_transmission": { "code": "44F", "name": "TorqShift-G 10-Speed Automatic" },
+        "availability": {
+          "standard": ["XL", "XLT", "Lariat (F-250/F-350)"],
+          "not_available": ["King_Ranch", "Platinum", "F-450", "Lariat Ultimate"]
+        },
+        "specs": { "horsepower": "405 @ 5,000", "torque": "445 @ 4,000" }
+      },
+      "7.3L_V8_Gas": {
+        "code": "99N",
+        "type": "Gas",
+        "default_transmission": { "code": "44F/44G", "name": "TorqShift-G (F-250) or TorqShift (F-350/Tremor)" },
+        "availability": {
+          "standard": ["King_Ranch (F-250/F-350)", "Platinum (F-250/F-350)"],
+          "optional": ["XL", "XLT", "Lariat"],
+          "not_available": ["F-450"]
+        },
+        "specs": { "horsepower": "430 @ 5,500", "torque": "485 @ 4,000" }
+      },
+      "6.7L_Power_Stroke_Diesel": {
+        "code": "99T",
+        "type": "Diesel",
+        "default_transmission": { "code": "44G", "name": "TorqShift 10-Speed Automatic" },
+        "availability": {
+          "standard": ["F-450 (All Trims)"],
+          "optional": ["XL", "XLT", "Lariat", "King_Ranch", "Platinum"]
+        },
+        "specs": { "horsepower": "475 @ 2,600", "torque": "1,050 @ 1,600" }
+      },
+      "6.7L_HO_Power_Stroke_Diesel": {
+        "code": "99M",
+        "type": "Diesel",
+        "default_transmission": { "code": "44G", "name": "TorqShift 10-Speed Automatic" },
+        "availability": {
+          "optional": ["XL", "XLT", "Lariat", "King_Ranch", "Platinum"],
+          "required_for": ["Platinum Plus Package (17W)", "F-450 High-Capacity Gooseneck Tow (535)"],
+          "not_available": ["F-250 Fixed 10k GVWR Package"]
+        },
+        "specs": { "horsepower": "500 @ 2,600", "torque": "1,200 @ 1,600" }
+      }
+    },
+    "safety_technology": {
+      "co_pilot360_technology": {
+        "description": "Base level safety features available on XL/XLT.",
+        "features": [
+          "Autolamp (Auto On/Off Headlamps)",
+          "Pre-Collision Assist with AEB (Std XLT, Opt XL)",
+          "Automatic High Beam",
+          "Rear View Camera"
+        ]
+      },
+      "ford_co_pilot360_assist_2_0": {
+        "description": "Advanced driver assist suite.",
+        "availability": "Std on King Ranch/Platinum, Opt on Lariat (Ultimate Pkg)",
+        "features": [
+          "Adaptive Cruise Control (ACC)",
+          "Lane Centering",
+          "Predictive Speed Assist",
+          "Stop & Go",
+          "Lane-Keeping System",
+          "Intersection Assist"
+        ]
+      },
+      "360_degree_camera_package": {
+        "code": "874",
+        "availability": "Opt XL/XLT, Std Lariat+",
+        "includes": ["360-Degree Camera", "BLIS w/ Trailer Coverage", "Reverse Brake Assist", "Rear Parking Sensors", "Wired Aux Trailer Camera Compatibility"]
+      }
+    },
+    "accessories": {
+      "bed_protection": {
+        "tough_bed_spray_in_bedliner": { "code": "85S", "availability": "Optional; NA w/ Pickup Box Delete" },
+        "drop_in_bedliner": { "code": "85L", "availability": "Optional; NA w/ 5th Wheel/Gooseneck Prep" },
+        "bed_mat": { "code": "85M", "availability": "Optional; NA w/ 5th Wheel/Gooseneck Prep" }
+      },
+      "towing": {
+        "5th_wheel_gooseneck_prep_pkg": { "code": "53W", "availability": "Optional (Std on F-450)" },
+        "gooseneck_hitch_kit": { "code": "15J", "availability": "Optional; Req 53W" },
+        "5th_wheel_hitch_20k": { "code": "15L", "availability": "Optional; Req 53W" },
+        "5th_wheel_hitch_35k": { "code": "15K", "availability": "Optional; Req 53W (DRW Only)" }
+      },
+      "exterior_accessories": {
+        "wheel_well_liners_front": { "code": "61L", "availability": "Optional" },
+        "wheel_well_liners_rear": { "code": "61M", "availability": "Optional (SRW Only)" },
+        "splash_guards_front": { "code": "61S", "availability": "Optional" },
+        "splash_guards_rear": { "code": "62S", "availability": "Optional" }
+      }
+    }
+  },
+  "series_build_rules": [
+    {
+      "series": "XL",
+      "description": "Base work truck.",
+      "equipment_groups": {
+        "600A": "F-250",
+        "610A": "F-350 SRW",
+        "620A": "F-350 DRW",
+        "670A": "F-450"
+      },
+      "safety_and_technology": {
+        "standard": ["Rear View Camera", "Trailer Sway Control"],
+        "optional": ["Driver Assist Package (96D)", "360-Degree Camera Package (874)"]
+      },
+      "standard_equipment": [
+        "6.8L V8 Gas Engine (F-250/350)",
+        "8-inch LCD Touchscreen (SYNC 4)",
+        "5G Wi-Fi Hotspot",
+        "Remote Keyless Entry",
+        "Vinyl Floor Covering",
+        "Trailer Tow Package"
+      ],
+      "packages": {
+        "stx_appearance_package": {
+          "code": "17S",
+          "requires": ["4x4"],
+          "excludes": ["XL Chrome Pkg"],
+          "includes": [
+            "360-Degree Camera",
+            "BLIS w/ Trailer Coverage",
+            "Body-color Bumpers",
+            "18-inch Ebony Black Wheels",
+            "LED Box Lighting",
+            "LED Reflector Lamps"
+          ]
+        },
+        "xl_off_road_package": {
+          "code": "17Z",
+          "requires": ["4x4", "SRW"],
+          "includes": ["33-inch Off-Road Tires", "Rear E-Lock Diff", "Skid Plates"]
+        },
+        "xl_chrome_package": {
+          "code": "96V",
+          "includes": ["Chrome Bumpers", "Halogen Fog Lamps"]
+        },
+        "xl_driver_assist_package": {
+          "code": "96D",
+          "includes": ["Pre-Collision Assist w/ AEB", "Auto High Beam"]
+        }
+      },
+      "options": {
+        "pro_power_onboard_2kw": "43K",
+        "upfitter_switches": "66S",
+        "platform_running_boards": "18B"
+      }
+    },
+    {
+      "series": "XLT",
+      "description": "Mid-level trim.",
+      "equipment_groups": {
+        "603A": "Standard XLT"
+      },
+      "safety_and_technology": {
+        "standard": ["Pre-Collision Assist w/ AEB", "Auto High Beam"],
+        "optional": ["360-Degree Camera (Included in XLT Premium)"]
+      },
+      "standard_equipment": [
+        "6.8L V8 Gas Engine",
+        "4x4",
+        "18-inch Sparkle Silver Wheels (SRW)",
+        "Cloth Seats",
+        "Carpet Flooring",
+        "120V/400W Outlets",
+        "Trailer Brake Controller"
+      ],
+      "packages": {
+        "xlt_premium_package": {
+          "code": "17P",
+          "requires": ["Black Appearance Package (17L)"],
+          "includes": [
+            "360-Degree Camera",
+            "B&O Sound System",
+            "Intelligent Access w/ Push-Button Start",
+            "Remote Start",
+            "Heated Front Seats",
+            "PowerScope Trailer Tow Mirrors",
+            "12-inch Touchscreen w/ SYNC 4"
+          ]
+        },
+        "black_appearance_package": {
+          "code": "17L",
+          "requires": ["4x4", "SRW", "Crew Cab", "XLT Premium Pkg (17P)"],
+          "includes": [
+            "20-inch Ebony Black Wheels",
+            "Body-color Bumpers",
+            "Ebony Black Running Boards",
+            "Tough Bed Spray-in Bedliner",
+            "LED Lighting (Fog, Reflector, Box)"
+          ]
+        },
+        "tremor_off_road_package": {
+          "code": "17Y",
+          "requires": ["4x4", "Crew Cab", "7.3L Gas (99N) or 6.7L HO Diesel (99M)"],
+          "excludes": ["8' Box", "DRW"],
+          "includes": ["35-inch Off-Road Tires", "Rock Crawl Mode", "Trail Control", "Off-Road Tuned Suspension"]
+        }
+      },
+      "options": {
+        "high_capacity_axle_upgrade_f250": "535",
+        "powerscope_mirrors": "54F"
+      }
+    },
+    {
+      "series": "Lariat",
+      "description": "Luxury trim.",
+      "equipment_groups": {
+        "608A": "Standard Lariat"
+      },
+      "safety_and_technology": {
+        "standard": ["360-Degree Camera", "BLIS w/ Trailer Coverage", "Intersection Assist", "Reverse Brake Assist"],
+        "optional": ["Co-Pilot360 Assist 2.0 (in Ultimate Pkg)"]
+      },
+      "standard_equipment": [
+        "6.8L V8 Gas Engine",
+        "12-inch LCD Productivity Screen",
+        "12-inch Center Stack Touchscreen",
+        "B&O Sound System (8 Speakers)",
+        "ActiveX Trimmed Seats",
+        "LED Reflector Headlamps",
+        "PowerScope Mirrors"
+      ],
+      "packages": {
+        "lariat_ultimate_package": {
+          "code": "96U",
+          "requires": ["40/console/40 seat"],
+          "excludes": ["6.8L Gas Engine (99A)"],
+          "includes": [
+            "Ford Co-Pilot360 Assist 2.0",
+            "Heads-Up Display",
+            "B&O Unleashed Sound System (14 Speakers)",
+            "Pro Trailer Backup/Hitch Assist",
+            "Power Running Boards",
+            "Tailgate Step"
+          ]
+        },
+        "black_appearance_package": {
+          "code": "17L",
+          "includes": ["20-inch Ebony Black Wheels", "Ebony Black Mirror Caps", "Dark Fender Badge"]
+        },
+        "chrome_package": {
+          "code": "17C",
+          "requires": ["4x4"],
+          "includes": ["20-inch Chrome PVD Wheels", "Chrome Bumpers/Handles/Mirrors", "6-inch Bright Step Bars"]
+        }
+      }
+    },
+    {
+      "series": "King_Ranch",
+      "description": "Western-themed luxury.",
+      "equipment_groups": {
+        "700A": "F-250",
+        "710A": "F-350 SRW",
+        "720A": "F-350 DRW",
+        "770A": "F-450"
+      },
+      "safety_and_technology": {
+        "standard": ["Ford Co-Pilot360 Assist 2.0", "Head-Up Display", "Pro Trailer Backup Assist"]
+      },
+      "standard_equipment": [
+        "7.3L V8 Gas Engine (F-250/350)",
+        "6.7L Diesel (F-450)",
+        "Kingsville Antique Affect Leather Seats",
+        "2kW Pro Power Onboard",
+        "Power Deployable Running Boards",
+        "B&O Unleashed Sound System",
+        "Onboard Scales & Smart Hitch"
+      ],
+      "packages": {
+        "chrome_package": {
+          "code": "17C",
+          "includes": ["Chrome Bumpers", "Chrome Mirror Caps", "20-inch Chrome PVD Wheels"]
+        },
+        "tremor_off_road_package": {
+          "code": "17Y",
+          "availability": "Optional"
+        }
+      }
+    },
+    {
+      "series": "Platinum",
+      "description": "Premium luxury.",
+      "equipment_groups": {
+        "703A": "F-250",
+        "713A": "F-350 SRW",
+        "723A": "F-350 DRW",
+        "773A": "F-450"
+      },
+      "safety_and_technology": {
+        "standard": ["Ford Co-Pilot360 Assist 2.0", "Head-Up Display"]
+      },
+      "standard_equipment": [
+        "7.3L V8 Gas Engine (F-250/350)",
+        "6.7L Diesel (F-450)",
+        "Power Deployable Running Boards",
+        "LED Projector Headlamps",
+        "Power Tailgate",
+        "2kW Pro Power Onboard"
+      ],
+      "packages": {
+        "platinum_plus_package": {
+          "code": "17W",
+          "requires": ["6.7L HO Diesel (99M)"],
+          "includes": [
+            "Smoked Truffle Premium Luxury Leather",
+            "Max Recline Seats",
+            "Twin Panel Moonroof",
+            "Unique Satin Grille",
+            "Platinum Plus Experience (2-year Maintenance Plan)"
+          ]
+        },
+        "tremor_off_road_package": {
+          "code": "17Y",
+          "availability": "Optional"
+        }
+      }
+    }
+  ]
+}

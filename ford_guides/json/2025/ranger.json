@@ -1,0 +1,480 @@
+{
+    "metadata": {
+      "model_year": "2025",
+      "model": "Ranger",
+      "document_date": "2025-07-07",
+      "version": "Job 2",
+      "notes": "Job 2 Order Guide Updates effective on all vehicles built on or after Job #2 (TBD). Key changes include the addition of the Black Appearance Package, new paint colors (Marsh Gray, Desert Sand, Ruby Red), and the removal of standard 120V outlets/wireless charging from XLT/Lariat (moved to new Convenience Package)."
+    },
+    "global_components": {
+      "paint_colors": {
+        "marsh_gray": {
+          "code": "T9",
+          "availability": [
+            "XL",
+            "XLT",
+            "Lariat",
+            "Raptor"
+          ],
+          "notes": "New for Job 2"
+        },
+        "ruby_red_metallic_tinted_clearcoat": {
+          "code": "RR",
+          "availability": [
+            "XL",
+            "XLT",
+            "Lariat"
+          ],
+          "notes": "New for Job 2; Extra Charge Paint"
+        },
+        "desert_sand": {
+          "code": "VA",
+          "availability": [
+            "XL",
+            "XLT",
+            "Lariat",
+            "Raptor"
+          ],
+          "notes": "New for Job 2"
+        },
+        "carbonized_gray_metallic": {
+          "code": "M7",
+          "availability": [
+            "XL",
+            "XLT",
+            "Lariat",
+            "Raptor"
+          ],
+          "notes": ""
+        },
+        "oxford_white": {
+          "code": "YZ",
+          "availability": [
+            "XL",
+            "XLT",
+            "Lariat",
+            "Raptor"
+          ],
+          "notes": ""
+        },
+        "shadow_black": {
+          "code": "G1",
+          "availability": [
+            "XL",
+            "XLT",
+            "Lariat",
+            "Raptor"
+          ],
+          "notes": ""
+        },
+        "velocity_blue_metallic": {
+          "code": "E7",
+          "availability": [
+            "XL",
+            "XLT",
+            "Lariat",
+            "Raptor"
+          ],
+          "notes": ""
+        },
+        "azure_gray_metallic_tri_coat": {
+          "code": "G4",
+          "availability": [
+            "XLT",
+            "Lariat",
+            "Raptor"
+          ],
+          "notes": "Extra Charge Paint"
+        },
+        "shelter_green_metallic": {
+          "code": "D",
+          "availability": [
+            "Raptor"
+          ],
+          "notes": "Raptor Exclusive"
+        }
+      },
+      "powertrains": {
+        "2.3l_ecoboost": {
+          "code": "99H",
+          "default_transmission": "44T",
+          "availability": {
+            "standard": [
+              "XL",
+              "XLT",
+              "Lariat"
+            ],
+            "optional": []
+          },
+          "restrictions": "Includes Auto Start-Stop Technology"
+        },
+        "2.7l_ecoboost": {
+          "code": "99P",
+          "default_transmission": "44T",
+          "availability": {
+            "standard": [],
+            "optional": [
+              "XLT",
+              "Lariat"
+            ]
+          },
+          "restrictions": "Requires 4x4. Available on XLT and Lariat."
+        },
+        "3.0l_ecoboost_v6": {
+          "code": "99R",
+          "default_transmission": "44T",
+          "availability": {
+            "standard": [
+              "Raptor"
+            ],
+            "optional": []
+          },
+          "restrictions": "Raptor only"
+        }
+      },
+      "safety_technology": {
+        "ford_co_pilot360": {
+          "code": "67J",
+          "description": "Standard on XLT/Lariat/Raptor. Changed to Optional on XL for Job 2.",
+          "features": [
+            "Auto High-Beam Headlamps",
+            "BLIS (Blind Spot Information System) w/ Cross-Traffic Alert and Trailer Coverage",
+            "Lane-Keeping System (Alert, Aid, Driver Alert)",
+            "Pre-Collision Assist with Automatic Emergency Braking (AEB)",
+            "Rear View Camera",
+            "Rear Parking Sensors"
+          ]
+        },
+        "technology_package": {
+          "code": "67Y",
+          "description": "Advanced driver assist features.",
+          "features": [
+            "Adaptive Cruise Control and Speed Sign Recognition",
+            "Front Parking Sensors",
+            "360-Degree Camera"
+          ]
+        }
+      },
+      "accessories": {
+        "bed_protection": {
+          "bedliner_tough_bed_spray_in": {
+            "code": "86S",
+            "availability": "Optional on all trims",
+            "notes": "NA w/ Modular Drop-in Bedliner (86Q)"
+          },
+          "bedliner_modular_drop_in": {
+            "code": "86Q",
+            "availability": "Optional on all trims",
+            "notes": "NA w/ Spray-in Bedliner, Pickup Box Extender, or Tonneau covers"
+          }
+        },
+        "tonneau_covers": {
+          "soft_folding": {
+            "code": "94D",
+            "availability": "Optional on XL, XLT, Lariat",
+            "notes": "NA w/ Drop-in Bedliner"
+          },
+          "hard_folding": {
+            "code": "94E",
+            "availability": "Optional on XL, XLT, Lariat",
+            "notes": "4x4 only; NA w/ Drop-in Bedliner"
+          },
+          "retractable": {
+            "code": "94J",
+            "availability": "Optional on XL, XLT, Lariat",
+            "notes": "4x4 only; NA w/ Drop-in Bedliner"
+          }
+        },
+        "exterior_accessories": {
+          "splash_guards": {
+            "code": "17B",
+            "availability": "Optional"
+          },
+          "running_boards_black": {
+            "code": "18D",
+            "availability": "Optional on XL, XLT, Lariat"
+          },
+          "integrated_box_side_step": {
+            "code": "47G",
+            "availability": "Optional on XLT, Lariat; Required for Chrome Accent Package"
+          }
+        }
+      }
+    },
+    "series_build_rules": [
+      {
+        "series": "XL",
+        "description": "Base work truck capability with STX styling standard.",
+        "equipment_groups": {
+          "100A": "Standard"
+        },
+        "safety_and_technology": {
+          "ford_co_pilot360": {
+            "status": "Optional",
+            "code": "67J",
+            "notes": "Job 2 Change: Now optional on all XL orders"
+          },
+          "rear_view_camera": {
+            "status": "Standard",
+            "type": "Analog"
+          },
+          "integrated_trailer_brake_controller": {
+            "status": "Optional",
+            "code": "66D",
+            "notes": "New for Job 2: Optional on XL; Req. Trailer Tow Pkg (53R)"
+          }
+        },
+        "standard_equipment": [
+          "STX Appearance Package",
+          "2.3L EcoBoost Engine",
+          "10-Speed Automatic Transmission",
+          "10-inch Center Stack Display",
+          "8-inch Digital Instrument Cluster",
+          "Privacy Glass (Job 2: Added as standard)",
+          "Fixed Rear Window w/ Privacy Glass",
+          "Power Windows (Front/Rear)",
+          "Black Vinyl Floor Covering"
+        ],
+        "packages": {
+          "stx_appearance_package": {
+            "code": "76F",
+            "status": "Included",
+            "content": [
+              "17-inch Silver-Painted Aluminum Wheels (64E)",
+              "LED Reflector Headlamps",
+              "Fog Lamps - Halogen",
+              "STX Fender Badge"
+            ],
+            "notes": "Included on XL"
+          },
+          "trailer_tow_package": {
+            "code": "53R",
+            "status": "Optional",
+            "content": [
+              "Class IV Trailer Hitch Receiver",
+              "4-pin/7-pin wiring harness"
+            ],
+            "notes": ""
+          }
+        },
+        "options": {
+          "carpet_floor_covering": "16E",
+          "electronic_locking_rear_differential": "X73",
+          "engine_block_heater": "41H",
+          "120v_400w_outlets": "55J"
+        }
+      },
+      {
+        "series": "XLT",
+        "description": "Mid-level trim adding comfort, tech, and appearance options.",
+        "equipment_groups": {
+          "300A": "Standard",
+          "301A": "High"
+        },
+        "safety_and_technology": {
+          "ford_co_pilot360": {
+            "status": "Standard",
+            "notes": ""
+          },
+          "technology_package": {
+            "status": "Optional",
+            "code": "67Y",
+            "notes": "Includes 360-Degree Camera and Adaptive Cruise Control. N/A with Advanced Towing Packs (67P, 67G)"
+          }
+        },
+        "standard_equipment": [
+          "Sport Appearance Package",
+          "LED Reflector Headlamps & Fog Lamps",
+          "Power-folding Sideview Mirrors",
+          "Fixed Rear Window (Job 2: Replaced Manual Slider on 300A)",
+          "Carpet Floor Covering",
+          "Wireless Charging Pad (REMOVED from Std - Job 2)",
+          "120V Outlets (REMOVED from Std - Job 2)"
+        ],
+        "packages": {
+          "sport_appearance_package": {
+            "code": "76E",
+            "status": "Included",
+            "notes": "Standard. Removed if Chrome Accent (76G) or Black Appearance (76J) is selected."
+          },
+          "black_appearance_package": {
+            "code": "76J",
+            "status": "Optional",
+            "content": [
+              "18-inch Black-Painted Wheels (64T)",
+              "Black Ford Ovals",
+              "Black Grille & Bumpers"
+            ],
+            "notes": "New for 2025. Removes Sport Pkg; N/A w/ Chrome Accent Pkg."
+          },
+          "chrome_accent_package": {
+            "code": "76G",
+            "status": "Optional",
+            "notes": "Revised name. Removes Sport Pkg; Req. Integrated Box Side Step (47G)."
+          },
+          "convenience_package": {
+            "code": "61B",
+            "status": "Optional",
+            "content": [
+              "Wireless Charging Pad",
+              "120V/400W In-Cab and In-Bed Power Outlets",
+              "LED Bed Lighting"
+            ],
+            "notes": "New Job 2 Package. Contains items removed from Standard Equipment."
+          },
+          "fx4_off_road_package": {
+            "code": "914",
+            "status": "Optional",
+            "notes": "4x4 only. OWL tires and running board requirement removed."
+          },
+          "advanced_towing_package": {
+            "code": "67P",
+            "status": "Optional",
+            "content": [
+              "Trailer Brake Controller",
+              "Pro Trailer Backup Assist",
+              "Trailer Tow Package (53R)"
+            ],
+            "notes": "N/A with Technology Package (67Y)"
+          },
+          "advanced_towing_plus_technology": {
+            "code": "67G",
+            "status": "Optional",
+            "content": [
+              "Includes content of Advanced Towing (67P) and Technology Package (67Y)"
+            ],
+            "notes": ""
+          }
+        },
+        "options": {
+          "electronic_locking_rear_differential": "X73",
+          "engine_block_heater": "41H",
+          "power_sliding_rear_window": "43E (Optional on 300A, Std on 301A)",
+          "running_boards_black": "18D"
+        }
+      },
+      {
+        "series": "Lariat",
+        "description": "Premium trim with leather, advanced tech, and convenience features.",
+        "equipment_groups": {
+          "500A": "Standard"
+        },
+        "safety_and_technology": {
+          "ford_co_pilot360": {
+            "status": "Standard",
+            "notes": ""
+          },
+          "adaptive_cruise_control": {
+            "status": "Standard",
+            "notes": ""
+          },
+          "360_degree_camera": {
+            "status": "Standard",
+            "notes": ""
+          },
+          "front_parking_sensors": {
+            "status": "Standard",
+            "notes": ""
+          }
+        },
+        "standard_equipment": [
+          "12-inch Digital Instrument Cluster",
+          "12-inch Center Stack Display",
+          "B&O Sound System (10 Speakers)",
+          "Leather-Trimmed Seats",
+          "Heated Front Seats and Steering Wheel",
+          "Rain-Sensing Wipers",
+          "Power-Sliding Rear Window",
+          "LED Projector Headlamps",
+          "Wireless Charging Pad (REMOVED from Std - Job 2)",
+          "LED CHMSL (REMOVED - Job 2)"
+        ],
+        "packages": {
+          "convenience_package": {
+            "code": "61B",
+            "status": "Optional",
+            "content": [
+              "Wireless Charging Pad",
+              "120V/400W In-Cab and In-Bed Power Outlets",
+              "LED Bed Lighting"
+            ],
+            "notes": "New Job 2 Package."
+          },
+          "black_appearance_package": {
+            "code": "76J",
+            "status": "Optional",
+            "notes": "New for 2025"
+          },
+          "chrome_accent_package": {
+            "code": "76G",
+            "status": "Optional",
+            "notes": "Req. Integrated Box Side Step (47G)"
+          },
+          "advanced_towing_package": {
+            "code": "67W",
+            "status": "Optional",
+            "content": [
+              "Trailer Brake Controller",
+              "Pro Trailer Backup Assist",
+              "Rear Parking Sensors with Trailer Guidance"
+            ],
+            "notes": "4x4 Only"
+          },
+          "fx4_off_road_package": {
+            "code": "914",
+            "status": "Optional",
+            "notes": "4x4 only"
+          }
+        },
+        "options": {
+          "electronic_locking_rear_differential": "X73",
+          "integrated_box_side_step": "47G",
+          "running_boards_black": "18D"
+        }
+      },
+      {
+        "series": "Raptor",
+        "description": "High-performance off-road truck.",
+        "equipment_groups": {
+          "800A": "Standard"
+        },
+        "safety_and_technology": {
+          "ford_co_pilot360": {
+            "status": "Standard",
+            "notes": ""
+          },
+          "adaptive_cruise_control": {
+            "status": "Standard",
+            "notes": ""
+          },
+          "360_degree_camera": {
+            "status": "Standard",
+            "notes": ""
+          }
+        },
+        "standard_equipment": [
+          "3.0L EcoBoost V6 Engine",
+          "Fox Racing Shocks with Live Valve Technology",
+          "Locking Front & Rear Axles",
+          "Watts-Link Rear Suspension",
+          "Upfitter Switches",
+          "B&O Sound System",
+          "12-inch Digital Instrument Cluster",
+          "Zone Lighting",
+          "120V/400W Power Outlets (Retained as Standard for Raptor)"
+        ],
+        "packages": {
+          "raptor_exterior_graphics": {
+            "code": "47R",
+            "status": "Optional",
+            "notes": ""
+          }
+        },
+        "options": {
+          "forged_beadlock_capable_wheel": "64S",
+          "engine_block_heater": "41H",
+          "splash_guards": "17B"
+        }
+      }
+    ]
+  }
