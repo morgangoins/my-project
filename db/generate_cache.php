@@ -42,26 +42,36 @@ echo "Generating cache for database updated at " . date('Y-m-d H:i:s', $dbMtime)
 // These ensure consistent values across the application
 // ============================================================================
 
-function normalizePaintColor($paint) {
+function normalizePaintColor($paint, $model = '') {
     $paint = trim($paint);
     if (!$paint) return '';
     $lower = strtolower($paint);
 
-    // Common color normalizations
+    // Common color normalizations - check specific patterns before general ones
     if (stripos($lower, 'rapid red') !== false) return 'Rapid Red';
     if (stripos($lower, 'star white') !== false) return 'Star White';
     if (stripos($lower, 'space white') !== false) return 'Space White';
     if (stripos($lower, 'agate black') !== false) return 'Agate Black';
     if (stripos($lower, 'antimatter blue') !== false) return 'Antimatter Blue';
+    if (stripos($lower, 'glacier gray') !== false) return 'Glacier Gray';
     if (stripos($lower, 'carbonized gray') !== false) return 'Carbonized Gray Metallic';
-    if (stripos($lower, 'gray metallic') !== false) return 'Carbonized Gray Metallic';
+    if (stripos($lower, 'marsh gray') !== false) return 'Marsh Gray';
+    if (stripos($lower, 'azure gray') !== false) return 'Azure Gray';
+    // Special handling for Gray Metallic - distinguish based on model
+    if (stripos($lower, 'gray metallic') !== false) {
+        // F-150 vehicles with Gray Metallic should be Glacier Gray
+        // Super Duty vehicles with Gray Metallic should be Carbonized Gray Metallic
+        if (stripos(strtolower($model), 'f-150') !== false) {
+            return 'Glacier Gray';
+        } else {
+            return 'Carbonized Gray Metallic';
+        }
+    }
     if (stripos($lower, 'iconic silver') !== false) return 'Iconic Silver';
     if (stripos($lower, 'oxford white') !== false) return 'Oxford White';
-    if (stripos($lower, 'marsh gray') !== false) return 'Marsh Gray';
     if (stripos($lower, 'atlas blue') !== false) return 'Atlas Blue';
     if (stripos($lower, 'shadow black') !== false) return 'Shadow Black';
     if (stripos($lower, 'velocity blue') !== false) return 'Velocity Blue';
-    if (stripos($lower, 'glacier gray') !== false) return 'Glacier Gray';
     if (stripos($lower, 'vapor blue') !== false) return 'Vapor Blue';
     if (stripos($lower, 'azure gray') !== false) return 'Azure Gray';
     if (stripos($lower, 'desert sand') !== false) return 'Desert Sand';
@@ -343,7 +353,7 @@ foreach ($rows as $row) {
     $normalizedModel = normalizeModel($row['model'] ?? '');
     $normalizedEngine = normalizeEngine($row['engine'] ?? '');
     $normalizedDrivetrain = normalizeDrivetrain($row['drivetrain'] ?? '');
-    $normalizedColor = normalizePaintColor($row['paint'] ?? '');
+    $normalizedColor = normalizePaintColor($row['paint'] ?? '', $row['model'] ?? '');
     $normalizedBodyStyle = normalizeBodyStyle($row['truck_body_style'] ?: ($row['body_style'] ?? ''));
     
     // Extract pricing using centralized function

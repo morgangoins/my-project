@@ -29,6 +29,68 @@
         .stock-search-hint { font-size: 12px; color: var(--muted); margin-top: 4px; min-height: 14px; }
         .header-right { display: flex; align-items: center; gap: 16px; }
         .header-right.hidden { display: none; }
+        .bookmarks-button {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: white;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 0.2s, transform 0.2s, background 0.2s;
+            padding: 0;
+            position: relative;
+        }
+        .bookmarks-button svg {
+            width: 22px;
+            height: 22px;
+            stroke-width: 1.6;
+            stroke-linejoin: round;
+            stroke-linecap: round;
+        }
+        .bookmarks-button:hover {
+            border-color: var(--accent);
+            transform: translateY(-1px);
+        }
+        .bookmarks-button.active,
+        .bookmarks-button.has-count {
+            border-color: var(--accent);
+        }
+        .bookmarks-button .bookmark-count {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 999px;
+            background: #ef4444;
+            color: #fff;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            box-shadow: 0 0 0 2px white;
+        }
+        .bookmarks-clear-button {
+            margin-left: 12px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            background: white;
+            padding: 8px 16px;
+            font-size: 14px;
+            color: var(--text);
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .bookmarks-clear-button:hover {
+            border-color: var(--accent);
+        }
+        .bookmarks-clear-button.hidden {
+            display: none;
+        }
         .results-count { font-size: 14px; color: var(--muted); }
         .results-count strong { color: var(--text); font-weight: 600; }
         .sort { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
@@ -70,6 +132,10 @@
         .card-image-placeholder img.interior { opacity: 0; }
         .card-image-placeholder:hover img.exterior { opacity: 0; }
         .card-image-placeholder:hover img.interior { opacity: 1; }
+        .bookmark-button { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border: none; border-radius: 50%; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(8px); color: #666; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; font-size: 16px; z-index: 3; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .bookmark-button:hover { background: rgba(255, 255, 255, 1); color: #333; transform: scale(1.1); }
+        .bookmark-button.bookmarked { color: #e11d48; }
+        .bookmark-button.bookmarked:hover { color: #dc2626; }
         .card-title { font-size: 16px; font-weight: 500; margin-bottom: 4px; }
         .card-subtitle { font-size: 13px; color: var(--muted); }
         .card-meta { font-size: 12px; color: var(--muted); display: flex; flex-direction: column; gap: 2px; }
@@ -92,10 +158,14 @@
         .detail-media { position: sticky; top: 24px; min-width: 0; }
         .detail-hero { background: var(--bg); border-radius: 12px; overflow: hidden; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.06); aspect-ratio: 4/3; max-height: calc(100vh - 160px); }
         .detail-hero img { width: 100%; height: 100%; object-fit: contain; object-position: center; transition: opacity 0.2s; display: block; }
-        .detail-hero-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; border: none; background: rgba(255,255,255,0.9); color: var(--text); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.15); transition: background 0.2s, transform 0.2s; font-size: 18px; z-index: 2; }
-        .detail-hero-nav:hover { background: #fff; transform: translateY(-50%) scale(1.05); }
+        .detail-hero-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 42px; height: 42px; border-radius: 8px; border: none; background: rgba(255,255,255,0.5); color: var(--text); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.03); transition: all 0.2s; font-size: 20px; font-weight: 500; z-index: 2; touch-action: manipulation; user-select: none; }
+        .detail-hero-nav:hover { background: rgba(255,255,255,0.7); color: var(--accent); transform: translateY(-50%) scale(1.02); box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
         .detail-hero-nav.prev { left: 16px; }
         .detail-hero-nav.next { right: 16px; }
+        .detail-bookmark-button { position: absolute; top: 12px; right: 12px; width: 44px; height: 44px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.15); background: rgba(255,255,255,0.95); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s; color: #4b5563; box-shadow: 0 3px 12px rgba(0,0,0,0.08); z-index: 3; }
+        .detail-bookmark-button svg { width: 20px; height: 20px; stroke-width: 1.6; }
+        .detail-bookmark-button:hover { border-color: var(--accent); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+        .detail-bookmark-button.bookmarked { color: #ef4444; background: rgba(255,255,255,0.95); border-color: rgba(239,68,68,0.5); box-shadow: 0 6px 20px rgba(239,68,68,0.28); }
         .detail-thumbnails { display: flex; gap: 8px; margin-top: 12px; overflow-x: auto; padding-bottom: 8px; max-width: 100%; }
         .detail-thumbnails::-webkit-scrollbar { height: 4px; }
         .detail-thumbnails::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
@@ -192,8 +262,103 @@
         .stock-search input { flex: 1; width: 100%; }
         .qr-scan-button { display: flex; }
         }
+        .comparison-table-container {
+            overflow-x: auto;
+            width: 100%;
+            margin: 20px 0;
+        }
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            min-width: 800px;
+        }
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border: 1px solid #e0e0e0;
+            vertical-align: top;
+        }
+        .comparison-label-cell {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: var(--text);
+            width: 150px;
+            min-width: 150px;
+            position: sticky;
+            left: 0;
+            z-index: 2;
+            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+        }
+        .comparison-data-cell {
+            min-width: 200px;
+            background: white;
+        }
+        .comparison-data-cell.empty-cell {
+            color: #999;
+            font-style: italic;
+        }
+        .comparison-data-cell.no-equipment {
+            color: #999;
+            font-style: italic;
+        }
+        .comparison-vehicle-photo {
+            width: 180px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .comparison-equipment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .comparison-equipment-item {
+            font-size: 13px;
+            color: var(--muted);
+            padding: 2px 0;
+            line-height: 1.3;
+        }
+        .comparison-equipment-item:not(:last-child)::after {
+            content: '';
+            display: block;
+            height: 1px;
+            background: #f0f0f0;
+            margin-top: 4px;
+        }
+        /* Header row styling */
+        .comparison-table tbody tr:first-child .comparison-label-cell {
+            background: #e9ecef;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        .comparison-table tbody tr:first-child .comparison-data-cell {
+            background: #f8f9fa;
+            font-weight: 600;
+            font-size: 15px;
+        }
+        /* Photo row styling */
+        .comparison-table tbody tr:nth-child(2) {
+            background: #fafafa;
+        }
+        .comparison-table tbody tr:nth-child(2) .comparison-label-cell {
+            background: #f8f9fa;
+        }
+        /* Alternate row colors for better readability */
+        .comparison-table tbody tr:nth-child(odd) .comparison-data-cell {
+            background: #ffffff;
+        }
+        .comparison-table tbody tr:nth-child(even) .comparison-data-cell {
+            background: #f9f9f9;
+        }
+        /* Hover effect */
+        .comparison-table tbody tr:hover .comparison-data-cell {
+            background: #e3f2fd;
+        }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js"></script>
 </head>
 <body>
     <div class="page">
@@ -203,20 +368,29 @@
                 <div class="header-subtitle" id="last-updated"></div>
                 <form class="stock-search" id="stock-search" autocomplete="off">
                     <input type="text" id="stock-search-input" placeholder="Search by stock #" aria-label="Search by stock number">
-                    <button type="button" id="qr-scan-button" class="qr-scan-button" title="Scan QR Code" aria-label="Scan QR Code">
+                    <button type="button" id="qr-scan-button" class="qr-scan-button" title="Scan QR Code or VIN Barcode" aria-label="Scan QR Code or VIN Barcode">
                         📷
                     </button>
                 </form>
                 <div class="stock-search-hint" id="stock-search-hint"></div>
             </div>
             <div class="header-right hidden" id="header-right">
+                <button class="bookmarks-button" id="bookmarks-button">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                    </svg>
+                </button>
+                <button class="bookmarks-clear-button hidden" id="clear-bookmarks-button">Clear</button>
+                <button class="view-toggle-button hidden" id="view-toggle-button">
+                    <span id="view-toggle-icon">C</span>
+                    <span id="view-toggle-text">Table</span>
+                </button>
                 <div class="results-count" id="results-count"></div>
-                <div class="sort"><span>Sort:</span>
+                <div class="sort" id="sort-container" style="display: none;"><span>Sort:</span>
                     <select class="sort-select" id="sort-select">
                         <option value="random">Random</option>
                         <option value="price_asc">Price: Low to High</option>
                         <option value="price_desc">Price: High to Low</option>
-                        <option value="trim_asc">Trim Level</option>
                     </select>
                 </div>
             </div>
@@ -233,8 +407,9 @@
                         <div class="detail-media">
                             <div class="detail-hero" id="detail-hero">
                                 <img src="" alt="" id="detail-hero-img">
-                                <button class="detail-hero-nav prev" id="detail-prev">‹</button>
-                                <button class="detail-hero-nav next" id="detail-next">›</button>
+                                <button class="detail-bookmark-button" id="detail-bookmark-button" aria-label="Bookmark vehicle"></button>
+                                <button class="detail-hero-nav prev" id="detail-prev">←</button>
+                                <button class="detail-hero-nav next" id="detail-next">→</button>
                             </div>
                             <div class="detail-thumbnails" id="detail-thumbnails"></div>
                         </div>
@@ -343,14 +518,6 @@
                     <div class="filter-title">Exterior Color <span class="filter-clear" id="clear-color">Clear</span></div>
                     <div id="color-options" class="filter-options-scroll"></div>
                 </div>
-                <div class="filter-section" id="price-section" style="display:none;">
-                    <div class="filter-title">Price Range</div>
-                    <div class="price-range-inputs">
-                        <input type="number" class="price-input" id="price-min" placeholder="Min" step="1000">
-                        <span style="color:var(--muted)">–</span>
-                        <input type="number" class="price-input" id="price-max" placeholder="Max" step="1000">
-                    </div>
-                </div>
                 <div class="filter-section" id="package-section" style="display:none;">
                     <div class="filter-title">Package <span class="filter-clear" id="clear-package">Clear</span></div>
                     <div id="package-options"></div>
@@ -379,16 +546,16 @@ document.addEventListener('DOMContentLoaded', function() {
     let facetCounts = {};
     let filteredVehicles = [];
     let displayedCount = 0;
+    let bookmarkViewMode = 'cards'; // 'cards' or 'table'
     const ITEMS_PER_PAGE = 24;
     let isHomepage = true; // Start on homepage
-    let selectedFilters = { model: null, year: [], series: [], trim: [], package: [], engine: [], wheelbase: [], drivetrain: [], body_style: [], rear_axle: [], equipment: [], color: [], status: [], price_min: null, price_max: null };
-    let excludeFilters = { model: null, year: [], series: [], trim: [], package: [], engine: [], wheelbase: [], drivetrain: [], body_style: [], rear_axle: [], equipment: [], color: [], status: [], price_min: null, price_max: null };
+    window.currentView = 'inventory';
+    let selectedFilters = { model: null, year: [], series: [], trim: [], package: [], engine: [], wheelbase: [], drivetrain: [], body_style: [], rear_axle: [], equipment: [], color: [], status: [] };
+    let excludeFilters = { model: null, year: [], series: [], trim: [], package: [], engine: [], wheelbase: [], drivetrain: [], body_style: [], rear_axle: [], equipment: [], color: [], status: [] };
     const grid = document.getElementById('cards-grid');
     const resultsCount = document.getElementById('results-count');
     const sortSelect = document.getElementById('sort-select');
     const activeFiltersContainer = document.getElementById('active-filters');
-    const priceMin = document.getElementById('price-min');
-    const priceMax = document.getElementById('price-max');
     const headerTitle = document.getElementById('header-title');
     const headerRight = document.getElementById('header-right');
     const filtersSidebar = document.getElementById('filters-sidebar');
@@ -415,10 +582,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     url.searchParams.set(key, selectedFilters[key].join(','));
                 }
             });
-            
-            // Add price filters
-            if (selectedFilters.price_min) url.searchParams.set('price_min', selectedFilters.price_min);
-            if (selectedFilters.price_max) url.searchParams.set('price_max', selectedFilters.price_max);
 
             // Add exclude filters
             ['year', 'series', 'trim', 'package', 'engine', 'wheelbase', 'drivetrain', 'body_style', 'rear_axle', 'equipment', 'color', 'status'].forEach(key => {
@@ -452,8 +615,6 @@ document.addEventListener('DOMContentLoaded', function() {
             equipment: params.get('equipment') ? params.get('equipment').split(',') : [],
             color: params.get('color') ? params.get('color').split(',') : [],
             status: params.get('status') ? params.get('status').split(',') : [],
-            price_min: params.get('price_min') ? parseFloat(params.get('price_min')) : null,
-            price_max: params.get('price_max') ? parseFloat(params.get('price_max')) : null,
             // Exclude filters
             exclude_year: params.get('exclude_year') ? params.get('exclude_year').split(',') : [],
             exclude_series: params.get('exclude_series') ? params.get('exclude_series').split(',') : [],
@@ -479,6 +640,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (urlState.model || (historyState && historyState.filters)) {
                 // Restore to inventory view with filters
                 isHomepage = false;
+                updateSortVisibility();
 
                 // Use history state if available, otherwise URL state
                 const state = historyState && historyState.filters ? historyState : urlState;
@@ -495,8 +657,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 selectedFilters.equipment = (state.filters && state.filters.equipment) || urlState.equipment;
                 selectedFilters.color = (state.filters && state.filters.color) || urlState.color;
                 selectedFilters.status = (state.filters && state.filters.status) || urlState.status;
-                selectedFilters.price_min = (state.filters && state.filters.price_min) || urlState.price_min;
-                selectedFilters.price_max = (state.filters && state.filters.price_max) || urlState.price_max;
 
                 // Restore exclude filters
                 if (state.excludeFilters) {
@@ -537,11 +697,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Check the corresponding radio button
                 const radio = document.querySelector('input[name="model"][value="' + urlState.model + '"]');
                 if (radio) radio.checked = true;
-                
-                // Update price inputs
-                priceMin.value = urlState.price_min || '';
-                priceMax.value = urlState.price_max || '';
-                
+
                 updateFilterVisibility();
                 updateYearOptions();
                 
@@ -578,26 +734,32 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
 
     // Function to render the homepage with model cards (internal, no URL update)
+    function updateSortVisibility() {
+        const sortContainer = document.getElementById('sort-container');
+        if (sortContainer) {
+            sortContainer.style.display = (!isHomepage && selectedFilters.model) ? 'flex' : 'none';
+        }
+    }
+
     function renderHomepageNoURLUpdate() {
         isHomepage = true;
         selectedFilters.model = null;
+        updateSortVisibility();
         // Clear all filters
         ['year', 'series', 'trim', 'package', 'engine', 'wheelbase', 'drivetrain', 'body_style', 'equipment', 'color', 'status'].forEach(k => selectedFilters[k] = []);
-        selectedFilters.price_min = null;
-        selectedFilters.price_max = null;
         // Clear all exclude filters
         ['year', 'series', 'trim', 'package', 'engine', 'wheelbase', 'drivetrain', 'body_style', 'equipment', 'color', 'status'].forEach(k => excludeFilters[k] = []);
-        excludeFilters.price_min = null;
-        excludeFilters.price_max = null;
-        priceMin.value = '';
-        priceMax.value = '';
         
-        // Update UI state
-        headerRight.classList.add('hidden');
+        // Update UI state - keep header actions visible for bookmarks access
+        headerRight.classList.remove('hidden');
         filtersSidebar.classList.add('hidden');
         mainContent.classList.add('homepage-main');
         setStockSearchVisible(true);
         activeFiltersContainer.innerHTML = '';
+        const bookmarksBtn = document.getElementById('bookmarks-button');
+        if (bookmarksBtn) {
+            bookmarksBtn.classList.remove('active');
+        }
         
         // Uncheck all model radio buttons
         document.querySelectorAll('input[name="model"]').forEach(r => r.checked = false);
@@ -691,14 +853,16 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Function to render the homepage (with URL update)
     function renderHomepage() {
+        // Reset bookmark view state
+        window.currentView = 'inventory';
         renderHomepageNoURLUpdate();
+        updateBookmarksButton();
         updateURL();
     }
     
     // Function to select a model and show inventory
     function selectModel(modelValue) {
         try {
-            console.log('Selecting model:', modelValue);
             isHomepage = false;
             selectedFilters.model = modelValue;
             
@@ -717,11 +881,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Clear other filters when switching models
             ['series', 'trim', 'package', 'engine', 'wheelbase', 'drivetrain', 'body_style', 'equipment', 'color', 'status'].forEach(k => selectedFilters[k] = []);
-            selectedFilters.price_min = null; 
-            selectedFilters.price_max = null; 
-            priceMin.value = ''; 
-            priceMax.value = '';
-            
+
+            updateSortVisibility();
             updateFilterVisibility();
             applyFiltersNoURLUpdate();
             updateURL(); // Push new history entry for model selection
@@ -744,7 +905,29 @@ document.addEventListener('DOMContentLoaded', function() {
             renderHomepage();
         }
     };
-    
+
+    // Bookmarks button handler
+    const bookmarksButton = document.getElementById('bookmarks-button');
+    if (bookmarksButton) {
+        bookmarksButton.onclick = () => {
+            showBookmarkedVehicles();
+        };
+    }
+    const clearBookmarksButton = document.getElementById('clear-bookmarks-button');
+    if (clearBookmarksButton) {
+        clearBookmarksButton.onclick = clearAllBookmarks;
+    }
+
+    // View toggle button handler
+    const viewToggleButton = document.getElementById('view-toggle-button');
+    if (viewToggleButton) {
+        viewToggleButton.onclick = () => {
+            bookmarkViewMode = bookmarkViewMode === 'cards' ? 'table' : 'cards';
+            updateViewToggleButton();
+            showBookmarkedVehicles();
+        };
+    }
+
     // Keyboard hotkey handler for model selection
     document.addEventListener('keydown', (e) => {
         // Don't handle hotkeys when typing in an input
@@ -879,15 +1062,13 @@ document.addEventListener('DOMContentLoaded', function() {
             { value: 'tremor_off_road', label: 'Tremor Off-Road Package', keywords: ['tremor', '17y'] },
             { value: 'black_appearance', label: 'Black Appearance Package', keywords: ['black appearance', '17l'] },
             { value: 'chrome_package', label: 'Chrome Package', keywords: ['chrome package', '17c'] },
-            { value: 'platinum_plus', label: 'Platinum Plus Package', keywords: ['platinum plus', '17w'] },
+            { value: 'moonroof', label: 'Moonroof', keywords: ['moonroof'] },
             { value: 'lariat_ultimate', label: 'Lariat Ultimate Package', keywords: ['lariat ultimate', '96u'] },
             { value: 'pro_power', label: 'Pro Power Onboard', keywords: ['pro power', '2kw'] },
             { value: 'fifth_wheel_prep', label: '5th Wheel', keywords: ['5th wheel', 'gooseneck', '53w'] },
-            { value: '360_camera', label: '360-Degree Camera', keywords: ['360 camera', '874'] },
             { value: 'copilot_assist', label: 'Co-Pilot360 Assist 2.0', keywords: ['co-pilot360 assist', 'copilot360 assist', 'lane centering'] },
             { value: 'tough_bed', label: 'Tough Bed Bedliner', keywords: ['tough bed', 'bedliner', '85s'] },
-            { value: 'trailer_tow', label: 'Trailer Tow / Smart Hitch', keywords: ['smart hitch', 'onboard scales', 'trailer tow'] },
-            { value: 'moonroof', label: 'Moonroof', keywords: ['moonroof'] }
+            { value: 'trailer_tow', label: 'Trailer Tow / Smart Hitch', keywords: ['smart hitch', 'onboard scales', 'trailer tow'] }
         ],
         colors: [
             { value: 'Agate Black', label: 'Agate Black' },
@@ -974,6 +1155,7 @@ document.addEventListener('DOMContentLoaded', function() {
         equipment: [
             { value: 'fx4', label: 'FX4 Off-Road Package', keywords: ['fx4', 'off-road', 'skid plate'] },
             { value: 'tow_pkg', label: '4K Tow Package', keywords: ['trailer tow', 'tow package'] },
+            { value: 'black_appearance', label: 'Black Appearance Pkg', keywords: ['black appearance'] },
             { value: 'xlt_luxury', label: 'XLT Luxury Package', keywords: ['xlt luxury', 'luxury package', 'premium'] }
         ],
         colors: [
@@ -1053,15 +1235,16 @@ document.addEventListener('DOMContentLoaded', function() {
             { value: '2.7L EcoBoost V6', label: '2.7L EcoBoost V6' },
             { value: '3.0L EcoBoost V6', label: '3.0L EcoBoost V6' }
         ],
-        drivetrains: [
-            { value: '4x4', label: '4x4' }
-        ],
         bodyStyles: [],
         equipment: [
             { value: 'black_appearance', label: 'Black Appearance Package', keywords: ['black appearance'] },
             { value: 'copilot_assist', label: 'Co-Pilot360', keywords: ['co-pilot360', 'copilot'] },
             { value: 'tow_pkg', label: 'Trailer Tow Package', keywords: ['trailer tow', 'tow package'] },
-            { value: '360_camera', label: '360-Degree Camera', keywords: ['360 camera', 'surround view'] }
+            { value: '360_camera', label: '360-Degree Camera', keywords: ['360 camera', 'surround view'] },
+            { value: 'sound_deadening', label: 'Sound Deadening', keywords: ['sound deadening', 'sound insulation'] },
+            { value: 'soft_top', label: 'Soft Top', keywords: ['soft top', 'convertible top', 'fabric top'] },
+            { value: 'hard_top_painted', label: 'Hard Top, Painted', keywords: ['hard top, painted', 'hard top painted'] },
+            { value: 'hard_top_molded', label: 'Hard Top, Molded-in-Color', keywords: ['molded-in-color', 'molded in color'] }
         ],
         colors: [
             { value: 'Oxford White', label: 'Oxford White' },
@@ -1657,6 +1840,168 @@ document.addEventListener('DOMContentLoaded', function() {
         return '';
     }
 
+    // ==================== BOOKMARK FUNCTIONS ====================
+        const BOOKMARK_KEY = 'ford_inventory_bookmarks';
+    const BOOKMARK_ICON = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" width="18" height="18">
+            <path d="M12 21s10-7.5 10-13.5C22 4.46 19.54 2 16.5 2 14.77 2 13.09 2.81 12 4.09 10.91 2.81 9.23 2 7.5 2 4.46 2 2 4.46 2 7.5 2 13.5 12 21 12 21z"/>
+        </svg>
+    `;
+
+    function getBookmarks() {
+        try {
+            const raw = localStorage.getItem(BOOKMARK_KEY);
+            const parsed = raw ? JSON.parse(raw) : [];
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (e) {
+            console.warn('Error loading bookmarks:', e);
+            return [];
+        }
+    }
+
+    function saveBookmarks(bookmarks) {
+        try {
+            localStorage.setItem(BOOKMARK_KEY, JSON.stringify(bookmarks));
+        } catch (e) {
+            console.warn('Error saving bookmarks:', e);
+        }
+    }
+
+    function isBookmarked(vin) {
+        return getBookmarks().includes(vin);
+    }
+
+    function toggleBookmark(vin) {
+        const bookmarks = getBookmarks();
+        const idx = bookmarks.indexOf(vin);
+        if (idx >= 0) {
+            bookmarks.splice(idx, 1);
+        } else {
+            bookmarks.push(vin);
+        }
+        saveBookmarks(bookmarks);
+        updateBookmarksButton();
+    }
+
+    function updateBookmarkButton(button, vin) {
+        if (!button) return;
+        if (isBookmarked(vin)) {
+            button.classList.add('bookmarked');
+            button.title = 'Remove from bookmarks';
+        } else {
+            button.classList.remove('bookmarked');
+            button.title = 'Add to bookmarks';
+        }
+    }
+
+    function updateBookmarksButton() {
+        const bookmarksBtn = document.getElementById('bookmarks-button');
+        if (!bookmarksBtn) return;
+        const count = getBookmarks().length;
+        const label = count > 0 ? `Bookmarks (${count})` : 'Bookmarks';
+        const countSpan = count > 0 ? `<span class="bookmark-count">${count}</span>` : '';
+        bookmarksBtn.innerHTML = `${BOOKMARK_ICON}${countSpan}`;
+        bookmarksBtn.setAttribute('aria-label', label);
+        bookmarksBtn.title = label;
+        bookmarksBtn.classList.toggle('has-count', count > 0);
+        bookmarksBtn.classList.toggle('active', window.currentView === 'bookmarks');
+
+        const clearBookmarksBtn = document.getElementById('clear-bookmarks-button');
+        if (clearBookmarksBtn) {
+            if (window.currentView === 'bookmarks' && count > 0) {
+                clearBookmarksBtn.classList.remove('hidden');
+            } else {
+                clearBookmarksBtn.classList.add('hidden');
+            }
+        }
+    }
+
+    function updateViewToggleButton() {
+        const toggleBtn = document.getElementById('view-toggle-button');
+        const toggleIcon = document.getElementById('view-toggle-icon');
+        const toggleText = document.getElementById('view-toggle-text');
+        if (!toggleBtn || !toggleIcon || !toggleText) return;
+
+        // Only update if button is visible (in bookmark view)
+        if (!toggleBtn.classList.contains('hidden')) {
+            const isTableMode = bookmarkViewMode === 'table';
+            toggleIcon.textContent = isTableMode ? 'T' : 'C';
+            toggleText.textContent = isTableMode ? 'Cards' : 'Table';
+            toggleBtn.classList.toggle('active', isTableMode);
+            toggleBtn.title = isTableMode ? 'Switch to card view' : 'Switch to table view';
+        }
+    }
+
+    function clearAllBookmarks() {
+        if (!confirm('Remove all bookmarks?')) return;
+        localStorage.removeItem(BOOKMARK_KEY);
+        updateBookmarksButton();
+        if (window.currentView === 'bookmarks') {
+            renderHomepage();
+        }
+    }
+
+    function showBookmarkedVehicles() {
+        const bookmarks = getBookmarks();
+        if (bookmarks.length === 0) {
+            alert('No bookmarked vehicles yet. Click the ♥ button on vehicle cards to bookmark them.');
+            return;
+        }
+
+        const wasShowingBookmarks = window.currentView === 'bookmarks';
+        window.currentView = wasShowingBookmarks ? 'inventory' : 'bookmarks';
+        isHomepage = false;
+        updateSortVisibility();
+
+        if (wasShowingBookmarks) {
+            // Hide view toggle button and reset view mode when exiting bookmark view
+            const viewToggleButton = document.getElementById('view-toggle-button');
+            if (viewToggleButton) {
+                viewToggleButton.classList.add('hidden');
+            }
+            bookmarkViewMode = 'cards'; // Reset to cards view
+            renderHomepage();
+            updateBookmarksButton();
+            return;
+        }
+
+        headerRight.classList.remove('hidden');
+        filtersSidebar.classList.add('hidden');
+        mainContent.classList.remove('homepage-main');
+        setStockSearchVisible(true);
+
+        // Show view toggle button in bookmark view
+        const viewToggleButton = document.getElementById('view-toggle-button');
+        if (viewToggleButton) {
+            viewToggleButton.classList.remove('hidden');
+        }
+
+        const bookmarkedVehicles = vehicles.filter(vehicle => bookmarks.includes(vehicle.vin));
+        filteredVehicles = bookmarkedVehicles;
+        displayedCount = 0;
+        grid.innerHTML = '';
+
+        if (!filteredVehicles.length) {
+            grid.innerHTML = '<div class="no-results">No bookmarked vehicles yet.</div>';
+        } else {
+            if (bookmarkViewMode === 'table') {
+                renderTableView();
+            } else {
+                renderCards(true);
+            }
+        }
+
+        if (resultsCount) {
+            resultsCount.innerHTML = `<strong>${filteredVehicles.length}</strong> vehicles`;
+        }
+
+        activeFiltersContainer.innerHTML = '';
+        updateBookmarksButton();
+    }
+
+    // Initialize bookmarks button once helpers are defined
+    updateBookmarksButton();
+
     function setStockSearchVisible(show) {
         if (stockSearchForm) stockSearchForm.style.display = show ? 'flex' : 'none';
         if (stockSearchHint) {
@@ -2104,11 +2449,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Apply year filter unless it's the excluded filter
             if (filterKey !== 'year' && selectedFilters.year.length && !selectedFilters.year.includes(String(v.year))) return false;
-
-            // Apply price filters (these are always applied)
-            const price = getPrice(v);
-            if (selectedFilters.price_min && price < selectedFilters.price_min) return false;
-            if (selectedFilters.price_max && price > selectedFilters.price_max) return false;
 
             // Apply exclude filters (always applied, regardless of filterKey)
             if (excludeFilters.year.length && excludeFilters.year.includes(String(v.year))) return false;
@@ -2596,7 +2936,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateFilterVisibility() {
         // If on homepage, hide all filter sections
         if (isHomepage || selectedFilters.model === null) {
-            ['year', 'series', 'trim', 'engine', 'drivetrain', 'status', 'body-style', 'equipment', 'color', 'price', 'package'].forEach(id => {
+            ['year', 'series', 'trim', 'engine', 'drivetrain', 'status', 'body-style', 'equipment', 'color', 'package'].forEach(id => {
                 document.getElementById(id + '-section').style.display = 'none';
             });
             return;
@@ -2627,7 +2967,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Show series section for Super Duty
         document.getElementById('series-section').style.display = isSuperDuty ? 'block' : 'none';
 
-        ['trim', 'engine', 'wheelbase', 'drivetrain', 'status', 'equipment', 'color', 'price'].forEach(id => {
+        ['trim', 'engine', 'wheelbase', 'drivetrain', 'status', 'equipment', 'color'].forEach(id => {
             document.getElementById(id + '-section').style.display = showFilters ? 'block' : 'none';
         });
         // Package section: require trim selection for these models
@@ -2761,16 +3101,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 activeFiltersContainer.appendChild(tag);
             });
         });
-        if (selectedFilters.price_min || selectedFilters.price_max) {
-            hasFilters = true;
-            const priceText = 'Price: ' + (formatMoney(selectedFilters.price_min) || 'Any') + ' - ' + (formatMoney(selectedFilters.price_max) || 'Any');
-            const tag = createTag(
-                priceText,
-                'active-filter-tag',
-                () => { selectedFilters.price_min = null; selectedFilters.price_max = null; priceMin.value = ''; priceMax.value = ''; applyFilters(); }
-            );
-            activeFiltersContainer.appendChild(tag);
-        }
         if (hasFilters) {
             const clear = document.createElement('span');
             clear.className = 'clear-all-filters';
@@ -2780,8 +3110,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     selectedFilters[k] = [];
                     excludeFilters[k] = [];
                 });
-                selectedFilters.price_min = null; selectedFilters.price_max = null; priceMin.value = ''; priceMax.value = '';
-                excludeFilters.price_min = null; excludeFilters.price_max = null;
                 updateFilterVisibility(); applyFilters();
             };
             activeFiltersContainer.appendChild(clear);
@@ -3319,10 +3647,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                     if (hasExcludedEquipment) return false;
                 }
-
-                const price = getPrice(v);
-                if (selectedFilters.price_min && price < selectedFilters.price_min) return false;
-                if (selectedFilters.price_max && price > selectedFilters.price_max) return false;
             }
             return true;
         });
@@ -3383,7 +3707,6 @@ document.addEventListener('DOMContentLoaded', function() {
             filteredVehicles.sort((a, b) => {
                 if (sort === 'price_asc') return getPrice(a) - getPrice(b);
                 if (sort === 'price_desc') return getPrice(b) - getPrice(a);
-                if (sort === 'trim_asc') return (a.trim || '').localeCompare(b.trim || '');
                 return 0;
             });
         }
@@ -3412,6 +3735,30 @@ document.addEventListener('DOMContentLoaded', function() {
         card.className = 'card';
         const img = document.createElement('div');
         img.className = 'card-image-placeholder';
+
+        // Add bookmark button
+        const bookmarkBtn = document.createElement('button');
+        bookmarkBtn.className = 'bookmark-button';
+        bookmarkBtn.innerHTML = '♥';
+        bookmarkBtn.onclick = (e) => {
+            e.stopPropagation(); // Don't trigger card click
+            toggleBookmark(v.vin);
+            updateBookmarkButton(bookmarkBtn, v.vin);
+            if (window.currentView === 'bookmarks' && !isBookmarked(v.vin)) {
+                filteredVehicles = filteredVehicles.filter(item => item.vin !== v.vin);
+                displayedCount = Math.max(displayedCount - 1, 0);
+                if (filteredVehicles.length === 0) {
+                    grid.innerHTML = '<div class="no-results">No bookmarked vehicles yet.</div>';
+                }
+                if (resultsCount) {
+                    resultsCount.innerHTML = `<strong>${filteredVehicles.length}</strong> vehicles`;
+                }
+                card.remove(); // Immediately reflect removal in bookmarks view
+            }
+        };
+        updateBookmarkButton(bookmarkBtn, v.vin); // Set initial state
+        img.appendChild(bookmarkBtn);
+
         if (v.photo) {
             // Create exterior image
             const exteriorImg = document.createElement('img');
@@ -3612,6 +3959,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const detailNext = document.getElementById('detail-next');
     const detailEquipmentToggle = document.getElementById('detail-equipment-toggle');
     const detailEquipmentSection = document.getElementById('detail-equipment-section');
+    const detailBookmarkButton = document.getElementById('detail-bookmark-button');
     
     let currentDetailPhotos = [];
     let currentDetailPhotoIndex = 0;
@@ -3648,10 +3996,23 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
+    if (detailBookmarkButton) {
+        detailBookmarkButton.innerHTML = BOOKMARK_ICON;
+        detailBookmarkButton.onclick = (e) => {
+            e.stopPropagation();
+            if (!currentVehicleData || !currentVehicleData.vin) return;
+            toggleBookmark(currentVehicleData.vin);
+            updateBookmarkButton(detailBookmarkButton, currentVehicleData.vin);
+        };
+    }
+
     function renderVehicleDetail(v) {
         if (!hasDetailView) return;
         currentVehicleData = v;
         
+        if (detailBookmarkButton) {
+            updateBookmarkButton(detailBookmarkButton, v.vin);
+        }
         // Title
         detailTitle.textContent = [v.year, v.model, v.trim].filter(Boolean).join(' ');
         if (v.vin) {
@@ -3906,9 +4267,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (selectedFilters.model) {
             isHomepage = false;
+            updateSortVisibility();
             applyFiltersNoURLUpdate();
         } else {
             isHomepage = true;
+            updateSortVisibility();
             renderHomepageNoURLUpdate();
         }
 
@@ -4037,6 +4400,99 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100);
     }
 
+    function renderTableView() {
+        grid.innerHTML = '';
+
+        if (!filteredVehicles.length) {
+            grid.innerHTML = '<div class="no-results">No bookmarked vehicles yet.</div>';
+            return;
+        }
+
+        // Create container for the comparison table
+        const tableContainer = document.createElement('div');
+        tableContainer.className = 'comparison-table-container';
+
+        // Create the comparison table
+        const table = document.createElement('table');
+        table.className = 'comparison-table';
+
+        // Create table body
+        const tbody = document.createElement('tbody');
+
+        // Define the rows we want to show
+        const rows = [
+            { label: 'Vehicle', getValue: (v) => `${v.year} ${v.make} ${v.model}` },
+            { label: 'Photo', getValue: (v) => '', isImage: true },
+            { label: 'Trim', getValue: (v) => v.trim || '' },
+            { label: 'Engine', getValue: (v) => v.engine || '' },
+            { label: 'Drivetrain', getValue: (v) => v.drive_line || '' },
+            { label: 'Exterior Color', getValue: (v) => v.exterior || '' },
+            { label: 'Interior Color', getValue: (v) => v.interior_color || '' },
+            { label: 'Stock #', getValue: (v) => v.stock || '' },
+            { label: 'Optional Equipment', getValue: (v) => v.optional_equipment || [], isEquipment: true }
+        ];
+
+        rows.forEach(row => {
+            const tr = document.createElement('tr');
+
+            // Add label cell (first column)
+            const labelCell = document.createElement('th');
+            labelCell.className = 'comparison-label-cell';
+            labelCell.textContent = row.label;
+            tr.appendChild(labelCell);
+
+            // Add data cells for each vehicle
+            filteredVehicles.forEach(vehicle => {
+                const dataCell = document.createElement('td');
+                dataCell.className = 'comparison-data-cell';
+
+                if (row.isImage) {
+                    // Special handling for photo row
+                    const img = document.createElement('img');
+                    img.src = vehicle.photo || '/placeholder-vehicle.jpg';
+                    img.alt = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
+                    img.loading = 'lazy';
+                    img.className = 'comparison-vehicle-photo';
+                    dataCell.appendChild(img);
+                } else if (row.isEquipment) {
+                    // Special handling for equipment
+                    const equipment = row.getValue(vehicle);
+                    if (Array.isArray(equipment) && equipment.length > 0) {
+                        const equipmentList = document.createElement('div');
+                        equipmentList.className = 'comparison-equipment-list';
+
+                        equipment.forEach(item => {
+                            const equipmentItem = document.createElement('div');
+                            equipmentItem.className = 'comparison-equipment-item';
+                            equipmentItem.textContent = typeof item === 'string' ? item : (item.name || item.description || JSON.stringify(item));
+                            equipmentList.appendChild(equipmentItem);
+                        });
+
+                        dataCell.appendChild(equipmentList);
+                    } else {
+                        dataCell.textContent = 'None';
+                        dataCell.classList.add('no-equipment');
+                    }
+                } else {
+                    // Regular data cell
+                    const value = row.getValue(vehicle);
+                    dataCell.textContent = value || '-';
+                    if (!value) {
+                        dataCell.classList.add('empty-cell');
+                    }
+                }
+
+                tr.appendChild(dataCell);
+            });
+
+            tbody.appendChild(tr);
+        });
+
+        table.appendChild(tbody);
+        tableContainer.appendChild(table);
+        grid.appendChild(tableContainer);
+    }
+
     function renderCards(reset) {
         if (reset) {
             grid.innerHTML = '';
@@ -4114,9 +4570,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     sortSelect.onchange = applyFilters;
-    let priceTimeout;
-    priceMin.oninput = () => { clearTimeout(priceTimeout); priceTimeout = setTimeout(() => { selectedFilters.price_min = priceMin.value ? parseFloat(priceMin.value) : null; applyFilters(); }, 500); };
-    priceMax.oninput = () => { clearTimeout(priceTimeout); priceTimeout = setTimeout(() => { selectedFilters.price_max = priceMax.value ? parseFloat(priceMax.value) : null; applyFilters(); }, 500); };
 
     document.getElementById('clear-year').onclick = () => { clearFilter('year'); updateYearOptions(); document.getElementById('clear-year').style.display = 'none'; };
     document.getElementById('clear-trim').onclick = () => clearFilter('trim');
@@ -4171,12 +4624,10 @@ document.addEventListener('DOMContentLoaded', function() {
             grid.innerHTML = '<div class="no-results">Unable to load inventory. Please refresh and try again.</div>';
         });
 
-    // QR Code scanning functionality
+    // QR Code and Barcode scanning functionality
     let scanning = false;
-    let videoStream = null;
     let scanOverlay = null;
-    let scanCanvas = null;
-    let scanContext = null;
+    let codeReader = null;
 
     document.getElementById('qr-scan-button').addEventListener('click', startQRScan);
 
@@ -4194,14 +4645,13 @@ document.addEventListener('DOMContentLoaded', function() {
         scanOverlay.innerHTML = `
             <div class="qr-scan-modal">
                 <div class="qr-scan-header">
-                    <h3>Scan QR Code</h3>
+                    <h3>Scan QR Code or VIN Barcode</h3>
                     <button class="qr-scan-close" id="qr-scan-close">&times;</button>
                 </div>
                 <div class="qr-scan-content">
                     <video id="qr-video" autoplay playsinline></video>
-                    <canvas id="qr-canvas" style="display: none;"></canvas>
                     <div class="qr-scan-instructions">
-                        Point your camera at a QR code containing a VIN
+                        Point your camera at a QR code or VIN barcode containing a stock number or VIN
                     </div>
                 </div>
             </div>
@@ -4242,85 +4692,89 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         document.head.appendChild(modalStyle);
 
-        const video = document.getElementById('qr-video');
-        scanCanvas = document.getElementById('qr-canvas');
-        scanContext = scanCanvas.getContext('2d');
-
-        // Close button handler
         document.getElementById('qr-scan-close').addEventListener('click', stopQRScan);
 
-        // Start camera
-        navigator.mediaDevices.getUserMedia({
-            video: { facingMode: 'environment' }
-        }).then(stream => {
-            videoStream = stream;
-            video.srcObject = stream;
-            video.play();
+        const videoElement = document.getElementById('qr-video');
 
-            // Start scanning loop
-            requestAnimationFrame(scanQRCode);
-        }).catch(err => {
+        if (typeof ZXing === 'undefined' || typeof ZXing.BrowserMultiFormatReader !== 'function') {
+            console.error('ZXing library not loaded properly');
+            alert('Barcode scanning library failed to load. Please refresh the page.');
+            stopQRScan();
+            return;
+        }
+
+        const hints = new Map();
+        hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
+            ZXing.BarcodeFormat.QR_CODE,
+            ZXing.BarcodeFormat.CODE_128,
+            ZXing.BarcodeFormat.CODE_39,
+            ZXing.BarcodeFormat.CODE_93,
+            ZXing.BarcodeFormat.ITF
+        ]);
+        hints.set(ZXing.DecodeHintType.TRY_HARDER, false);
+        hints.set(ZXing.DecodeHintType.ALSO_INVERTED, false);
+
+        codeReader = new ZXing.BrowserMultiFormatReader();
+
+        codeReader.decodeFromVideoDevice(
+            null,
+            'qr-video',
+            (result, err) => {
+                if (result && result.text) {
+                    applyScannedValue(result.text);
+                } else if (err && !(err instanceof ZXing.NotFoundException)) {
+                    console.warn('ZXing scan error', err);
+                }
+            },
+            hints,
+            { videoConstraints: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } } }
+        ).catch(err => {
+            if (result && result.text) {
+                applyScannedValue(result.text);
+            } else if (err && !(err instanceof ZXing.NotFoundException)) {
+                console.warn('ZXing scan error', err);
+            }
+        }, hints).catch(err => {
             console.error('Camera access denied:', err);
-            alert('Camera access is required to scan QR codes. Please allow camera access and try again.');
+            alert('Camera access is required to scan QR codes and barcodes. Please allow camera access and try again.');
             stopQRScan();
         });
+
+        function applyScannedValue(data) {
+            const trimmed = data.trim();
+            if (!trimmed || trimmed.length < 8) return;
+
+            let stockNumber = '';
+            if (trimmed.length === 17 && /^[A-HJ-NPR-Z0-9]{17}$/i.test(trimmed)) {
+                stockNumber = trimmed.slice(-8);
+            } else if (trimmed.length >= 8) {
+                stockNumber = trimmed.slice(-8);
+            }
+
+            if (stockNumber) {
+                stopQRScan();
+                if (stockSearchInput) {
+                    stockSearchInput.value = stockNumber;
+                    stockSearchInput.focus();
+                    setTimeout(() => {
+                        handleStockSearch({ preventDefault: () => {} });
+                    }, 100);
+                }
+            }
+        }
     }
 
     function stopQRScan() {
         scanning = false;
 
-        if (videoStream) {
-            videoStream.getTracks().forEach(track => track.stop());
-            videoStream = null;
+        if (codeReader) {
+            codeReader.reset();
+            codeReader = null;
         }
 
         if (scanOverlay) {
             document.body.removeChild(scanOverlay);
             scanOverlay = null;
-        }
-    }
-
-    function scanQRCode() {
-        if (!scanning) return;
-
-        const video = document.getElementById('qr-video');
-        const canvas = scanCanvas;
-        const ctx = scanContext;
-
-        if (video.readyState === video.HAVE_ENOUGH_DATA) {
-            canvas.height = video.videoHeight;
-            canvas.width = video.videoWidth;
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const code = jsQR(imageData.data, imageData.width, imageData.height);
-
-            if (code) {
-                const vin = code.data.trim();
-                if (vin.length >= 8) {
-                    // Extract last 8 digits as stock number
-                    const stockNumber = vin.slice(-8);
-                    stopQRScan();
-
-                    // Set the stock number in the search input
-                    if (stockSearchInput) {
-                        stockSearchInput.value = stockNumber;
-                        stockSearchInput.focus();
-
-                        // Trigger search after a short delay
-                        setTimeout(() => {
-                            handleStockSearch({ preventDefault: () => {} });
-                        }, 100);
-                    }
-                } else {
-                    // Invalid VIN, continue scanning
-                    requestAnimationFrame(scanQRCode);
-                }
-            } else {
-                requestAnimationFrame(scanQRCode);
-            }
-        } else {
-            requestAnimationFrame(scanQRCode);
         }
     }
 });

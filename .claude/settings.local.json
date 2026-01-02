@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sqlite3:*)",
+      "Bash(python3:*)",
+      "Bash(bd sync:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}

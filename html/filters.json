@@ -442,6 +442,52 @@
             "50M"
           ]
         }
+        ,
+        {
+          "value": "active_valve_exhaust",
+          "label": "Active Valve Exhaust",
+          "keywords": [
+            "active valve exhaust",
+            "dual mode exhaust",
+            "active valve"
+          ]
+        },
+        {
+          "value": "magneride",
+          "label": "MagneRide",
+          "keywords": [
+            "magneride",
+            "adaptive suspension",
+            "magnetic ride control"
+          ]
+        },
+        {
+          "value": "spoiler_delete",
+          "label": "Spoiler Delete",
+          "keywords": [
+            "spoiler delete",
+            "delete spoiler",
+            "no spoiler"
+          ]
+        },
+        {
+          "value": "b_and_o_sound_system",
+          "label": "B&O Sound System",
+          "keywords": [
+            "b&o sound system",
+            "bang & olufsen",
+            "premium sound"
+          ]
+        },
+        {
+          "value": "bronze_appearance_pkg",
+          "label": "Bronze Appearance Pkg",
+          "keywords": [
+            "bronze appearance",
+            "bronze pkg",
+            "appearance package"
+          ]
+        }
       ],
       "order": 6
     },
@@ -519,16 +565,6 @@
       ],
       "order": 7,
       "match_mode": "variations"
-    },
-    "price_range": {
-      "label": "Price Range",
-      "type": "range",
-      "db_column": "total_vehicle",
-      "min": 30000,
-      "max": 120000,
-      "step": 5000,
-      "format": "currency",
-      "order": 8
     }
   },
   "filter_dependencies": {
@@ -917,15 +953,13 @@
         "db_column": "optional",
         "search_mode": "json_contains",
         "options": [
-          { "value": "moonroof", "label": "Moonroof", "keywords": ["moonroof", "sunroof", "43M", "43P"] },
           { "value": "tremor_off_road", "label": "Tremor Off-Road Package", "keywords": ["tremor", "17Y"] },
           { "value": "black_appearance", "label": "Black Appearance Package", "keywords": ["black appearance", "17L"] },
           { "value": "chrome_package", "label": "Chrome Package", "keywords": ["chrome package", "17C"] },
-          { "value": "platinum_plus", "label": "Platinum Plus Package", "keywords": ["platinum plus", "17W"] },
+          { "value": "moonroof", "label": "Moonroof", "keywords": ["moonroof", "sunroof", "43M", "43P"] },
           { "value": "lariat_ultimate", "label": "Lariat Ultimate Package", "keywords": ["lariat ultimate", "96U"] },
           { "value": "pro_power", "label": "Pro Power Onboard", "keywords": ["pro power", "2kw"] },
           { "value": "fifth_wheel_prep", "label": "5th Wheel / Gooseneck Prep", "keywords": ["5th wheel", "gooseneck", "53W"] },
-          { "value": "360_camera", "label": "360-Degree Camera", "keywords": ["360 camera", "874"] },
           { "value": "copilot_assist", "label": "Co-Pilot360 Assist 2.0", "keywords": ["co-pilot360 assist", "copilot360 assist", "lane centering"] },
           { "value": "tough_bed", "label": "Tough Bed Spray-in Bedliner", "keywords": ["tough bed", "bedliner", "85S"] },
           { "value": "trailer_tow", "label": "Trailer Tow / Smart Hitch", "keywords": ["smart hitch", "onboard scales", "trailer tow"] }
@@ -949,16 +983,6 @@
         ],
         "order": 8,
         "match_mode": "contains"
-      },
-      "price_range": {
-        "label": "Price Range",
-        "type": "range",
-        "db_column": "total_vehicle",
-        "min": 45000,
-        "max": 105000,
-        "step": 5000,
-        "format": "currency",
-        "order": 9
       }
     },
     "filter_dependencies": {
@@ -1075,16 +1099,6 @@
         ],
         "order": 7,
         "match_mode": "contains"
-      },
-      "price_range": {
-        "label": "Price Range",
-        "type": "range",
-        "db_column": "total_vehicle",
-        "min": 35000,
-        "max": 75000,
-        "step": 2500,
-        "format": "currency",
-        "order": 8
       }
     },
     "filter_dependencies": {

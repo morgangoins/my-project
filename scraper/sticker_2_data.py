@@ -516,8 +516,8 @@ def call_model_for_window_sticker(pdf_text: str, model: str | None = None) -> st
         "- For F-150 5.0L: Extract as '5.0L V8'",
         "- For F-150 5.2L Supercharged: Extract as '5.2L Supercharged V8'",
         "- For F-150 Lightning: Look for 'DUAL EMOTOR' - extract as 'Dual eMotor'",
-        "- For Super Duty High Output: Look for '6.7L' and 'HIGH OUTPUT' in the same engine description line - extract as '6.7L High Output Power Stroke V8'",
-        "- For Super Duty 6.7L Power Stroke: Look for '6.7L POWER STROKE' - extract as '6.7L Power Stroke V8'",
+        "- For Super Duty High Output: Look for '6.7L' with 'HIGH OUTPUT', '475 HP', '1050 LB-FT', or High Output indicators - extract as '6.7L High Output Power Stroke V8'",
+        "- For Super Duty 6.7L Power Stroke: Look for '6.7L POWER STROKE' without High Output indicators - extract as '6.7L Power Stroke V8'",
         "- For Super Duty 6.8L: Extract as '6.8L V8'",
         "- For Super Duty 7.3L: Extract as '7.3L V8'",
         "- Use the canonical names from options.json exactly - do NOT add extra words like 'Engine' or 'Technology'",
@@ -818,7 +818,13 @@ _F150_MODEL_KEYWORDS = (
     "F150",
 )
 
-_HIGH_OUTPUT_PATTERN = re.compile(r"6\.7L?\s+HI(?:GH)?\s*OUTPUT\s+POWER\s+STROKE", re.IGNORECASE)
+# Patterns for Super Duty High Output engine detection
+_HIGH_OUTPUT_PATTERNS = [
+    re.compile(r"6\.7L?\s+HI(?:GH)?\s*OUTPUT\s+POWER\s+STROKE", re.IGNORECASE),
+    re.compile(r"HI(?:GH)?\s*OUTPUT.*6\.7L?", re.IGNORECASE),
+    re.compile(r"475\s*HP|475HP", re.IGNORECASE),  # High Output has 475 hp vs 430 hp
+    re.compile(r"1,050\s*LB(?:-FT)?|1050\s*(?:LB|FT)", re.IGNORECASE),  # High Output torque
+]
 
 # Pattern for F-150 PowerBoost hybrid detection
 _POWERBOOST_PATTERN = re.compile(r"\bPOWERBOOST\b|\bFULL\s+HYBRID\b|\bHYBRID\s+ELEC\b|\b3\.5L.*HYBRID\b", re.IGNORECASE)
@@ -838,15 +844,70 @@ def _is_f150_model(model: str | None) -> bool:
     return any(keyword in upper for keyword in _F150_MODEL_KEYWORDS)
 
 
+def _apply_engine_fallback_logic(pdf_text: str, current_engine: str | None, model: str | None, trim: str | None = None) -> str | None:
+    """
+    Apply very conservative fallback logic to detect engines that might have been missed by the LLM.
+    Only classify as High Output when there are definitive indicators that it's the high-performance variant.
+    """
+    if not _is_super_duty_model(model):
+        return None
+
+    if not current_engine:
+        return None
+
+    upper_engine = current_engine.upper()
+    upper_text = pdf_text.upper()
+
+    # Only apply fallback for 6.7L engines that could potentially be High Output
+    if "6.7L" in upper_engine or "6.7" in upper_engine:
+        # High Output should ONLY be detected with definitive proof
+        # Equipment packages alone are NOT sufficient - they can be on regular engines
+
+        # Check for definitive High Output indicators
+        definitive_indicators = []
+
+        # 1. Explicit horsepower rating of 475+ hp (High Output is 475 hp, regular is 430 hp)
+        if "475" in upper_text and ("HP" in upper_text or "HORSEPOWER" in upper_text):
+            definitive_indicators.append("475_hp")
+
+        # 2. Torque rating of 1050+ lb-ft (High Output is 1050, regular is 950)
+        if ("1050" in upper_text or "1,050" in upper_text) and ("LB-FT" in upper_text or "FT-LBS" in upper_text or "TORQUE" in upper_text):
+            definitive_indicators.append("1050_torque")
+
+        # 3. Maximum towing capacity of 21,000+ lbs (only available with High Output on some configurations)
+        if ("21,000" in upper_text or "21000" in upper_text) and "TOW" in upper_text:
+            definitive_indicators.append("21k_towing")
+
+        # 4. Very specific combination: DRW + 21K towing capacity
+        has_drw = "DUAL REAR WHEELS" in upper_text or "DRW" in upper_text
+        has_21k_tow = ("21,000" in upper_text or "21000" in upper_text) and "TOW" in upper_text
+        if has_drw and has_21k_tow:
+            definitive_indicators.append("drw_21k_combo")
+
+        # Only classify as High Output if we have at least one definitive indicator
+        # This should eliminate false positives from equipment packages
+        if definitive_indicators:
+            return "6.7L High Output Power Stroke V8"
+
+    return None
+
+
 def _detect_high_output_engine(pdf_text: str, current_engine: str | None, model: str | None, trim: str | None = None) -> str | None:
     if not _is_super_duty_model(model):
         return None
     if current_engine and "HIGH OUTPUT" in current_engine.upper():
         return None
 
-    # Only mark as high output if the window sticker explicitly contains high output text
-    if _HIGH_OUTPUT_PATTERN.search(pdf_text):
-        return "6.7L High Output Power Stroke V8"
+    # Check if it's a 6.7L engine that should potentially be High Output
+    is_67l_engine = current_engine and ("6.7L" in current_engine.upper() or "6.7" in current_engine.upper())
+
+    # Look for explicit High Output indicators
+    for pattern in _HIGH_OUTPUT_PATTERNS:
+        if pattern.search(pdf_text):
+            if is_67l_engine:
+                return "6.7L High Output Power Stroke V8"
+            # If we find high output indicators but don't know it's 6.7L, assume it is
+            return "6.7L High Output Power Stroke V8"
 
     return None
 
@@ -1359,6 +1420,8 @@ def process_all_stickers(
 
             columns = _labels_to_vehicle_columns(labels, data, column_types)
             model_hint = columns.get("model") or (data.get("model") if isinstance(data, dict) else None)
+
+            # Apply High Output engine detection
             high_output_engine = _detect_high_output_engine(
                 pdf_text,
                 columns.get("engine"),
@@ -1368,6 +1431,12 @@ def process_all_stickers(
             if high_output_engine:
                 columns["engine"] = high_output_engine
                 print(f"  Detected High Output engine for VIN {vin} via sticker text.")
+
+            # Fallback: Apply additional engine normalization logic
+            fallback_engine = _apply_engine_fallback_logic(pdf_text, columns.get("engine"), model_hint, columns.get("trim"))
+            if fallback_engine and fallback_engine != columns.get("engine"):
+                columns["engine"] = fallback_engine
+                print(f"  Applied fallback engine detection for VIN {vin}: {fallback_engine}")
 
             # Detect F-150 PowerBoost hybrid engines
             powerboost_engine = _detect_powerboost_engine(
@@ -1548,9 +1617,107 @@ def fix_powerboost_entries():
         print(f"Updated {updated_count} vehicles with Powerboost engines")
 
 
+def fix_high_output_entries():
+    """
+    Fix existing Super Duty High Output entries by scanning PDFs for High Output patterns
+    without using expensive LLM calls.
+    """
+    import sqlite3
+
+    print("Fixing existing Super Duty High Output entries...")
+
+    with sqlite3.connect(DB_PATH) as conn:
+        cur = conn.cursor()
+
+        # First, revert any incorrectly classified High Output engines back to regular 6.7L
+        # Only keep High Output classification if it meets the stricter criteria
+        cur.execute("""
+            SELECT vin, model, engine, trim
+            FROM vehicles
+            WHERE (model LIKE '%F-250%' OR model LIKE '%F-350%' OR model LIKE '%F-450%' OR model LIKE '%Super Duty%')
+            AND engine LIKE '%High Output%'
+        """)
+
+        high_output_candidates = cur.fetchall()
+        print(f"Found {len(high_output_candidates)} vehicles currently classified as High Output - re-evaluating...")
+
+        reverted_count = 0
+        kept_count = 0
+
+        for vin, model, engine, trim in high_output_candidates:
+            pdf_path = STICKERS_DIR / f"{vin}.pdf"
+            if not pdf_path.exists():
+                continue
+
+            try:
+                pdf_text = extract_text_from_pdf(pdf_path)
+            except Exception as e:
+                print(f"  Error extracting text from {pdf_path}: {e}")
+                continue
+
+            # Re-evaluate with stricter criteria
+            high_output_engine = _detect_high_output_engine(pdf_text, "6.7L Power Stroke V8", model, trim)
+            if not high_output_engine:
+                high_output_engine = _apply_engine_fallback_logic(pdf_text, "6.7L Power Stroke V8", model, trim)
+
+            if not high_output_engine:
+                # Revert to regular 6.7L engine
+                cur.execute("""
+                    UPDATE vehicles
+                    SET engine = '6.7L Power Stroke V8'
+                    WHERE vin = ?
+                """, (vin,))
+                reverted_count += 1
+            else:
+                kept_count += 1
+
+        # Now check for vehicles that should be High Output but aren't classified as such
+        cur.execute("""
+            SELECT vin, model, engine, trim
+            FROM vehicles
+            WHERE (model LIKE '%F-250%' OR model LIKE '%F-350%' OR model LIKE '%F-450%' OR model LIKE '%Super Duty%')
+            AND (engine LIKE '%6.7L%' OR engine LIKE '%6.7%')
+            AND engine NOT LIKE '%High Output%'
+        """)
+
+        regular_candidates = cur.fetchall()
+        print(f"Found {len(regular_candidates)} regular 6.7L candidates for High Output checking")
+
+        upgraded_count = 0
+        for vin, model, engine, trim in regular_candidates:
+            pdf_path = STICKERS_DIR / f"{vin}.pdf"
+            if not pdf_path.exists():
+                continue
+
+            try:
+                pdf_text = extract_text_from_pdf(pdf_path)
+            except Exception as e:
+                print(f"  Error extracting text from {pdf_path}: {e}")
+                continue
+
+            # Check if this should actually be High Output
+            high_output_engine = _detect_high_output_engine(pdf_text, engine, model, trim)
+            if not high_output_engine:
+                high_output_engine = _apply_engine_fallback_logic(pdf_text, engine, model, trim)
+
+            if high_output_engine:
+                print(f"  Upgrading {vin} to High Output")
+                cur.execute("""
+                    UPDATE vehicles
+                    SET engine = ?
+                    WHERE vin = ?
+                """, (high_output_engine, vin))
+                upgraded_count += 1
+
+        conn.commit()
+        print(f"Results: Reverted {reverted_count}, kept {kept_count}, upgraded {upgraded_count} vehicles")
+
+
 if __name__ == "__main__":
     import sys
     if len(sys.argv) > 1 and sys.argv[1] == "--fix-powerboost":
         fix_powerboost_entries()
+    elif len(sys.argv) > 1 and sys.argv[1] == "--fix-high-output":
+        fix_high_output_entries()
     else:
         main()
