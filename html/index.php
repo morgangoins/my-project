@@ -91,6 +91,51 @@
         .bookmarks-clear-button.hidden {
             display: none;
         }
+        .view-toggle-button {
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            background: white;
+            padding: 8px 14px;
+            font-size: 14px;
+            color: var(--text);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: border-color 0.2s, background 0.2s, transform 0.2s;
+            user-select: none;
+        }
+        .view-toggle-button:hover {
+            border-color: var(--accent);
+            transform: translateY(-1px);
+        }
+        .view-toggle-button.active {
+            border-color: var(--accent);
+            background: var(--accent-light);
+        }
+        .view-toggle-button:active {
+            transform: translateY(0);
+        }
+        #view-toggle-icon {
+            width: 18px;
+            height: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            background: #f3f4f6;
+            color: #374151;
+            letter-spacing: 0.02em;
+        }
+        .view-toggle-button.active #view-toggle-icon {
+            background: rgba(62, 106, 225, 0.15);
+            color: var(--accent);
+        }
+        .view-toggle-button.hidden {
+            display: none;
+        }
         .results-count { font-size: 14px; color: var(--muted); }
         .results-count strong { color: var(--text); font-weight: 600; }
         .sort { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
@@ -381,7 +426,7 @@
                     </svg>
                 </button>
                 <button class="bookmarks-clear-button hidden" id="clear-bookmarks-button">Clear</button>
-                <button class="view-toggle-button hidden" id="view-toggle-button">
+                <button type="button" class="view-toggle-button hidden" id="view-toggle-button">
                     <span id="view-toggle-icon">C</span>
                     <span id="view-toggle-text">Table</span>
                 </button>
@@ -921,10 +966,20 @@ document.addEventListener('DOMContentLoaded', function() {
     // View toggle button handler
     const viewToggleButton = document.getElementById('view-toggle-button');
     if (viewToggleButton) {
-        viewToggleButton.onclick = () => {
+        viewToggleButton.onclick = (e) => {
+            if (e && typeof e.preventDefault === 'function') e.preventDefault();
+            if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+
+            // If we're not in bookmark view, first enter it (otherwise we have no grid to toggle).
+            if (window.currentView !== 'bookmarks') {
+                showBookmarkedVehicles();
+                return;
+            }
+
+            // Toggle cards/table INSIDE bookmark view (do not call showBookmarkedVehicles, it toggles views).
             bookmarkViewMode = bookmarkViewMode === 'cards' ? 'table' : 'cards';
             updateViewToggleButton();
-            showBookmarkedVehicles();
+            renderBookmarkedVehiclesGrid();
         };
     }
 
@@ -1974,8 +2029,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const viewToggleButton = document.getElementById('view-toggle-button');
         if (viewToggleButton) {
             viewToggleButton.classList.remove('hidden');
+            updateViewToggleButton(); // Sync button state with current bookmarkViewMode
         }
 
+        renderBookmarkedVehiclesGrid();
+    }
+
+    // Initialize bookmarks button once helpers are defined
+    updateBookmarksButton();
+
+    function renderBookmarkedVehiclesGrid() {
+        const bookmarks = getBookmarks();
         const bookmarkedVehicles = vehicles.filter(vehicle => bookmarks.includes(vehicle.vin));
         filteredVehicles = bookmarkedVehicles;
         displayedCount = 0;
@@ -1998,9 +2062,6 @@ document.addEventListener('DOMContentLoaded', function() {
         activeFiltersContainer.innerHTML = '';
         updateBookmarksButton();
     }
-
-    // Initialize bookmarks button once helpers are defined
-    updateBookmarksButton();
 
     function setStockSearchVisible(show) {
         if (stockSearchForm) stockSearchForm.style.display = show ? 'flex' : 'none';
@@ -4424,10 +4485,14 @@ document.addEventListener('DOMContentLoaded', function() {
             { label: 'Vehicle', getValue: (v) => `${v.year} ${v.make} ${v.model}` },
             { label: 'Photo', getValue: (v) => '', isImage: true },
             { label: 'Trim', getValue: (v) => v.trim || '' },
+            { label: 'Body Style', getValue: (v) => v.body_style || '' },
             { label: 'Engine', getValue: (v) => v.engine || '' },
             { label: 'Drivetrain', getValue: (v) => v.drive_line || '' },
+            { label: 'Wheelbase', getValue: (v) => v.wheelbase ? `${v.wheelbase}"` : '' },
             { label: 'Exterior Color', getValue: (v) => v.exterior || '' },
-            { label: 'Interior Color', getValue: (v) => v.interior_color || '' },
+            { label: 'Package', getValue: (v) => v.equipment_pkg || '' },
+            { label: 'MSRP', getValue: (v) => formatMoney(v.msrp) || '' },
+            { label: 'Retail Price', getValue: (v) => formatMoney(v.retail_price) || '' },
             { label: 'Stock #', getValue: (v) => v.stock || '' },
             { label: 'Optional Equipment', getValue: (v) => v.optional_equipment || [], isEquipment: true }
         ];
