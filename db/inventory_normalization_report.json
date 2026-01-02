@@ -1,0 +1,1560 @@
+{
+  "changes": [
+    {
+      "after": {
+        "paint": "Shelter Green",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "paint": "Green",
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-150",
+      "vin": "1FTEX1KP5SKE25349",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "Shelter Green",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "paint": "Green",
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-150",
+      "vin": "1FTEX1KP5SKE25352",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "Carbonized Gray Metallic",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "paint": "Carbonized Gray",
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-150",
+      "vin": "1FTEW2KP1SKE25888",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "Iconic Silver Metallic",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "paint": "Iconic Silver",
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-150",
+      "vin": "1FTEW2KP5SKE88377",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-150",
+      "vin": "1FTEW2KP7SKE60841",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-150",
+      "vin": "1FTEW2KP6SKE60846",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-150",
+      "vin": "1FTEW3K58SKE09725",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-150",
+      "vin": "1FTFW3LD7SFA78087",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-150",
+      "vin": "1FTFW3LD3SFB16740",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-150",
+      "vin": "1FTFW3LD4SFB16665",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-150",
+      "vin": "1FTFW3LDXSFB45412",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-150",
+      "vin": "1FTFW3LDXSFB45443",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "Iconic Silver Metallic",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "paint": "Iconic Silver",
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-150",
+      "vin": "1FTFW3LD4SFB67373",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-150",
+      "vin": "1FTFW3LD2SFB45453",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-150",
+      "vin": "1FTFW3LD3SFB45431",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "Iconic Silver Metallic",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "paint": "Iconic Silver",
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-150",
+      "vin": "1FTFW3LD5SFC08237",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-250",
+      "vin": "1FT8W2BN9SED68981",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-250",
+      "vin": "1FT8W2BT0SEC76060",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "Antimatter Blue Metallic",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "paint": "Antimatter Blue",
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-250",
+      "vin": "1FT8W2BT4SEC77647",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-250",
+      "vin": "1FT8W2BTXSEC77183",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-250",
+      "vin": "1FT8W2BT4SEC65403",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "Agate Black Metallic",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "paint": "Agate Black",
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-250",
+      "vin": "1FT8W2BT3SEC08318",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-250",
+      "vin": "1FT8W2BT2SED96927",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "Carbonized Gray Metallic"
+      },
+      "before": {
+        "paint": "Carbonized Gray"
+      },
+      "model": "Escape",
+      "vin": "1FMCU9NZ4SUB62010",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "Star White Metallic Tri-Coat"
+      },
+      "before": {
+        "paint": "Star White Tri-Coat"
+      },
+      "model": "Escape",
+      "vin": "1FMCU0MZ0SUA55551",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "8-Speed Automatic"
+      },
+      "model": "Bronco Sport",
+      "vin": "3FMCR9BN9SRF13147",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "8-Speed Automatic"
+      },
+      "model": "Bronco Sport",
+      "vin": "3FMCR9BN7SRF41836",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "8-Speed Automatic"
+      },
+      "model": "Bronco Sport",
+      "vin": "3FMCR9BN6SRF35767",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "8-Speed Automatic"
+      },
+      "model": "Bronco Sport",
+      "vin": "3FMCR9BN8SRF59388",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "8-Speed Automatic"
+      },
+      "model": "Bronco Sport",
+      "vin": "3FMCR9BN5SRF44119",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "8-Speed Automatic"
+      },
+      "model": "Bronco Sport",
+      "vin": "3FMCR9BNXSRF44116",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "8-Speed Automatic"
+      },
+      "model": "Bronco Sport",
+      "vin": "3FMCR9BN0SRF70787",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic",
+        "trim": "EcoBoost"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic",
+        "trim": "Ecoboost"
+      },
+      "model": "Mustang",
+      "vin": "1FA6P8TH3S5130324",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic",
+        "trim": "EcoBoost"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic",
+        "trim": "Ecoboost"
+      },
+      "model": "Mustang",
+      "vin": "1FA6P8TH7S5131217",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic",
+        "trim": "EcoBoost"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic",
+        "trim": "Ecoboost"
+      },
+      "model": "Mustang",
+      "vin": "1FA6P8TH4S5132437",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic",
+        "trim": "EcoBoost"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic",
+        "trim": "Ecoboost"
+      },
+      "model": "Mustang",
+      "vin": "1FA6P8TH2S5132145",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "8-Speed Automatic"
+      },
+      "model": "Bronco Sport",
+      "vin": "3FMCR9BN9SRF54376",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "8-Speed Automatic"
+      },
+      "model": "Bronco Sport",
+      "vin": "3FMCR9BN6SRF82359",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic",
+        "trim": "EcoBoost"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic",
+        "trim": "Ecoboost"
+      },
+      "model": "Mustang",
+      "vin": "1FA6P8TH6S5131418",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "Carbonized Gray Metallic",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "paint": "Carbonized Gray",
+        "transmission_type": "7-Speed Automatic"
+      },
+      "model": "Maverick",
+      "vin": "3FTCW8TA3SRB13782",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "8-Speed Automatic"
+      },
+      "model": "Bronco Sport",
+      "vin": "3FMCR9CN0SRF35424",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "Robin's Egg Blue",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "paint": "Robins Egg Blue",
+        "transmission_type": "8-Speed Automatic"
+      },
+      "model": "Bronco Sport",
+      "vin": "3FMCR9GN3SRF76981",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Ranger",
+      "vin": "1FTER4PH6SLE50557",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Ranger",
+      "vin": "1FTER4PH7SLE69554",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "8-Speed Automatic"
+      },
+      "model": "Bronco Sport",
+      "vin": "3FMCR9CN3SRF41136",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "Ruby Red Metallic Tinted Clearcoat",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "paint": "Ruby Red Tinted",
+        "transmission_type": "8-Speed Automatic"
+      },
+      "model": "Bronco Sport",
+      "vin": "3FMCR9CN1SRF37019",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "8-Speed Automatic"
+      },
+      "model": "Bronco Sport",
+      "vin": "3FMCR9CN9SRF47961",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "8-Speed Automatic"
+      },
+      "model": "Bronco Sport",
+      "vin": "3FMCR9CN6SRF53667",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "Shelter Green",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "paint": "Eruption Green",
+        "transmission_type": "8-Speed Automatic"
+      },
+      "model": "Bronco Sport",
+      "vin": "3FMCR9CN3SRF65646",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "8-Speed Automatic"
+      },
+      "model": "Bronco Sport",
+      "vin": "3FMCR9CN3SRF53481",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "8-Speed Automatic"
+      },
+      "model": "Bronco Sport",
+      "vin": "3FMCR9CN4SRF84934",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "8-Speed Automatic"
+      },
+      "model": "Bronco Sport",
+      "vin": "3FMCR9DA0SRF37833",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "Gray Metallic",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "paint": "Gray",
+        "transmission_type": "8-Speed Automatic"
+      },
+      "model": "Maverick",
+      "vin": "3FTTW8NA3SRB79777",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "Shelter Green",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "paint": "Eruption Green",
+        "transmission_type": "7-Speed Manual"
+      },
+      "model": "Bronco",
+      "vin": "1FMDE6AH4SLB29351",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "White Metallic",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "paint": "White",
+        "transmission_type": "8-Speed Automatic"
+      },
+      "model": "Maverick",
+      "vin": "3FTTW8NA1SRB79776",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Ranger",
+      "vin": "1FTER4HH8SLE70744",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Bronco",
+      "vin": "1FMDE6BH9SLB59850",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "Ruby Red Metallic Tinted Clearcoat",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "paint": "Ruby Red Tinted",
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Bronco",
+      "vin": "1FMDE6BHXSLB59548",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Bronco",
+      "vin": "1FMDE7BH9SLB64021",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Bronco",
+      "vin": "1FMDE7BH1SLB25763",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Bronco",
+      "vin": "1FMDE7BH8SLB30099",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Bronco",
+      "vin": "1FMDE7BH7SLB47072",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Bronco",
+      "vin": "1FMDE7BHXSLB46823",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Bronco",
+      "vin": "1FMDE7BH7SLB49517",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Bronco",
+      "vin": "1FMDE7BH0SLB35619",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Bronco",
+      "vin": "1FMDE7BH2SLB46718",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Bronco",
+      "vin": "1FMDE7BH8SLB49137",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic Transmission"
+      },
+      "model": "Bronco",
+      "vin": "1FMDE7BH4SLB61804",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "Azure Gray Metallic Tri-Coat",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "paint": "Azure Gray Metallic",
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Bronco",
+      "vin": "1FMDE7BH6SLB28691",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "Molten Magenta Tri-Coat"
+      },
+      "before": {
+        "paint": "Molten Magenta Tinted"
+      },
+      "model": "Mustang Mach-E",
+      "vin": "3FMTK3R72SMA57045",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "Glacier Gray Metallic Tri-Coat"
+      },
+      "before": {
+        "paint": "Glacier Gray TriCoat"
+      },
+      "model": "Mustang Mach-E",
+      "vin": "3FMTK3R77SMA51970",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Bronco",
+      "vin": "1FMDE7BH0SLB64831",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "Shelter Green",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "paint": "Eruption Green",
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Bronco",
+      "vin": "1FMDE7BHXSLB59751",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Bronco",
+      "vin": "1FMDE7BH0SLB48550",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Bronco",
+      "vin": "1FMDE7BH4SLB67313",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "Glacier Gray Metallic Tri-Coat"
+      },
+      "before": {
+        "paint": "Glacier Gray TriCoat"
+      },
+      "model": "Mustang Mach-E",
+      "vin": "3FMTK3R72SMA53013",
+      "year": 2025
+    },
+    {
+      "after": {
+        "interior_material": "Leather-Trimmed",
+        "paint": "Shelter Green",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "interior_material": "Leather-Trim",
+        "paint": "Eruption Green",
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Bronco",
+      "vin": "1FMDE8BH4SLB61338",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Bronco",
+      "vin": "1FMDE8BH5SLB27425",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "Shelter Green"
+      },
+      "before": {
+        "paint": "Eruption Green"
+      },
+      "model": "Mustang Mach-E",
+      "vin": "3FMTK3R78SMA55560",
+      "year": 2025
+    },
+    {
+      "after": {
+        "drivetrain": "eAWD",
+        "interior_color": "Black Onyx",
+        "paint": "Glacier Gray Metallic Tri-Coat"
+      },
+      "before": {
+        "drivetrain": "AWD",
+        "interior_color": "Blk Perforated",
+        "paint": "Glacier Gray TriCoat"
+      },
+      "model": "Mustang Mach-E",
+      "vin": "3FMTK3SU4SMA54924",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Bronco",
+      "vin": "1FMEE8BPXSLB48363",
+      "year": 2025
+    },
+    {
+      "after": {
+        "interior_color": "Black Onyx",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "interior_color": "Black",
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Bronco",
+      "vin": "1FMEE8BPXSLB21745",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Bronco",
+      "vin": "1FMEE8BP6SLB65046",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Bronco",
+      "vin": "1FMEE8BP0SLB32172",
+      "year": 2025
+    },
+    {
+      "after": {
+        "drivetrain": "eAWD",
+        "paint": "Shelter Green"
+      },
+      "before": {
+        "drivetrain": "AWD",
+        "paint": "Eruption Green"
+      },
+      "model": "Mustang Mach-E",
+      "vin": "3FMTK3SU8SMA47491",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Bronco",
+      "vin": "1FMEE8BP7SLB64861",
+      "year": 2025
+    },
+    {
+      "after": {
+        "drivetrain": "eAWD",
+        "paint": "Star White Metallic Tri-Coat"
+      },
+      "before": {
+        "drivetrain": "AWD",
+        "paint": "Star White Tri-Coat"
+      },
+      "model": "Mustang Mach-E",
+      "vin": "3FMTK3SU1SMA41385",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic Transmission"
+      },
+      "model": "Bronco",
+      "vin": "1FMEE8BP3SLB64789",
+      "year": 2025
+    },
+    {
+      "after": {
+        "drivetrain": "eAWD",
+        "paint": "Star White Metallic Tri-Coat"
+      },
+      "before": {
+        "drivetrain": "AWD",
+        "paint": "Star White Tri-Coat"
+      },
+      "model": "Mustang Mach-E",
+      "vin": "3FMTK4SX0SMA24318",
+      "year": 2025
+    },
+    {
+      "after": {
+        "engine_displacement": "5.0",
+        "paint": "Carbonized Gray Metallic",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "engine_displacement": "5.0L",
+        "paint": "Carbonized Gray",
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Mustang",
+      "vin": "1FA6P8CF9S5412479",
+      "year": 2025
+    },
+    {
+      "after": {
+        "interior_color": "Black Onyx",
+        "paint": "Shelter Green",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "interior_color": "Black",
+        "paint": "Eruption Green",
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Bronco",
+      "vin": "1FMEE8BP4SLB09963",
+      "year": 2025
+    },
+    {
+      "after": {
+        "engine_displacement": "5.0",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "engine_displacement": "5.0L",
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Mustang",
+      "vin": "1FA6P8CFXS5410336",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-350",
+      "vin": "1FT8W3BT6SED19080",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "Carbonized Gray Metallic"
+      },
+      "before": {
+        "paint": "Carbonized Gray"
+      },
+      "model": "F-150 Lightning",
+      "vin": "1FTVW3LK5SWG29711",
+      "year": 2025
+    },
+    {
+      "after": {
+        "engine_displacement": "5.0",
+        "paint": "Blue Metallic",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "engine_displacement": "5.0L",
+        "paint": "Blue",
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Mustang",
+      "vin": "1FA6P8R05S5502845",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "Iconic Silver Metallic"
+      },
+      "before": {
+        "paint": "Iconic Silver"
+      },
+      "model": "F-150 Lightning",
+      "vin": "1FT6W3LU2SWG23516",
+      "year": 2025
+    },
+    {
+      "after": {
+        "engine_displacement": "5.0",
+        "interior_material": "Leather-Trimmed",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "engine_displacement": "5.0L",
+        "interior_material": "Leather-Trim",
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Mustang",
+      "vin": "1FA6P8R03S5501046",
+      "year": 2025
+    },
+    {
+      "after": {
+        "body_style": "Truck",
+        "interior_color": "Black Onyx"
+      },
+      "before": {
+        "body_style": "TRUCK",
+        "interior_color": "Black"
+      },
+      "model": "F-150 Lightning",
+      "vin": "1FT6W7L75SWG27982",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-350",
+      "vin": "1FT8W3BT0SEC20254",
+      "year": 2025
+    },
+    {
+      "after": {
+        "interior_material": "Leather-Trimmed",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "interior_material": "Leather",
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Bronco",
+      "vin": "1FMEE0RR2SLA91777",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "Agate Black Metallic",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "paint": "Agate Black",
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-350",
+      "vin": "1FT8W3BM7SEC67385",
+      "year": 2025
+    },
+    {
+      "after": {
+        "engine": "2.0L EcoBoost I4",
+        "engine_displacement": "2.0",
+        "transmission_speeds": "8",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "engine": "2.0L EcoBoost with Auto Start-Stop Technology",
+        "engine_displacement": "2.0L",
+        "transmission_speeds": "8-Speed",
+        "transmission_type": "8-Speed Automatic Transmission"
+      },
+      "model": "Bronco Sport",
+      "vin": "3FMCR9DA0SRF74266",
+      "year": 2025
+    },
+    {
+      "after": {
+        "engine_displacement": "2.7",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "engine_displacement": "2.7L",
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-150",
+      "vin": "1FTEW1KP3SKF71266",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "Gray Metallic"
+      },
+      "before": {
+        "paint": "Gray"
+      },
+      "model": "Maverick",
+      "vin": "3FTTW8H34SRB60099",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-150",
+      "vin": "1FTMF1LP2SKF73732",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-150",
+      "vin": "1FTMF1LP7SKF93474",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-150",
+      "vin": "1FTEX1LP1SKE39473",
+      "year": 2025
+    },
+    {
+      "after": {
+        "body_style": "Truck"
+      },
+      "before": {
+        "body_style": "TRUCK"
+      },
+      "model": "F-150 Lightning",
+      "vin": "1FTVW3LK0SWG31379",
+      "year": 2025
+    },
+    {
+      "after": {
+        "body_style": "Truck"
+      },
+      "before": {
+        "body_style": "TRUCK"
+      },
+      "model": "F-150 Lightning",
+      "vin": "1FTVW3LU4SWG26980",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic Transmission"
+      },
+      "model": "Bronco",
+      "vin": "1FMDE7BH0SLB84156",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic Transmission"
+      },
+      "model": "Bronco",
+      "vin": "1FMEE9BP4SLB84166",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "Bronco",
+      "vin": "1FMDE8BH2SLB61595",
+      "year": 2025
+    },
+    {
+      "after": {
+        "paint": "Iconic Silver Metallic",
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "paint": "Iconic Silver",
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-150",
+      "vin": "1FTEW3LP7SFC58496",
+      "year": 2025
+    },
+    {
+      "after": {
+        "transmission_type": "Automatic"
+      },
+      "before": {
+        "transmission_type": "10-Speed Automatic"
+      },
+      "model": "F-150",
+      "vin": "1FTEW2KP6SKF21306",
+      "year": 2025
+    }
+  ],
+  "rows_with_changes": 114,
+  "rows_without_spec_in_options": 213,
+  "total_rows": 339,
+  "unknown_values": {
+    "body_style::2025::F-150": {
+      "Truck Regular Cab": 2,
+      "Truck SuperCab": 3,
+      "Truck SuperCrew Cab": 17
+    },
+    "body_style::2025::F-150 Lightning": {
+      "Truck SuperCrew Cab": 3
+    },
+    "body_style::2025::F-250": {
+      "Truck Crew Cab": 7
+    },
+    "body_style::2025::F-350": {
+      "Truck Crew Cab": 3
+    },
+    "body_style::2025::Maverick": {
+      "Truck SuperCrew": 13
+    },
+    "body_style::2025::Ranger": {
+      "Truck SuperCrew": 3
+    },
+    "engine::2025::Bronco": {
+      "2.3L EcoBoost I-4 Engine": 2,
+      "2.3L I-4 cyl": 20,
+      "2.7L EcoBoost V6 Engine": 2,
+      "2.7L V-6 cyl": 6,
+      "3.0L V-6 cyl": 1
+    },
+    "engine::2025::Bronco Sport": {
+      "1.5L I-3 cyl": 18,
+      "2.0L I-4 cyl": 1
+    },
+    "engine::2025::Escape": {
+      "2.5L I-4 cyl": 2
+    },
+    "engine::2025::F-150": {
+      "2.7L V-6 cyl": 12,
+      "3.5L V-6 cyl": 9,
+      "5.0L V-8 cyl": 1
+    },
+    "engine::2025::F-250": {
+      "6.7L V-8 cyl": 6,
+      "7.3L V-8 cyl": 1
+    },
+    "engine::2025::F-350": {
+      "6.7L V-8 cyl": 3
+    },
+    "engine::2025::Maverick": {
+      "2.0L I-4 cyl": 3,
+      "2.5L I-4 cyl": 10
+    },
+    "engine::2025::Mustang": {
+      "2.3L I-4 cyl": 5,
+      "5.0L V-8 cyl": 4
+    },
+    "engine::2025::Ranger": {
+      "2.3L I-4 cyl": 3
+    },
+    "fuel::2025::Bronco": {
+      "Gasoline": 27,
+      "Other": 4
+    },
+    "fuel::2025::Bronco Sport": {
+      "Gasoline": 19,
+      "Other": 1
+    },
+    "fuel::2025::Escape": {
+      "Gasoline": 2
+    },
+    "fuel::2025::F-150": {
+      "Gasoline": 22
+    },
+    "fuel::2025::F-250": {
+      "Gasoline": 1
+    },
+    "fuel::2025::Maverick": {
+      "Gasoline": 13
+    },
+    "fuel::2025::Mustang": {
+      "Gasoline": 9
+    },
+    "fuel::2025::Ranger": {
+      "Gasoline": 3
+    },
+    "interior_color::2025::Bronco": {
+      "Dark Gray W/Black Onyx": 3,
+      "Dark Space Gray": 3,
+      "Gray": 7,
+      "Lth Trm Smoked Truffle Black Onyx Interior": 2,
+      "Smoked Truffle": 3
+    },
+    "interior_color::2025::Bronco Sport": {
+      "Dark Space Gray": 2,
+      "Ebony Brown": 4,
+      "Ebony/Roast": 2,
+      "Medium Lt Smoked Truffle": 3,
+      "Platinum Blue": 1,
+      "Unstoppable Platinum Blue": 1,
+      "W Easy Clean Material Smoked Truffle": 6
+    },
+    "interior_color::2025::F-150": {
+      "Black W/Medium Dark Slate": 6,
+      "Black W/Smoked Truffle": 1,
+      "Black/Medium Dark Slate": 1
+    },
+    "interior_color::2025::F-150 Lightning": {
+      "Medium Dark Slate": 5
+    },
+    "interior_color::2025::F-350": {
+      "Black Onyx/Platinum Blue": 1
+    },
+    "interior_color::2025::Maverick": {
+      "Black Onyx": 3,
+      "Black Onyx/Dark Slate": 3,
+      "Navy Pier/Aspen Gray": 3,
+      "Smoked Truffle": 1,
+      "black": 1
+    },
+    "interior_color::2025::Mustang": {
+      "Black W/Blue Accents": 2,
+      "Gray": 1
+    },
+    "interior_color::2025::Mustang Mach-E": {
+      "Perforated Activex Seat MatL Black Onyx": 3,
+      "Performance Gray": 1
+    },
+    "interior_color::2025::Ranger": {
+      "Seats Ebony Interior Trim": 1
+    },
+    "interior_material::2025::Bronco Sport": {
+      "Leather": 1,
+      "Leather Trim": 1,
+      "PREMIUM TRIM": 1,
+      "Premium Trim": 7
+    },
+    "interior_material::2025::Mustang": {
+      "Cloth/Vinyl": 6
+    },
+    "preferred_equipment_pkg::2025::Bronco": {
+      "Equipment Group 101A": 3,
+      "Equipment Group 222A Mid Package": 12,
+      "Equipment Group 312A Mid Package": 2,
+      "Equipment Group 314A Lux Package": 2,
+      "Equipment Group 314A Lux Package,Painted Hard Top": 3,
+      "Raptor Black Appearance Package,Shadow Black Painted Hard Top": 1,
+      "Sasquatch Package,Equipment Group 314A Lux Package": 1
+    },
+    "preferred_equipment_pkg::2025::Bronco Sport": {
+      "Badlands Tech Package,Equipment Group 400A": 1,
+      "Convenience Package,Equipment Group 200A": 2,
+      "Convenience Package,Plaid Cloth Front Bucket Seats,Equipment Group 250A": 1,
+      "Equipment Group 200A": 6,
+      "Outer Banks Tech Package+,Premium Trimmed Front Bucket Seats w/Ebony/Roast,Equipment Group 300A": 5,
+      "Outer Banks Tech Package+,Premium Trimmed Front Bucket Seats w/Ebony/Roast,Premium Trimmed Front Bucket Seats w/Platinum Blue,Equipment Group 300A": 1,
+      "Premium Trimmed Front Bucket Seats w/Ebony/Roast": 1,
+      "Premium Trimmed Front Bucket Seats w/Ebony/Roast,Equipment Group 300A": 1
+    },
+    "preferred_equipment_pkg::2025::Escape": {
+      "Equipment Group 301A,Panoramic Vista Roof,Cold Weather Package,AM/FM Stereo": 1,
+      "Tech Pack #1,AM/FM Stereo,Ford Co-Pilot360 Assist+": 1
+    },
+    "preferred_equipment_pkg::2025::F-150": {
+      "Equipment Group 101A Standard": 4,
+      "Equipment Group 200A Mid": 1,
+      "Equipment Group 301A Standard,FX4 Off-Road Package,Mobile Office Package": 1,
+      "Equipment Group 302A Mid,Mobile Office Package,Power Glass Heated Sideview Mirrors": 1,
+      "Equipment Group 302A Mid,Wheels: 20\" Chrome-Like PVD,Mobile Office Package,Tow/Haul Package,Bed Utility Package,Power Glass Heated Sideview Mirrors": 1
+    },
+    "preferred_equipment_pkg::2025::F-150 Lightning": {
+      "Equipment Group 311A Standard": 1
+    },
+    "preferred_equipment_pkg::2025::Maverick": {
+      "4K Tow Package": 2,
+      "4K Tow Package,Equipment Group 501A": 1,
+      "Black Appearance Package,4K Tow Package": 1,
+      "Equipment Group 100A": 3,
+      "Equipment Group 300A": 2,
+      "Equipment Group 602A": 2
+    },
+    "preferred_equipment_pkg::2025::Mustang": {
+      "Equipment Group 700A Deluxe Package,RECARO Sport Seats,Security Package": 1,
+      "GT Performance Package": 1,
+      "Wheels: 19\" x 8.5\" Premier Polished Aluminum": 1
+    },
+    "preferred_equipment_pkg::2025::Mustang Mach-E": {
+      "Equipment Group 300A Standard Package": 4,
+      "Interior Protection Package,Equipment Group 300A Standard Package": 1,
+      "Sport Appearance Package,Interior Protection Package": 1
+    },
+    "preferred_equipment_pkg::2025::Ranger": {
+      "Equipment Group 301A High,FX4 Off-Road Package,Convenience Package,Trailer Tow Package,Sport Appearance Package": 1,
+      "Trailer Tow Package,Equipment Group 100A Standard,STX Appearance Package": 2
+    },
+    "transmission_speeds::2025::F-150": {
+      "Ten-Speed": 3
+    },
+    "transmission_speeds::2025::Maverick": {
+      "10": 3
+    },
+    "transmission_type::2025::Escape": {
+      "eCVT": 2
+    }
+  }
+}

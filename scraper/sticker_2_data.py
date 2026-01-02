@@ -21,6 +21,7 @@ import sys
 import time
 import urllib.request
 import urllib.error
+import re
 
 from functools import lru_cache
 from difflib import SequenceMatcher
@@ -29,6 +30,34 @@ try:
     from pypdf import PdfReader
 except ImportError:  # pragma: no cover - optional dependency
     PdfReader = None  # type: ignore[assignment]
+
+
+def _load_openrouter_env() -> None:
+    """
+    Load OpenRouter credentials from ~/.openrouter_env if present.
+    This mirrors the cron setup so local runs pick up the same key.
+    """
+    env_path = pathlib.Path("/root/.openrouter_env")
+    if not env_path.exists():
+        return
+    try:
+        with env_path.open() as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                key, val = line.split("=", 1)
+                key = key.strip()
+                val = val.strip()
+                # Only set if not already present in the environment
+                if key and val and key not in os.environ:
+                    os.environ[key] = val
+    except Exception:
+        # Fail silently; caller will still rely on existing env vars
+        pass
+
+
+_load_openrouter_env()
 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 BASE_URL = os.getenv(
@@ -59,99 +88,177 @@ except ValueError:
 ROOT_DIR = pathlib.Path("/root/www")
 DB_PATH = ROOT_DIR / "db" / "inventory.sqlite"
 STICKERS_DIR = ROOT_DIR / "scraper" / "stickers"
+TEMPLATE_PATH = ROOT_DIR / "db" / "ford_guides" / "context" / "template.json"
 
 # Fields that come from the CSV/scraper and should not be used to decide
 # whether sticker-derived data is missing.
-NON_STICKER_COLUMNS = {"vin", "stock", "photo_urls", "vehicle_link"}
+NON_STICKER_COLUMNS = {"vin", "stock", "photo_urls", "vehicle_link", "pricing", "msrp"}
 
-# Base table columns (from CTI schema)
+# Base table columns (from model-based schema)
 BASE_TABLE_COLUMNS = {
-    "vin", "stock", "photo_urls", "vehicle_link", "vehicle_type",
+    "vin", "stock", "photo_urls", "vehicle_link", "model_table",
     "year", "make", "model", "trim", "paint", "interior_color",
-    "interior_material", "body_style", "fuel", "msrp", "base_price",
-    "total_options", "total_vehicle", "destination_delivery", "discount",
+    "interior_material", "body_style", "fuel", "msrp", "pricing",
     "optional", "standard", "final_assembly_plant", "method_of_transport",
-    "special_order", "equipment_group", "equipment_group_discount", "address"
-}
-
-# Child table columns for each vehicle type (matching actual DB schema)
-CHILD_TABLE_COLUMNS = {
-    "trucks": {
-        "drivetrain", "engine", "engine_displacement", "cylinder_count",
-        "transmission_type", "transmission_speeds", "mpg", "truck_body_style",
-        "rear_axle_config", "wheelbase", "axle_ratio", "axle_ratio_type",
-        "bed_length", "towing_capacity", "payload_capacity"
-    },
-    "suvs": {
-        "drivetrain", "engine", "engine_displacement", "cylinder_count",
-        "transmission_type", "transmission_speeds", "mpg", "cargo_volume",
-        "third_row_seating", "ground_clearance"
-    },
-    "vans": {
-        "drivetrain", "engine", "engine_displacement", "cylinder_count",
-        "transmission_type", "transmission_speeds", "mpg", "cargo_length",
-        "roof_height"
-    },
-    "coupes": {
-        "drivetrain", "engine", "engine_displacement", "cylinder_count",
-        "transmission_type", "transmission_speeds", "mpg", "horsepower",
-        "torque"
-    },
-    "chassis": {
-        "drivetrain", "engine", "engine_displacement", "cylinder_count",
-        "transmission_type", "transmission_speeds", "mpg", "truck_body_style",
-        "rear_axle_config", "wheelbase", "axle_ratio", "axle_ratio_type",
-        "towing_capacity", "payload_capacity"
-    },
-}
-
-# Vehicle type to child table mapping
-VEHICLE_TYPE_TO_TABLE = {
-    "truck": "trucks",
-    "suv": "suvs",
-    "van": "vans",
-    "coupe": "coupes",
-    "chassis": "chassis",
-}
-
-# Vehicle type classification based on model name
-VEHICLE_TYPE_MAP = {
-    "F-150": "truck", "F-250": "truck", "F-350": "truck", "F-450": "truck",
-    "F-550": "truck", "F-600": "truck", "F-650": "truck", "F-750": "truck",
-    "Ranger": "truck", "Maverick": "truck",
-    "Bronco": "suv", "Bronco Sport": "suv", "Explorer": "suv",
-    "Expedition": "suv", "Edge": "suv", "Escape": "suv", "EcoSport": "suv",
-    "Mustang Mach-E": "suv",
-    "Transit": "van", "E-Transit": "van", "Transit Connect": "van",
-    "Mustang": "coupe", "GT": "coupe",
-    "F-Series": "chassis",
+    "special_order", "equipment_group", "equipment_group_discount", "address",
+    "mpg", "engine", "engine_displacement", "cylinder_count", "drivetrain",
+    "transmission_type", "transmission_speeds"
 }
 
 
-def infer_vehicle_type(model: str) -> str:
-    """Determine vehicle type from model name."""
+@lru_cache(maxsize=1)
+def _load_template() -> dict:
+    """Load template.json and return the parsed dict."""
+    try:
+        return json.loads(TEMPLATE_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def _get_model_table_map() -> dict[str, str]:
+    """
+    Get the model name -> table name mapping from template.json.
+    Falls back to a built-in mapping if template.json doesn't have one.
+    """
+    tmpl = _load_template()
+    mapping = tmpl.get("model_table_map")
+    if isinstance(mapping, dict):
+        return mapping
+    
+    # Fallback built-in mapping
+    return {
+        "F-150": "f150",
+        "F-150 Lightning": "f150_lightning",
+        "F-250": "super_duty",
+        "F-350": "super_duty",
+        "F-450": "super_duty",
+        "F-550": "super_duty",
+        "F-600": "super_duty",
+        "F-650": "super_duty",
+        "F-750": "super_duty",
+        "Super Duty": "super_duty",
+        "Ranger": "ranger",
+        "Maverick": "maverick",
+        "Explorer": "explorer",
+        "Expedition": "expedition",
+        "Bronco": "bronco",
+        "Bronco Sport": "bronco_sport",
+        "Escape": "escape",
+        "Mustang Mach-E": "mach_e",
+        "Mach-E": "mach_e",
+        "Mustang": "mustang",
+        "GT": "mustang",
+        "Transit": "transit",
+        "E-Transit": "transit",
+        "Transit Connect": "transit",
+    }
+
+
+def _get_model_table_columns() -> dict[str, set[str]]:
+    """
+    Get model table columns from template.json.
+    Returns a dict mapping table name -> set of column names.
+    """
+    tmpl = _load_template()
+    tables = tmpl.get("tables", {})
+    
+    result: dict[str, set[str]] = {}
+    for table_name, fields in tables.items():
+        if table_name == "vehicles":
+            continue  # Skip base table
+        if isinstance(fields, dict):
+            # Apply alias mapping to column names
+            result[table_name] = {_apply_alias(k) for k in fields.keys()}
+    
+    return result
+
+
+def _apply_alias(key: str) -> str:
+    """Map template key to DB column name where they intentionally differ."""
+    aliases = {
+        "optional_equipment": "optional",
+        "standard_equipment": "standard",
+        "rear_axle_configuration": "rear_axle_config",
+        "preferred_equipment_pkg": "equipment_group",
+        "preferred_equipment_pkg_cost": "equipment_group_discount",
+    }
+    return aliases.get(key, key)
+
+
+def infer_model_table(model: str) -> str:
+    """Determine model table name from model name."""
     if not model:
         return "unknown"
+    
     model_normalized = model.strip()
-    if model_normalized in VEHICLE_TYPE_MAP:
-        return VEHICLE_TYPE_MAP[model_normalized]
-    for key in sorted(VEHICLE_TYPE_MAP.keys(), key=len, reverse=True):
+    model_table_map = _get_model_table_map()
+    
+    # Check exact matches first
+    if model_normalized in model_table_map:
+        return model_table_map[model_normalized]
+    
+    # Check prefix matches (longer prefixes first)
+    for key in sorted(model_table_map.keys(), key=len, reverse=True):
         if model_normalized.startswith(key):
-            return VEHICLE_TYPE_MAP[key]
+            return model_table_map[key]
+    
+    # Check if model contains keywords
     model_lower = model_normalized.lower()
-    if any(t in model_lower for t in ["f-150", "f-250", "f-350", "f-450", "f-550", "ranger", "maverick"]):
-        return "truck"
-    if "mustang mach-e" in model_lower or "mach-e" in model_lower:
-        return "suv"
-    if any(s in model_lower for s in ["bronco", "explorer", "expedition", "edge", "escape"]):
-        return "suv"
+    
+    # Lightning check first (before F-150 check)
+    if "lightning" in model_lower:
+        return "f150_lightning"
+    
+    # Mach-E check (before Mustang check)
+    if "mach-e" in model_lower or "mach e" in model_lower:
+        return "mach_e"
+    
+    # Truck patterns
+    if any(t in model_lower for t in ["f-250", "f-350", "f-450", "f-550", "f-650", "f-750"]):
+        return "super_duty"
+    if "f-150" in model_lower:
+        return "f150"
+    if "ranger" in model_lower:
+        return "ranger"
+    if "maverick" in model_lower:
+        return "maverick"
+    
+    # SUV patterns
+    if "bronco sport" in model_lower:
+        return "bronco_sport"
+    if "bronco" in model_lower:
+        return "bronco"
+    if "explorer" in model_lower:
+        return "explorer"
+    if "expedition" in model_lower:
+        return "expedition"
+    if "escape" in model_lower:
+        return "escapes"
+    
+    # Van patterns
     if "transit" in model_lower:
-        return "van"
+        return "transit"
+    
+    # Coupe/sports car patterns
     if "mustang" in model_lower or model_lower == "gt":
-        return "coupe"
+        return "mustang"
+    
     return "unknown"
 
 
+# Keep old function for backwards compatibility
+def infer_vehicle_type(model: str) -> str:
+    """Determine vehicle type from model name (deprecated, use infer_model_table)."""
+    table = infer_model_table(model)
+    # Map model tables back to vehicle types for legacy compatibility
+    type_map = {
+        "f150": "truck", "super_duty": "truck", "ranger": "truck",
+        "maverick": "truck", "f150_lightning": "truck",
+        "explorer": "suv", "expedition": "suv", "bronco": "suv",
+        "bronco_sport": "suv", "escapes": "suv", "mach_e": "suv",
+        "mustang": "coupe", "transit": "van",
+    }
+    return type_map.get(table, "unknown")
 
 
 @lru_cache(maxsize=4)
@@ -337,6 +444,42 @@ def load_pdf_json_examples(dir_path: pathlib.Path) -> str:
         if len(pairs) >= MAX_EXAMPLE_PAIRS:
             break
 
+    # Also load examples from the examples directory
+    examples_dir = dir_path.parent / "examples"
+    if examples_dir.exists():
+        for txt_path in sorted(examples_dir.glob("*.txt")):
+            json_path = txt_path.with_suffix(".json")
+            if json_path.exists():
+                try:
+                    txt_text = txt_path.read_text(encoding="utf-8")
+                except UnicodeDecodeError:
+                    continue
+
+                try:
+                    json_text = json_path.read_text(encoding="utf-8")
+                except UnicodeDecodeError:
+                    continue
+
+                rel_txt = txt_path.relative_to(dir_path.parent)
+                rel_json = json_path.relative_to(dir_path.parent)
+
+                pairs.append(
+                    "===== WINDOW STICKER EXAMPLE =====\n"
+                    f"TEXT FILE: {rel_txt}\n"
+                    f"JSON FILE: {rel_json}\n\n"
+                    "PDF_TEXT_START\n"
+                    f"{txt_text}\n"
+                    "PDF_TEXT_END\n\n"
+                    "JSON_START\n"
+                    f"{json_text}\n"
+                    "JSON_END\n"
+                )
+
+                # Avoid loading too many heavy examples into the prompt; this reduces
+                # token count and speeds up API calls.
+                if len(pairs) >= MAX_EXAMPLE_PAIRS:
+                    break
+
     return "\n\n".join(pairs)
 
 
@@ -365,14 +508,28 @@ def call_model_for_window_sticker(pdf_text: str, model: str | None = None) -> st
         "others. If a value is unknown or not present on the sticker, "
         "set it to null instead of omitting the field.",
         "",
+        "CRITICAL - Engine Extraction Rules:",
+        "- For F-150 PowerBoost hybrids: Look for 'POWERBOOST', 'FULL HYBRID', 'HYBRID ELEC' in the text - extract as '3.5L V6 PowerBoost Hybrid'",
+        "- For F-150 3.5L EcoBoost (non-hybrid): Look for '3.5L' with 'V6' or 'V-6' but NO PowerBoost/hybrid indicators - extract as '3.5L V6 EcoBoost'",
+        "- For F-150 3.5L High Output: Look for '3.5L' with 'HIGH OUTPUT' or 'RAPTOR' - extract as '3.5L EcoBoost High Output'",
+        "- For F-150 2.7L: Extract as '2.7L V6 EcoBoost'",
+        "- For F-150 5.0L: Extract as '5.0L V8'",
+        "- For F-150 5.2L Supercharged: Extract as '5.2L Supercharged V8'",
+        "- For F-150 Lightning: Look for 'DUAL EMOTOR' - extract as 'Dual eMotor'",
+        "- For Super Duty High Output: Look for '6.7L' and 'HIGH OUTPUT' in the same engine description line - extract as '6.7L High Output Power Stroke V8'",
+        "- For Super Duty 6.7L Power Stroke: Look for '6.7L POWER STROKE' - extract as '6.7L Power Stroke V8'",
+        "- For Super Duty 6.8L: Extract as '6.8L V8'",
+        "- For Super Duty 7.3L: Extract as '7.3L V8'",
+        "- Use the canonical names from options.json exactly - do NOT add extra words like 'Engine' or 'Technology'",
+        "",
         "CRITICAL - Consistent Capitalization Rules:",
         "- Use Title Case for most string fields (e.g., 'Cloth' not 'CLOTH', 'Oxford White' not 'OXFORD WHITE')",
-        "- For interior_material: Use exactly 'Cloth', 'Vinyl', 'Leather', 'ActiveX', or 'Leather-Trim'",
-        "- For fuel: Use exactly 'Gas', 'Diesel', 'Hybrid', or 'Electric' (not 'Gasoline')",
-        "- For drivetrain: Use exactly '4x2', '4x4', 'RWD', 'AWD', or '4WD'",
-        "- For body_style: Use exactly 'Truck', 'SUV', 'Van', or 'Coupe'",
+        "- For interior_material: Use exactly 'Cloth', 'Vinyl', 'Leather', 'ActiveX', 'Leather-Trim', 'Leather-Trimmed', 'Premium-Trimmed', or 'Marine Grade Vinyl'",
+        "- For fuel: Use exactly 'Gas', 'Diesel', 'Hybrid', 'Electric', or 'Plug-In Hybrid' (not 'Gasoline')",
+        "- For drivetrain: Use exactly '4x2', '4x4', 'RWD', 'AWD', '4WD', or 'FWD'",
+        "- For body_style: Use exactly 'Truck', 'SUV', 'Van', 'Coupe', or 'Convertible'",
         "- For rear_axle_config: Use exactly 'SRW' or 'DRW' (not spelled out)",
-        "- For transmission_type: Use exactly 'Automatic', 'Manual', or 'CVT'",
+        "- For transmission_type: Use exactly 'Automatic', 'Manual', 'CVT', or 'eCVT'",
         "- NEVER use ALL CAPS for any field values, even if the sticker shows them that way",
         "- Refer to options.json for canonical values for trim, paint, interior_color, etc.",
         "",
@@ -534,7 +691,177 @@ _NORMALIZABLE_FIELDS = {
     "trim", "paint", "interior_color", "interior_material", "drivetrain",
     "body_style", "truck_body_style", "rear_axle_config", "engine",
     "engine_displacement", "fuel", "axle_ratio_type", "transmission_type",
+    "bed_length",
 }
+
+
+def _derive_truck_fields_from_pdf_text(pdf_text: str) -> dict[str, object]:
+    """
+    Deterministically extract truck configuration fields from sticker text.
+
+    Why this exists:
+    - The towing guide lookup requires wheelbase/bed length/cab style.
+    - These fields are present in many sticker PDFs as plain text (e.g. '145\" WHEELBASE',
+      'PLATINUM 160\" WB STYLESIDE').
+    - Relying on the LLM for these is unnecessary and sometimes inconsistent.
+    """
+    text = pdf_text or ""
+    upper = text.upper()
+
+    # Model hints (used only for wheelbase canonicalization / bed inference)
+    model: str | None = None
+    if "F-150" in upper or re.search(r"\bF150\b", upper):
+        model = "F-150"
+    elif re.search(r"\bF[- ]?250\b", upper):
+        model = "F-250"
+    elif re.search(r"\bF[- ]?350\b", upper):
+        model = "F-350"
+    elif re.search(r"\bF[- ]?450\b", upper):
+        model = "F-450"
+    elif "RANGER" in upper:
+        model = "Ranger"
+    elif "MAVERICK" in upper:
+        model = "Maverick"
+
+    # Cab style: normalize to our canonical values
+    cab: str | None = None
+    if "REGULAR CAB" in upper:
+        cab = "Regular Cab"
+    elif "SUPERCAB" in upper or "SUPER CAB" in upper:
+        cab = "Super Cab"
+    elif "SUPERCREW" in upper or "SUPER CREW" in upper:
+        cab = "SuperCrew"
+    elif "CREW CAB" in upper:
+        cab = "Crew Cab"
+
+    # Rear axle config (Super Duty): SRW/DRW often appears in the description line
+    rear_axle_config: str | None = None
+    if re.search(r"\bDRW\b", upper):
+        rear_axle_config = "DRW"
+    elif re.search(r"\bSRW\b", upper):
+        rear_axle_config = "SRW"
+
+    # Wheelbase: examples include '145\" WHEELBASE' or '160\" WB'
+    wheelbase_in: float | None = None
+    m = re.search(r"\b(\d{3}(?:\.\d)?)\s*\"?\s*(WHEELBASE|WB)\b", upper)
+    if m:
+        try:
+            wheelbase_in = float(m.group(1))
+        except ValueError:
+            wheelbase_in = None
+
+    # Canonicalize wheelbase for towing-guide matching (uses decimals like 145.4, 141.5, etc.)
+    def _canonicalize_wb(model_name: str | None, wb: float | None) -> float | None:
+        if wb is None:
+            return None
+        # Known selector wheelbases from 2025 guide (rounded on stickers)
+        if model_name == "F-150":
+            candidates = [122.8, 141.5, 145.4, 157.2]
+        elif model_name in {"F-250", "F-350", "F-450"}:
+            candidates = [141.6, 159.8, 164.2, 176.0]
+        else:
+            return wb
+        best = min(candidates, key=lambda c: abs(c - wb))
+        return best if abs(best - wb) <= 1.2 else wb
+
+    wheelbase = _canonicalize_wb(model, wheelbase_in)
+
+    # Bed length inference (feet) for selector lookup.
+    bed_length: float | None = None
+    if model == "F-150" and cab and wheelbase:
+        if cab == "Regular Cab":
+            bed_length = 6.5 if abs(wheelbase - 122.8) < 1.0 else 8.0 if abs(wheelbase - 141.5) < 1.0 else None
+        elif cab == "Super Cab":
+            bed_length = 6.5 if abs(wheelbase - 145.4) < 1.0 else None
+        elif cab == "SuperCrew":
+            bed_length = 5.5 if abs(wheelbase - 145.4) < 1.0 else 6.5 if abs(wheelbase - 157.2) < 1.0 else None
+    elif model in {"F-250", "F-350", "F-450"} and cab and wheelbase:
+        # Based on 2025 towing guide headers for Super Duty pickups:
+        # - Regular Cab: 141.6 WB = 8' box
+        # - SuperCab: 164.2 WB = 8' box
+        # - Crew Cab: 159.8 WB = 6-3/4' box; 176.0 WB = 8' box
+        if cab == "Regular Cab" and abs(wheelbase - 141.6) < 1.0:
+            bed_length = 8.0
+        elif cab == "Super Cab" and abs(wheelbase - 164.2) < 1.0:
+            bed_length = 8.0
+        elif cab == "Crew Cab":
+            if abs(wheelbase - 159.8) < 1.0:
+                bed_length = 6.75
+            elif abs(wheelbase - 176.0) < 1.0:
+                bed_length = 8.0
+
+    out: dict[str, object] = {}
+    if cab:
+        out["truck_body_style"] = cab
+    if rear_axle_config:
+        out["rear_axle_config"] = rear_axle_config
+    if wheelbase is not None:
+        out["wheelbase"] = wheelbase
+    if bed_length is not None:
+        out["bed_length"] = bed_length
+    return out
+
+
+_SUPER_DUTY_MODEL_KEYWORDS = (
+    "F-250",
+    "F-350",
+    "F-450",
+    "F-550",
+    "F-600",
+    "F-650",
+    "F-750",
+    "SUPER DUTY",
+)
+
+_F150_MODEL_KEYWORDS = (
+    "F-150",
+    "F150",
+)
+
+_HIGH_OUTPUT_PATTERN = re.compile(r"6\.7L?\s+HI(?:GH)?\s*OUTPUT\s+POWER\s+STROKE", re.IGNORECASE)
+
+# Pattern for F-150 PowerBoost hybrid detection
+_POWERBOOST_PATTERN = re.compile(r"\bPOWERBOOST\b|\bFULL\s+HYBRID\b|\bHYBRID\s+ELEC\b|\b3\.5L.*HYBRID\b", re.IGNORECASE)
+
+
+def _is_super_duty_model(model: str | None) -> bool:
+    if not model:
+        return False
+    upper = model.strip().upper()
+    return any(keyword in upper for keyword in _SUPER_DUTY_MODEL_KEYWORDS)
+
+
+def _is_f150_model(model: str | None) -> bool:
+    if not model:
+        return False
+    upper = model.strip().upper()
+    return any(keyword in upper for keyword in _F150_MODEL_KEYWORDS)
+
+
+def _detect_high_output_engine(pdf_text: str, current_engine: str | None, model: str | None, trim: str | None = None) -> str | None:
+    if not _is_super_duty_model(model):
+        return None
+    if current_engine and "HIGH OUTPUT" in current_engine.upper():
+        return None
+
+    # Only mark as high output if the window sticker explicitly contains high output text
+    if _HIGH_OUTPUT_PATTERN.search(pdf_text):
+        return "6.7L High Output Power Stroke V8"
+
+    return None
+
+
+def _detect_powerboost_engine(pdf_text: str, current_engine: str | None, model: str | None, trim: str | None = None) -> str | None:
+    if not _is_f150_model(model):
+        return None
+    if current_engine and "POWERBOOST" in current_engine.upper():
+        return None
+
+    # Only mark as PowerBoost if the window sticker explicitly contains PowerBoost indicators
+    if _POWERBOOST_PATTERN.search(pdf_text):
+        return "3.5L V6 PowerBoost Hybrid"
+
+    return None
 
 
 @lru_cache(maxsize=1)
@@ -566,18 +893,26 @@ def _get_canonical_values(field: str, model: str | None = None) -> list[str]:
     options_field = field_map.get(field, field)
 
     values: set[str] = set()
-    if model and model in options:
-        model_opts = options[model].get(options_field, [])
-        for v in model_opts:
-            if v is not None and isinstance(v, str):
-                values.add(v)
-    else:
-        # Merge values from all models
-        for model_data in options.values():
-            if isinstance(model_data, dict):
-                for v in model_data.get(options_field, []):
-                    if v is not None and isinstance(v, str):
-                        values.add(v)
+
+    # Handle year -> model -> field structure
+    def extract_values_from_year_data(year_data: dict) -> None:
+        if model and model in year_data:
+            model_opts = year_data[model].get(options_field, [])
+            for v in model_opts:
+                if v is not None and isinstance(v, str):
+                    values.add(v)
+        else:
+            # Merge values from all models in this year
+            for model_data in year_data.values():
+                if isinstance(model_data, dict):
+                    for v in model_data.get(options_field, []):
+                        if v is not None and isinstance(v, str):
+                            values.add(v)
+
+    # Check each year in the options
+    for year_key, year_data in options.items():
+        if isinstance(year_data, dict):
+            extract_values_from_year_data(year_data)
 
     return list(values)
 
@@ -592,9 +927,20 @@ def _fuzzy_match(value: str, candidates: list[str], threshold: float = 0.7) -> s
 
     value_lower = value.lower().strip()
 
-    # First try exact case-insensitive match
+    # Remove noise words that might confuse matching
+    noise_words = ["engine", "liter", "l"]
+    clean_value = value_lower
+    for word in noise_words:
+        clean_value = clean_value.replace(f" {word}", "").strip()
+
+    # First try exact case-insensitive match (original value)
     for candidate in candidates:
         if candidate.lower() == value_lower:
+            return candidate
+
+    # Try exact match with cleaned value
+    for candidate in candidates:
+        if candidate.lower() == clean_value:
             return candidate
 
     # Try matching after stripping common prefixes/suffixes
@@ -615,6 +961,7 @@ def _fuzzy_match(value: str, candidates: list[str], threshold: float = 0.7) -> s
         "vnyl": "vinyl",
         "actx": "activex",
         "clth": "cloth",
+        "hybrid engine": "hybrid",
     }
     for abbr, full in abbreviation_map.items():
         if abbr in value_lower:
@@ -627,7 +974,12 @@ def _fuzzy_match(value: str, candidates: list[str], threshold: float = 0.7) -> s
     best_ratio = 0.0
 
     for candidate in candidates:
-        ratio = SequenceMatcher(None, value_lower, candidate.lower()).ratio()
+        # Check both original and cleaned value
+        ratio_orig = SequenceMatcher(None, value_lower, candidate.lower()).ratio()
+        ratio_clean = SequenceMatcher(None, clean_value, candidate.lower()).ratio()
+        
+        ratio = max(ratio_orig, ratio_clean)
+
         if ratio > best_ratio and ratio >= threshold:
             best_ratio = ratio
             best_match = candidate
@@ -777,6 +1129,23 @@ def _labels_to_vehicle_columns(
     for key, value in labels.items():
         flat[key] = value
 
+    # Extract paint color from optional equipment if not already present
+    # Window stickers often list the actual paint color in optional equipment
+    if "optional_equipment" in flat and not flat.get("paint"):
+        optional_equip = flat["optional_equipment"]
+        if isinstance(optional_equip, list):
+            for item in optional_equip:
+                if isinstance(item, dict) and "description" in item:
+                    desc = item["description"].upper()
+                    # Look for common paint color patterns
+                    if ("METALLIC" in desc or "TRI-COAT" in desc or "PEARL" in desc or
+                        desc.endswith("WHITE") or desc.endswith("BLACK") or
+                        desc.endswith("BLUE") or desc.endswith("RED") or
+                        desc.endswith("GRAY") or desc.endswith("SILVER")):
+                        # This looks like a paint color, use it
+                        flat["paint"] = item["description"]
+                        break
+
     # Build column mapping using aliases and SQLite type information.
     columns: dict[str, object | None] = {}
     for raw_key, value in flat.items():
@@ -787,14 +1156,28 @@ def _labels_to_vehicle_columns(
         coerced = _coerce_for_sqlite(value, column_types[col_name])
         columns[col_name] = coerced
 
+    # Group pricing fields into a nested JSON object
+    pricing_fields = ["base_price", "total_options", "total_vehicle", "destination_delivery", "discount"]
+    pricing_data = {}
+    for field in pricing_fields:
+        if field in columns and columns[field] is not None:
+            pricing_data[field] = columns[field]
+            del columns[field]  # Remove from top level
+
+    if pricing_data:
+        columns["pricing"] = json.dumps(pricing_data, ensure_ascii=False)
+
     return columns
 
 
 def _get_table_column_types(conn: sqlite3.Connection, table: str) -> dict[str, str]:
     """Return a mapping of table column name -> declared SQLite type."""
     cur = conn.cursor()
-    cur.execute(f"PRAGMA table_info({table})")
-    return {row[1]: (row[2] or "").upper() for row in cur.fetchall()}
+    try:
+        cur.execute(f"PRAGMA table_info({table})")
+        return {row[1]: (row[2] or "").upper() for row in cur.fetchall()}
+    except sqlite3.OperationalError:
+        return {}
 
 
 def _upsert_vehicle_base(conn: sqlite3.Connection, vin: str, columns: dict) -> None:
@@ -822,32 +1205,42 @@ def _upsert_vehicle_base(conn: sqlite3.Connection, vin: str, columns: dict) -> N
     conn.commit()
 
 
-def _upsert_vehicle_details(conn: sqlite3.Connection, vin: str, vehicle_type: str, columns: dict) -> None:
-    """Insert or update the appropriate child table based on vehicle_type."""
-    if vehicle_type not in VEHICLE_TYPE_TO_TABLE:
+def _upsert_model_details(conn: sqlite3.Connection, vin: str, model_table: str, columns: dict) -> None:
+    """Insert or update the appropriate model table based on model_table name."""
+    model_table_columns = _get_model_table_columns()
+    
+    if model_table not in model_table_columns:
         return
-    table_name = VEHICLE_TYPE_TO_TABLE[vehicle_type]
-    valid_columns = CHILD_TABLE_COLUMNS.get(table_name, set())
-    child_types = _get_table_column_types(conn, table_name)
-    # Filter and coerce columns for child table
+    
+    valid_columns = model_table_columns[model_table]
+    child_types = _get_table_column_types(conn, model_table)
+    
+    if not child_types:
+        # Table doesn't exist yet
+        return
+    
+    # Filter and coerce columns for model table
     update_columns = {}
     for k, v in columns.items():
         if k in valid_columns and k in child_types:
             update_columns[k] = _coerce_for_sqlite(v, child_types[k])
+    
     if not update_columns:
         return
+    
     cur = conn.cursor()
-    cur.execute(f"SELECT vin FROM {table_name} WHERE vin = ?", (vin,))
+    cur.execute(f"SELECT vin FROM {model_table} WHERE vin = ?", (vin,))
     exists = cur.fetchone() is not None
+    
     if exists:
         set_clause = ", ".join(f"{col} = :{col}" for col in update_columns)
         params = {**update_columns, "vin": vin}
-        cur.execute(f"UPDATE {table_name} SET {set_clause} WHERE vin = :vin", params)
+        cur.execute(f"UPDATE {model_table} SET {set_clause} WHERE vin = :vin", params)
     else:
         insert_cols = ["vin", *update_columns.keys()]
         placeholders = [":" + c for c in insert_cols]
         cur.execute(
-            f"INSERT INTO {table_name} ({', '.join(insert_cols)}) VALUES ({', '.join(placeholders)})",
+            f"INSERT INTO {model_table} ({', '.join(insert_cols)}) VALUES ({', '.join(placeholders)})",
             {"vin": vin, **update_columns}
         )
     conn.commit()
@@ -860,21 +1253,21 @@ def _upsert_vehicle_from_labels(
 ) -> None:
     """
     Update an existing vehicle row with extracted data, or insert a new row.
-    Also updates the appropriate child table based on vehicle_type (CTI schema).
+    Also updates the appropriate model table based on model_table (per-model schema).
     """
-    # Determine vehicle_type from model if not already set
-    vehicle_type = columns.get("vehicle_type")
+    # Determine model_table from model if not already set
+    model_table = columns.get("model_table")
     model = columns.get("model")
-    if not vehicle_type and model:
-        vehicle_type = infer_vehicle_type(str(model))
-        columns["vehicle_type"] = vehicle_type
+    if not model_table and model:
+        model_table = infer_model_table(str(model))
+        columns["model_table"] = model_table
 
     # Update base table
     _upsert_vehicle_base(conn, vin, columns)
 
-    # Update child table if we know the vehicle type
-    if vehicle_type and vehicle_type in VEHICLE_TYPE_TO_TABLE:
-        _upsert_vehicle_details(conn, vin, vehicle_type, columns)
+    # Update model table if we know the model
+    if model_table and model_table != "unknown":
+        _upsert_model_details(conn, vin, model_table, columns)
 
 
 def process_all_stickers(
@@ -965,6 +1358,33 @@ def process_all_stickers(
                 vin = vin_from_labels.strip().upper()
 
             columns = _labels_to_vehicle_columns(labels, data, column_types)
+            model_hint = columns.get("model") or (data.get("model") if isinstance(data, dict) else None)
+            high_output_engine = _detect_high_output_engine(
+                pdf_text,
+                columns.get("engine"),
+                model_hint,
+                columns.get("trim"),
+            )
+            if high_output_engine:
+                columns["engine"] = high_output_engine
+                print(f"  Detected High Output engine for VIN {vin} via sticker text.")
+
+            # Detect F-150 PowerBoost hybrid engines
+            powerboost_engine = _detect_powerboost_engine(
+                pdf_text,
+                columns.get("engine"),
+                model_hint,
+                columns.get("trim"),
+            )
+            if powerboost_engine:
+                columns["engine"] = powerboost_engine
+                print(f"  Detected PowerBoost hybrid engine for VIN {vin} via sticker text.")
+            # Deterministic enrichment for truck config fields needed for towing lookup.
+            # Fill only if missing in the extracted/normalized output.
+            derived = _derive_truck_fields_from_pdf_text(pdf_text)
+            for k, v in derived.items():
+                if k not in columns or columns.get(k) in (None, "", 0):
+                    columns[k] = v
             _upsert_vehicle_from_labels(conn, vin, columns)
 
             overall_end = time.perf_counter()
@@ -990,8 +1410,8 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Update the inventory database using window sticker PDFs that have "
-            "already been downloaded. By default, only processes VINs where all "
-            "sticker-derived fields are empty."
+            "already been downloaded. By default, processes only vehicles missing "
+            "a year (i.e., new VINs just synced)."
         )
     )
     parser.add_argument(
@@ -1037,25 +1457,32 @@ def main(argv: list[str] | None = None) -> None:
     Usage:
       python sticker_2_data.py [--process-all] [--only-missing] [--missing-field FIELD ...]
 
-    By default, only processes VINs where all sticker-derived fields are empty.
-    Use --process-all to process every sticker PDF.
+    Default: only process rows missing a year (newly synced VINs). Use
+    --process-all to process every sticker PDF. Use --only-missing/--missing-field
+    to target other missing columns.
     """
     if argv is None:
         argv = sys.argv[1:]
 
     args = parse_args(argv)
 
-    missing_fields = args.missing_fields or ["msrp"]
+    # By default, treat vehicles with missing year as "not yet enriched".
+    missing_fields = args.missing_fields or ["year"]
 
     if not OPENROUTER_API_KEY:
         print("OPENROUTER_API_KEY is not set.", file=sys.stderr)
         sys.exit(1)
 
-    # Default behavior: only process VINs with all sticker fields missing.
-    # --process-all disables this filter and processes everything.
-    # --only-missing uses specific field checks instead of all-fields-missing.
-    missing_all_sticker_fields = not args.process_all and not args.only_missing
-    only_missing = args.only_missing or missing_all_sticker_fields
+    # Default behavior: only process VINs missing the chosen fields (year by default).
+    # --process-all overrides to process everything. If both flags are supplied,
+    # process-all wins.
+    if args.process_all:
+        only_missing = False
+    else:
+        only_missing = True
+    if args.only_missing and not args.process_all:
+        only_missing = True
+    missing_all_sticker_fields = False
 
     try:
         with sqlite3.connect(DB_PATH) as conn:
@@ -1070,7 +1497,60 @@ def main(argv: list[str] | None = None) -> None:
         sys.exit(1)
 
 
+def fix_powerboost_entries():
+    """
+    Fix existing F-150 Powerboost entries by scanning PDFs for Powerboost patterns
+    without using expensive LLM calls.
+    """
+    import sqlite3
+
+    print("Fixing existing F-150 Powerboost entries...")
+
+    with sqlite3.connect(DB_PATH) as conn:
+        cur = conn.cursor()
+
+        # Find F-150 vehicles with 3.5L engines that might be Powerboost candidates
+        cur.execute("""
+            SELECT vin, model, engine
+            FROM vehicles
+            WHERE model LIKE '%F-150%'
+            AND (engine LIKE '%3.5L%' OR engine IS NULL OR engine = '')
+            AND engine NOT LIKE '%PowerBoost%'
+        """)
+
+        candidates = cur.fetchall()
+        print(f"Found {len(candidates)} F-150 candidates for Powerboost checking")
+
+        updated_count = 0
+        for vin, model, engine in candidates:
+            pdf_path = STICKERS_DIR / f"{vin}.pdf"
+            if not pdf_path.exists():
+                continue
+
+            try:
+                pdf_text = extract_text_from_pdf(pdf_path)
+            except Exception as e:
+                print(f"  Error extracting text from {pdf_path}: {e}")
+                continue
+
+            # Check for Powerboost patterns
+            if _POWERBOOST_PATTERN.search(pdf_text):
+                print(f"  Found Powerboost pattern in {vin} - updating engine")
+                cur.execute("""
+                    UPDATE vehicles
+                    SET engine = '3.5L V6 PowerBoost Hybrid'
+                    WHERE vin = ?
+                """, (vin,))
+
+                updated_count += 1
+
+        conn.commit()
+        print(f"Updated {updated_count} vehicles with Powerboost engines")
+
+
 if __name__ == "__main__":
-    main()
-
-
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == "--fix-powerboost":
+        fix_powerboost_entries()
+    else:
+        main()

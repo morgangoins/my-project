@@ -1,211 +1,541 @@
 {
-  "metadata": {
-    "model_year": "2025",
-    "model": "F-150",
-    "document_date": "09/17/25",
-    "version": "Job 2 Order Guide",
-    "notes": "Includes Lobo Package, Platinum Plus, and revised BlueCruise availability. 'S'=Standard, 'O'=Optional, 'I'=Included in Package, 'N/A'=Not Available."
-  },
-  "global_components": {
-    "paint_colors": {
-      "agate_black_metallic": { "code": "UM", "availability": "All Series", "citation": "[cite: 1042]" },
-      "antimatter_blue_metallic": { "code": "HX", "availability": "XL, XLT, Lariat, King Ranch, Platinum, Tremor, Raptor", "notes": "Extra Charge", "citation": "[cite: 1042, 1063]" },
-      "atlas_blue_metallic": { "code": "B3", "availability": "XL, STX, XLT, Lariat", "notes": "Extra Charge", "citation": "[cite: 1042, 1052]" },
-      "carbonized_gray_metallic": { "code": "M7", "availability": "All Series", "citation": "[cite: 1042]" },
-      "iconic_silver_metallic": { "code": "JS", "availability": "XL, STX, XLT, Lariat, Platinum, Tremor", "citation": "[cite: 1042]" },
-      "oxford_white": { "code": "YZ", "availability": "All Series", "citation": "[cite: 1042]" },
-      "rapid_red_metallic_tinted_clearcoat": { "code": "D4", "availability": "STX, XLT, Lariat, King Ranch, Platinum, Raptor", "notes": "Extra Charge", "citation": "[cite: 1043, 1063]" },
-      "marsh_gray": { "code": "T9", "availability": "STX (201A), XLT (NA 300A), Lariat (NA 500A), Platinum Plus", "notes": "New for 2025, Extra Charge", "citation": "[cite: 556, 1043]" },
-      "space_white_metallic": { "code": "A3", "availability": "STX (NA 201A), XLT, Lariat, Platinum, Tremor, Raptor", "notes": "New for 2025, Extra Charge", "citation": "[cite: 557, 1043]" },
-      "star_white_metallic_tri_coat": { "code": "AZ", "availability": "Lariat (NA 500A), King Ranch, Platinum", "notes": "Extra Charge", "citation": "[cite: 1053]" },
-      "shelter_green": { "code": "DB", "availability": "Raptor", "notes": "Raptor Exclusive, Extra Charge", "citation": "[cite: 1063]" }
+    "definitions": {
+        "model_codes": {
+            "F1K": "XL Regular Cab 4x2",
+            "F1L": "XL Regular Cab 4x4",
+            "X1K": "XL SuperCab 4x2",
+            "X1L": "XL SuperCab 4x4",
+            "W1K": "XL SuperCrew 4x2",
+            "W1L": "XL SuperCrew 4x4",
+            "W1F": "XL SuperCrew (Hybrid Fleet) 4x4",
+            "X2K": "STX SuperCab 4x2",
+            "X2L": "STX SuperCab 4x4",
+            "W2K": "STX SuperCrew 4x2",
+            "W2L": "STX SuperCrew 4x4",
+            "X3K": "XLT SuperCab 4x2",
+            "X3L": "XLT SuperCab 4x4",
+            "W3K": "XLT SuperCrew 4x2",
+            "W3L": "XLT SuperCrew 4x4",
+            "W5K": "Lariat SuperCrew 4x2",
+            "W5L": "Lariat SuperCrew 4x4",
+            "W6K": "King Ranch SuperCrew 4x2",
+            "W6L": "King Ranch SuperCrew 4x4",
+            "W7K": "Platinum SuperCrew 4x2",
+            "W7L": "Platinum SuperCrew 4x4",
+            "W4L": "Tremor SuperCrew 4x4",
+            "W1R": "Raptor SuperCrew 4x4"
+        },
+        "wheelbase_codes": {
+            "122.5": "Regular Cab 6.5' Bed",
+            "141.0": "Regular Cab 8' Bed",
+            "145.0": ["SuperCab 6.5' Bed", "SuperCrew 5.5' Bed"],
+            "157.0": "SuperCrew 6.5' Bed"
+        },
+        "engine_codes": {
+            "99P": "2.7L V6 EcoBoost Engine",
+            "995": "5.0L V8 Engine",
+            "998": "3.5L V6 EcoBoost Engine",
+            "99D": "3.5L PowerBoost Full Hybrid V6 Engine",
+            "99G": "3.5L V6 EcoBoost High Output Engine",
+            "99J": "5.2L Supercharged V8 Engine"
+        },
+        "transmission_codes": {
+            "44H": "Hybrid Electronic Ten-Speed Automatic Transmission",
+            "44G": "Electronic Ten-Speed Automatic Transmission"
+        },
+        "option_codes": {
+            "53T": "Tow/Haul Package",
+            "41H": "Engine Block Heater",
+            "18B": "Black Platform Running Boards",
+            "18C": "6\" Angular Bright Anodized Step Bar",
+            "477": "Pro Power Onboard - 7.2 KW",
+            "63T": "Tailgate Step w/ Work Surface (or Black Finish Tailgate Appliqué on Platinum)",
+            "924": "Rear-Window, Fixed Privacy Glass with Defroster",
+            "A": "Vinyl 40/20/40 Front-Seat",
+            "67T": "Integrated Trailer Brake Controller",
+            "153": "Front License Plate Bracket"
+        },
+        "accessory_codes": {
+            "90B": "Aluminum Crossbed Toolbox by Weather Guard - Matte Black",
+            "90P": "Aluminum Crossbed Toolbox by Weather Guard - Bright",
+            "96W": "Bedliner - Tough Bed spray-in",
+            "96P": "Bedliner - Plastic drop-in",
+            "66C": "Paint Protection Film",
+            "96X": "Tonneau Pickup Box Cover - Hard Folding",
+            "96T": "Tonneau Pickup Box Cover - Soft Folding",
+            "96J": "Tonneau Pickup Box Cover - Retractable",
+            "91P": "8-way Power Driver's Seat",
+            "94S": "LED Warning Beacons - Amber",
+            "94W": "LED Warning Beacons - Amber/White",
+            "85H": "Back-up Alarm System",
+            "942": "Daytime Running Lamps (DRL) (Non-controllable)",
+            "413": "Skid Plates",
+            "T7C": "LT265/70R17C BSW all-terrain tires",
+            "19S": "Lobo Package",
+            "50M": "Mobile Office Package",
+            "191": "STX Black Appearance Package",
+            "645": "20\" Alloy Dark Carbonized Gray Wheel",
+            "54Y": "Manual-folding, Power Glass Trailer Tow Mirrors",
+            "59S": "LED Sideview Mirror Spotlights (Tow Mirrors)",
+            "47R": "Floor Liner - Tray Style",
+            "66B": "Retractable Rear Center Step",
+            "68L": "Bed Utility Package",
+            "193": "XLT Black Appearance Package",
+            "19P": "XLT Black Appearance Package Plus",
+            "55A": "FX4 Off-Road Package",
+            "52A": "BlueCruise (1-year Plan)",
+            "64N": "18\" Painted Aluminum Wheel",
+            "64L": "20\" Chrome-like PVD Wheel",
+            "43V": "Twin Panel Moonroof",
+            "T8C": "LT265/70R18C BSW all-terrain tires",
+            "16G": "Vinyl Flooring - Black",
+            "195": "Lariat Black Appearance Package",
+            "64Z": "22\" Gloss Black Wheel without Inserts",
+            "649": "22\" Chrome Wheel without Inserts",
+            "16A": "Heads-Up Display Delete",
+            "54W": "Power-folding, PowerScope Telescoping Trailer Tow Mirrors",
+            "646": "22\" Premium Painted w/ Chrome Inserts Wheel",
+            "96L": "Wheel Well Liner",
+            "648": "22\" Gloss Black Wheel w/ Inserts",
+            "63M": "Pro Access Tailgate",
+            "55D": "Graphics Delete",
+            "UM": "Agate Black Metallic",
+            "HX": "Antimatter Blue Metallic",
+            "B3": "Atlas Blue Metallic",
+            "M7": "Carbonized Gray Metallic",
+            "JS": "Iconic Silver Metallic",
+            "YZ": "Oxford White",
+            "D4": "Rapid Red Metallic Tinted Clearcoat",
+            "A3": "Space White Metallic",
+            "AZ": "Star White Metallic Tri-Coat",
+            "T9": "Marsh Gray",
+            "GR": "Green (Fleet)",
+            "MB": "Orange (Fleet)",
+            "31": "School Bus Yellow (Fleet)",
+            "E4": "Vermillion Red (Fleet)",
+            "AT": "Yellow (Fleet)",
+            "DB": "Shelter Green (Raptor) or Sport Cloth (STX)",
+            "AS": "Vinyl 40/20/40 Front-Seat",
+            "CS": "Cloth 40/20/40 Front-Seat",
+            "US": "Cloth 40/Console/40 Front-Seats",
+            "FB": "Unique Sport Cloth 40/Console/40",
+            "3B": "ActiveX Trimmed 40/Console/40",
+            "79V": "COV Required",
+            "C09": "Priced DORA"
+        }
     },
-    "safety_technology": {
-      "ford_copilot360_2_0": {
-        "description": "Standard Safety Suite",
-        "citation": "[cite: 724]",
-        "features": [
-          "Pre-Collision Assist with Automatic Emergency Braking (AEB) [cite: 736]",
-          "BLIS® (Blind Spot Information System) with Cross-Traffic Alert [cite: 727]",
-          "Lane-Keeping System (Alert & Aid) [cite: 730]",
-          "Auto High Beams [cite: 725]",
-          "Rear View Camera [cite: 742]",
-          "Rear Parking Sensors [cite: 743]",
-          "Reverse Brake Assist [cite: 744]",
-          "Post-Collision Braking [cite: 741]"
+
+
+    "rules": {
+        "models": [
+            {
+                "model": "F1K",
+                "wheelbases": [
+                    {
+                        "wheelbase": "122.5",
+                        "packages": [
+                            {
+                                "package": "101A",
+                                "options": {
+                                    "paint": ["UM","HX","B3","M7","JS","YZ"],
+                                    "standard": ["995", "44G", "XL6"],
+                                    "optional": ["41H", "18B", "63T", "924", "A", "153", "90B", "90P", "96W", "96P", "66C", "96X", "96T", "96J"],
+                                    "fleet_only": ["91P", "94S", "94W", "85H", "942", "413", "T7C"]
+                                }
+                            },
+                            {
+                                "package": "103A",
+                                "options": {
+                                    "standard": ["995", "44G", "XL6"],
+                                    "optional": ["41H", "18B", "63T", "A", "153", "90B", "90P", "96W", "96P", "66C", "96X", "96T", "96J"]
+                                },
+                                "includes": ["Interior Work Surfaces", "LED Fog Lamps", "17\" silver painted aluminum", "Chrome Bumpers", "Electronic Rear-Window Defroster", "Rear Privacy Glass"]
+                            }
+                        ]
+                    },
+                    {
+                        "wheelbase": "141.0",
+                        "packages": [
+                            {
+                                "package": "101A",
+                                "options": {
+                                    "standard": ["995", "44G", "XL6"],
+                                    "optional": ["41H", "18B", "63T", "924", "A", "153", "90B", "90P", "96W", "96P", "66C", "96X", "96T", "96J"]
+                                }
+                            },
+                            {
+                                "package": "103A",
+                                "options": {
+                                    "standard": ["995", "44G", "XL6"],
+                                    "optional": ["41H", "18B", "63T", "A", "153", "90B", "90P", "96W", "96P", "66C", "96X", "96T", "96J"]
+                                },
+                                "includes": ["Interior Work Surfaces", "LED Fog Lamps", "17\" silver painted aluminum", "Chrome Bumpers", "Electronic Rear-Window Defroster", "Rear Privacy Glass"]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "model": "F1L",
+                "wheelbases": [
+                    {
+                        "wheelbase": "122.5",
+                        "packages": [
+                            {
+                                "package": "101A",
+                                "options": {
+                                    "standard": ["995", "44G", "XL6"],
+                                    "optional": ["41H", "18B", "63T", "924", "A", "153", "90B", "90P", "96W", "96P", "66C", "96X", "96T", "96J"]
+                                }
+                            },
+                            {
+                                "package": "103A",
+                                "options": {
+                                    "standard": ["995", "44G", "XL6"],
+                                    "optional": ["41H", "18B", "63T", "A", "153", "90B", "90P", "96W", "96P", "66C", "96X", "96T", "96J"]
+                                },
+                                "includes": ["Interior Work Surfaces", "LED Fog Lamps", "17\" silver painted aluminum", "Chrome Bumpers", "Electronic Rear-Window Defroster", "Rear Privacy Glass"]
+                            }
+                        ]
+                    },
+                    {
+                        "wheelbase": "141.0",
+                        "packages": [
+                            {
+                                "package": "101A",
+                                "options": {
+                                    "standard": ["995", "44G", "XL6"],
+                                    "optional": ["41H", "18B", "63T", "924", "A", "153", "90B", "90P", "96W", "96P", "66C", "96X", "96T", "96J"]
+                                }
+                            },
+                            {
+                                "package": "103A",
+                                "options": {
+                                    "standard": ["995", "44G", "XL6"],
+                                    "optional": ["41H", "18B", "63T", "A", "153", "90B", "90P", "96W", "96P", "66C", "96X", "96T", "96J"]
+                                },
+                                "includes": ["Interior Work Surfaces", "LED Fog Lamps", "17\" silver painted aluminum", "Chrome Bumpers", "Electronic Rear-Window Defroster", "Rear Privacy Glass"]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "model": "X1K",
+                "wheelbases": [
+                    {
+                        "wheelbase": "145.0",
+                        "packages": [
+                            {
+                                "package": "101A",
+                                "options": {
+                                    "standard": ["99P", "44G", "XL6"],
+                                    "optional": ["53T", "41H", "18B", "63T", "924", "A", "153", "90B", "90P", "96W", "96P", "66C", "96X", "96T", "96J"]
+                                }
+                            },
+                            {
+                                "package": "103A",
+                                "options": {
+                                    "standard": ["99P", "44G", "XL6"],
+                                    "optional": ["53T", "41H", "18B", "63T", "A", "153", "90B", "90P", "96W", "96P", "66C", "96X", "96T", "96J"]
+                                },
+                                "includes": ["Interior Work Surfaces", "LED Fog Lamps", "17\" silver painted aluminum", "Chrome Bumpers", "Electronic Rear-Window Defroster", "Rear Privacy Glass"]
+                            }
+                        ]
+                    }
+                ]
         ]
-      },
-      "ford_copilot360_assist_2_0": {
-        "description": "Advanced Driver Assist & Towing Technology",
-        "citation": "[cite: 890]",
-        "features": [
-          "Intelligent Adaptive Cruise Control (Stop-and-Go, Lane Centering, Speed Sign Recognition) [cite: 890]",
-          "360-Degree Camera Package [cite: 890]",
-          "Evasive Steering Assist [cite: 891]",
-          "Intersection Assist [cite: 735]",
-          "Front Parking Sensors [cite: 891]",
-          "Pro Trailer Backup Assist™ [cite: 891]",
-          "Pro Trailer Hitch Assist™ [cite: 891]"
-        ]
-      },
-      "bluecruise": {
-        "description": "Hands-Free Highway Driving",
-        "citation": "[cite: 902, 938, 967]",
-        "notes": "Requires Ford Co-Pilot360 Assist 2.0 hardware. Subscription required after trial/plan expires."
-      }
+    }
+
+
+    {
+      "model": "F1K",
+      "wheelbase": "122.5",
+        {
+          "122.5": {
+            
+          }
+        },
+        {
+          "length": 141.0
+        }
+      ]
     },
-    "accessories": {
-      "bed_protection": [
-        { "name": "Bedliner - Tough Bed® Spray-in", "code": "96W", "availability": "Optional on all series", "citation": "[cite: 914, 947, 961, 978, 1004, 1021]" },
-        { "name": "Bedliner - Plastic Drop-in", "code": "96P", "availability": "Optional (NA w/ Bed Utility or Retractable Tonneau)", "citation": "[cite: 914]" },
-        { "name": "Bed Mat - Removable", "code": "DIO", "availability": "Dealer Installed Option", "citation": "[cite: 911]" }
-      ],
-      "tonneau_covers": [
-        { "name": "Tonneau Pickup Box Cover - Hard Folding", "code": "96X", "availability": "Optional (NA w/ Plastic Drop-in Bedliner)", "citation": "[cite: 916]" },
-        { "name": "Tonneau Pickup Box Cover - Soft Folding", "code": "96T", "availability": "Optional (NA w/ Plastic Drop-in Bedliner)", "citation": "[cite: 916]" },
-        { "name": "Tonneau Pickup Box Cover - Retractable", "code": "96J", "availability": "Optional (NA w/ Plastic Drop-in Bedliner or 8' Box)", "citation": "[cite: 916]" }
+    {
+      "model": "F1L",
+      "description": ["XL","Regular Cab", "4x4"],
+      "valid": [
+        {
+          "wheelbase": 122.5,
+          "box_length": 6.5,
+          "description": "Short Box"
+        },
+        {
+          "wheelbase": 141.0,
+          "box_length": 8.0,
+          "description": "Long Box"
+        }
+      ]
+    },
+    {
+      "model": "X1K",
+      "description": ["XL","SuperCab", "4x2"],
+      "valid": [
+        {
+          "wheelbase": 145.0,
+          "box_length": 6.5,
+          "description": "Standard Box"
+        }
+      ]
+    },
+    {
+      "model": "X1L",
+      "description": ["XL","SuperCab", "4x4"],
+      "valid": [
+        {
+          "wheelbase": 145.0,
+        "box_length": 6.5,
+          "description": "Standard Box"
+        }
+      ]
+    },
+    {
+      "model": "W1K",
+      "description": ["XL","SuperCrew", "4x2"],
+      "valid": [
+        {
+          "wheelbase": 145.0,
+          "box_length": 5.5,
+          "description": "Short Box"
+        }
+      ]
+    },
+    {
+      "model": "W1L",
+      "description": ["XL","SuperCrew", "4x4"],
+      "valid": [
+        {
+          "wheelbase": 145.0,
+          "box_length": 5.5,
+          "description": "Short Box"
+        },
+        {
+          "wheelbase": 157.0,
+          "box_length": 6.5,
+          "description": "Long Box"
+        }
+      ]
+    },
+    {
+      "model": "W1F",
+      "description": ["XL","SuperCrew", "4x4", "Hybrid Fleet Only"],
+      "valid": [
+        {
+          "wheelbase": 145.0,
+          "box_length": 5.5,
+          "description": "Short Box"
+        },
+        {
+          "wheelbase": 157.0,
+          "box_length": 6.5,
+          "description": "Long Box"
+        }
+      ]
+    },
+    {
+      "model": "X2K",
+      "description": ["STX","SuperCab", "4x2"],
+      "valid": [
+        {
+          "wheelbase": 145.0,
+          "box_length": 6.5,
+          "description": "Standard Box"
+        }
+      ]
+    },
+    {
+      "model": "X2L",
+      "description": ["STX","SuperCab", "4x4"],
+      "valid": [
+        {
+          "wheelbase": 145.0,
+          "box_length": 6.5,
+          "description": "Standard Box"
+        }
+      ]
+    },
+    {
+      "model": "W2K",
+      "description": ["STX","SuperCrew", "4x2"],
+      "valid": [
+        {
+          "wheelbase": 145.0,
+          "box_length": 5.5,
+          "description": "Short Box"
+        }
+      ]
+    },
+    {
+      "model": "W2L",
+      "description": ["STX","SuperCrew", "4x4"],
+      "valid": [
+        {
+          "wheelbase": 145.0,
+          "box_length": 5.5,
+          "description": "Short Box"
+        }
+      ]
+    },
+    {
+      "model": "X3K",
+      "description": ["XLT","SuperCab", "4x2"],
+      "valid": [
+        {
+          "wheelbase": 145.0,
+          "box_length": 6.5,
+          "description": "Standard Box"
+        }
+      ]
+    },
+    {
+      "model": "X3L",
+      "description": ["XLT","SuperCab", "4x4"],
+      "valid": [
+        {
+          "wheelbase": 145.0,
+          "box_length": 6.5,
+          "description": "Standard Box"
+        }
+      ]
+    },
+    {
+      "model": "W3K",
+      "description": ["XLT","SuperCrew", "4x2"],
+      "valid": [
+        {
+          "wheelbase": 145.0,
+          "box_length": 5.5,
+          "description": "Short Box"
+        }
+      ]
+    },
+    {
+      "model": "W3L",
+      "description": ["XLT","SuperCrew", "4x4"],
+      "valid": [
+        {
+          "wheelbase": 145.0,
+          "box_length": 5.5,
+          "description": "Short Box"
+        },
+        {
+          "wheelbase": 157.0,
+          "box_length": 6.5,
+          "description": "Long Box"
+        }
+      ]
+    },
+    {
+      "model": "W5K",
+      "description": ["LARIAT","SuperCrew", "4x2"],
+      "valid": [
+        {
+          "wheelbase": 145.0,
+          "box_length": 5.5,
+          "description": "Short Box"
+        }
+      ]
+    },
+    {
+      "model": "W5L",
+      "description": ["LARIAT","SuperCrew", "4x4"],
+      "valid": [
+        {
+          "wheelbase": 145.0,
+          "box_length": 5.5,
+          "description": "Short Box"
+        },
+        {
+          "wheelbase": 157.0,
+          "box_length": 6.5,
+          "description": "Long Box"
+        }
+      ]
+    },
+    {
+      "model": "W6K",
+      "description": ["KING RANCH","SuperCrew", "4x2"],
+      "valid": [
+        {
+          "wheelbase": 145.0,
+          "box_length": 5.5,
+          "description": "Short Box"
+        }
+      ]
+    },
+    {
+      "model": "W6L",
+      "description": ["KING RANCH","SuperCrew", "4x4"],
+      "valid": [
+        {
+          "wheelbase": 145.0,
+          "box_length": 5.5,
+          "description": "Short Box"
+        },
+        {
+          "wheelbase": 157.0,
+          "box_length": "6.5 ft",
+          "description": "Long Box"
+        }
+      ]
+    },
+    {
+      "model": "W7K",
+      "description": ["PLATINUM","SuperCrew", "4x2"],
+      "valid": [
+        {
+          "wheelbase": 145.0,
+          "box_length": "5.5 ft",
+          "description": "Short Box"
+        }
+      ]
+    },
+    {
+      "model": "W7L",
+      "description": ["PLATINUM","SuperCrew", "4x4"],
+      "valid": [
+        {
+          "wheelbase": 145.0,
+          "box_length": "5.5 ft",
+          "description": "Short Box"
+        },
+        {
+          "wheelbase": 157.0,
+          "box_length": 6.5,
+          "description": "Long Box"
+        }
+      ]
+    },
+    {
+      "model": "W4L",
+      "description": ["TREMOR","SuperCrew", "4x4"],
+      "valid": [
+        {
+          "wheelbase": 145.0,
+          "box_length": 5.5,
+          "description": "Short Box"
+        }
+      ]
+    },
+    {
+      "model": "W1R",
+      "description": ["RAPTOR","SuperCrew", "4x4"],
+      "valid": [
+        {
+          "wheelbase": 145.0,
+          "box_length": 5.5,
+          "description": "Short Box"
+        }
       ]
     }
-  },
-  "series_build_rules": [
-    {
-      "series": "XL",
-      "description": "Base work truck.",
-      "equipment_groups": { "101A": "Standard", "103A": "High" },
-      "safety_and_technology": {
-        "Ford Co-Pilot360 2.0": "Standard [cite: 724]",
-        "Ford Co-Pilot360 Assist 2.0": "Not Available [cite: 582]",
-        "BlueCruise": "Not Available [cite: 582]"
-      },
-      "standard_equipment": [
-        "12\" Screen [cite: 667]",
-        "Class IV Hitch [cite: 749]",
-        "5G Wi-Fi [cite: 752]",
-        "Cruise Control [cite: 672]"
-      ],
-      "options": {
-        "Tow/Haul Pkg (53T)": "Optional (NA w/ 2.7L) [cite: 791]",
-        "Bed Utility Pkg (68L)": "Optional [cite: 1077]",
-        "Mobile Office Pkg (50M)": "Optional (Req 40/Console/40 seat) [cite: 1079]"
-      }
-    },
-    {
-      "series": "STX",
-      "description": "Sport appearance.",
-      "equipment_groups": { "200B": "Standard", "200A": "Mid", "201A": "FX4" },
-      "safety_and_technology": {
-        "Ford Co-Pilot360 2.0": "Standard (Inherited from XL)",
-        "Ford Co-Pilot360 Assist 2.0": "Not Available"
-      },
-      "new_packages": {
-        "Lobo Package (19S)": {
-          "availability": "Optional on 200A",
-          "requirements": "5.0L V8, Crew Cab, 4x4 (AWD)",
-          "citation": "[cite: 1066]",
-          "includes": [
-            "22\" Aluminum Wheels (64D)",
-            "Lowered Ride Height (Rear Shocks)",
-            "Painted Grille",
-            "Dual Exhaust w/ Black Tips",
-            "3.73 Final Drive",
-            "Signature Lighting"
-          ]
-        }
-      },
-      "options": {
-        "STX Black Appearance Pkg (191)": "Optional on 200A [cite: 1065]",
-        "20\" Alloy Dark Carbonized Gray Wheel (645)": "Optional on 200A [cite: 597]"
-      }
-    },
-    {
-      "series": "XLT",
-      "description": "Volume leader.",
-      "equipment_groups": { "300A": "Base", "301A": "Standard", "302A": "Mid", "303A": "High" },
-      "safety_and_technology": {
-        "Ford Co-Pilot360 2.0": "Standard [cite: 724]",
-        "Ford Co-Pilot360 Assist 2.0": {
-          "availability": "Standard on 301A, 302A, 303A [cite: 890]",
-          "features": "360-Degree Camera, Adaptive Cruise Control, Pro Trailer Backup Assist"
-        },
-        "BlueCruise (601)": {
-          "availability": "Optional on 302A and 303A [cite: 902]",
-          "details": "Equipment + 1-year Plan. Subscription required after 1 year."
-        }
-      },
-      "packages": {
-        "XLT Black Appearance Pkg (193)": "Optional on 301A/302A [cite: 1067]",
-        "XLT Black Appearance Pkg Plus (19P)": "Optional on 302A/303A [cite: 1068]"
-      }
-    },
-    {
-      "series": "LARIAT",
-      "description": "Leather luxury.",
-      "equipment_groups": { "500A": "Standard", "501A": "Mid", "502A": "High" },
-      "safety_and_technology": {
-        "Ford Co-Pilot360 Assist 2.0": "Standard [cite: 923]",
-        "BlueCruise": {
-          "standard": "Equipped with 90-day Trial [cite: 931]",
-          "optional": "1-Year Plan (Option 52A) [cite: 938]"
-        },
-        "Heads-Up Display": "Standard [cite: 936]"
-      },
-      "options": {
-        "Lariat Black Appearance Pkg (195)": "Optional [cite: 937]",
-        "Heads-Up Display Delete (16A)": "Optional [cite: 941]"
-      }
-    },
-    {
-      "series": "KING RANCH",
-      "description": "Western luxury.",
-      "equipment_groups": { "601A": "High" },
-      "safety_and_technology": {
-        "Ford Co-Pilot360 Assist 2.0": "Standard",
-        "BlueCruise": "Standard with 1-Year Plan included [cite: 953]",
-        "Heads-Up Display": "Standard [cite: 955]"
-      }
-    },
-    {
-      "series": "PLATINUM",
-      "description": "Premium luxury.",
-      "equipment_groups": { "701A": "Standard", "702A": "High", "703A": "Plus" },
-      "safety_and_technology": {
-        "Ford Co-Pilot360 Assist 2.0": "Standard",
-        "BlueCruise": "Standard with 1-Year Plan included [cite: 967]",
-        "Heads-Up Display": "Standard [cite: 972]"
-      },
-      "platinum_plus_703A": {
-        "citation": "[cite: 971, 972]",
-        "includes": [
-          "Platinum Plus Exterior/Interior Theme",
-          "22\" Premium Painted Wheels",
-          "Quilted Leather Seats",
-          "Premium Maintenance Plan",
-          "Elite Welcome Call"
-        ]
-      }
-    },
-    {
-      "series": "TREMOR",
-      "description": "Off-road capability.",
-      "equipment_groups": { "401A": "Standard", "402A": "High" },
-      "safety_and_technology": {
-        "Ford Co-Pilot360 Assist 2.0": "Standard [cite: 986]",
-        "BlueCruise": {
-          "standard": "Equipped with 90-day Trial [cite: 985]",
-          "optional": "1-Year Plan (Option 52A) [cite: 997]"
-        },
-        "Trail Control": "Standard [cite: 981]"
-      }
-    },
-    {
-      "series": "RAPTOR",
-      "description": "High performance.",
-      "equipment_groups": { "801A": "Standard", "802A": "Raptor 37", "803A": "Raptor R" },
-      "safety_and_technology": {
-        "Ford Co-Pilot360 Assist 2.0": "Standard [cite: 1013]",
-        "BlueCruise": "Not Available [cite: 1014]",
-        "Heads-Up Display": "Standard [cite: 1014]"
-      }
-    }
   ]
-}

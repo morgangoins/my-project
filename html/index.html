@@ -389,7 +389,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateYearOptions() {
-        const years = [...new Set(vehicles.map(v => v.year).filter(Boolean))].sort((a, b) => b - a);
+        // Scope year options to the selected model (so F-150 only shows its years)
+        const modelScopedVehicles = selectedFilters.model === 'f150'
+            ? vehicles.filter(v => normalizeModel(v.model) === 'f150')
+            : vehicles;
+        let years = [...new Set(modelScopedVehicles.map(v => v.year).filter(Boolean))].sort((a, b) => b - a);
+        // Remove 2024 from F-150 filter options
+        if (selectedFilters.model === 'f150') {
+            years = years.filter(y => String(y) !== '2024');
+            selectedFilters.year = selectedFilters.year.filter(y => y !== '2024');
+        }
         const container = document.getElementById('year-options');
         container.innerHTML = '';
         years.forEach(year => {
@@ -423,7 +432,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (selectedFilters.model !== 'all' && normalizeModel(v.model) !== selectedFilters.model) return false;
             if (selectedFilters.model === 'f150') {
                 if (selectedFilters.trim.length && !selectedFilters.trim.some(t => (v.trim || '').toLowerCase().includes(t.toLowerCase()))) return false;
-                if (selectedFilters.package.length && !selectedFilters.package.includes(v.equipment_pkg)) return false;
+                if (selectedFilters.package.length) {
+                    const vehiclePackageCode = normalizePackageCode(v.equipment_pkg || '');
+                    if (!selectedFilters.package.includes(vehiclePackageCode)) return false;
+                }
                 if (selectedFilters.engine.length && !selectedFilters.engine.some(e => (v.engine || '').toLowerCase().includes(e.toLowerCase()))) return false;
                 if (selectedFilters.drivetrain.length && !selectedFilters.drivetrain.some(d => (v.drive_line || '').toLowerCase().includes(d.toLowerCase()))) return false;
                 if (selectedFilters.body_style.length) {
@@ -494,7 +506,7 @@ document.addEventListener('DOMContentLoaded', function() {
         titleDiv.appendChild(sub);
         const meta = document.createElement('div');
         meta.className = 'card-meta';
-        meta.innerHTML = '<span>' + (v.condition || 'New') + '</span>' + (v.stock ? '<span>' + v.stock + '</span>' : '') + (v.body_style ? '<span>' + v.body_style + '</span>' : '');
+        meta.innerHTML = '<span>' + (v.condition || 'New') + '</span>' + (v.stock ? '<span>' + v.stock + '</span>' : '');
         const tags = document.createElement('div');
         tags.className = 'card-tags';
         [v.exterior, v.engine].filter(Boolean).forEach(t => { const tag = document.createElement('span'); tag.className = 'tag'; tag.textContent = t; tags.appendChild(tag); });

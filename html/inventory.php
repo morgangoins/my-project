@@ -26,6 +26,136 @@
 
 $dbPath = __DIR__ . '/../db/inventory.sqlite';
 
+// ----------------------------------------------------------------------------
+// Hardening: this endpoint must ALWAYS return valid JSON.
+// In some environments PHP warnings/notices are displayed; if they leak into the
+// response body they break `response.json()` in the frontend and the homepage
+// appears "blank". We therefore suppress display and log server-side instead.
+// ----------------------------------------------------------------------------
+
+@ini_set('display_errors', '0');
+@ini_set('display_startup_errors', '0');
+@ini_set('log_errors', '1');
+@ini_set('error_reporting', (string)E_ALL);
+
+$logDir = __DIR__ . '/../var/logs';
+if (is_dir($logDir) && is_writable($logDir)) {
+    @ini_set('error_log', $logDir . '/inventory_api.log');
+}
+
+set_error_handler(function ($severity, $message, $file, $line) {
+    // Log and suppress non-fatal errors so they don't corrupt JSON output.
+    // Let fatal errors fall through to PHP's default handling.
+    if (!(error_reporting() & $severity)) return true;
+    $payload = [
+        'ts' => date('c'),
+        'severity' => $severity,
+        'message' => $message,
+        'file' => $file,
+        'line' => $line,
+    ];
+    error_log('[inventory.php] ' . json_encode($payload));
+    return true;
+});
+
+// Normalization functions for facet processing
+function normalizePaintColor($paint) {
+    $paint = trim($paint);
+    $lower = strtolower($paint);
+
+    // Common color normalizations
+    if (stripos($lower, 'rapid red') !== false) return 'Rapid Red';
+    if (stripos($lower, 'star white') !== false) return 'Star White';
+    if (stripos($lower, 'space white') !== false) return 'Space White';
+    if (stripos($lower, 'agate black') !== false) return 'Agate Black';
+    if (stripos($lower, 'antimatter blue') !== false) return 'Antimatter Blue';
+    if (stripos($lower, 'carbonized gray') !== false) return 'Carbonized Gray';
+    if (stripos($lower, 'iconic silver') !== false) return 'Iconic Silver';
+    if (stripos($lower, 'oxford white') !== false) return 'Oxford White';
+    if (stripos($lower, 'marsh gray') !== false) return 'Marsh Gray';
+    if (stripos($lower, 'atlas blue') !== false) return 'Atlas Blue';
+
+    // Return original if no normalization matches
+    return $paint;
+}
+
+function normalizeEngine($engine) {
+    $engine = trim($engine);
+    $lower = strtolower($engine);
+    // Normalize separators so "v-6" and "v6" behave the same.
+    $lower = str_replace(['-', '–', '—'], '', $lower);
+
+    // Engine normalizations - F-150/Lightning
+    if (stripos($lower, '2.7l') !== false && stripos($lower, 'v6') !== false) return '2.7L';
+    if (stripos($lower, '2.7l') !== false && stripos($lower, 'ecoboost') !== false) return '2.7L';
+    if (stripos($lower, '3.5l') !== false && stripos($lower, 'v6') !== false && stripos($lower, 'ecoboost') !== false) return '3.5L V6 EcoBoost';
+    if (stripos($lower, '3.5l') !== false && stripos($lower, 'powerboost') !== false) return 'PowerBoost';
+    if (stripos($lower, '3.5l') !== false && stripos($lower, 'high-output') !== false) return 'High Output';
+    // Some sources only provide "3.5L V-6 cyl" without the EcoBoost marker.
+    if (stripos($lower, '3.5l') !== false && stripos($lower, 'v6') !== false && stripos($lower, 'powerboost') === false) return '3.5L V6 EcoBoost';
+    if (stripos($lower, '5.0l') !== false && stripos($lower, 'v8') !== false) return '5.0L';
+    if (stripos($lower, 'dual emotor') !== false) return 'High Output'; // Lightning
+
+    // Super Duty engines
+    if (stripos($lower, '6.7l') !== false && stripos($lower, 'high output') !== false) return '6.7L High Output Power Stroke V8';
+    if (stripos($lower, '6.7l') !== false) return '6.7L Power Stroke V8';
+    if (stripos($lower, '6.8l') !== false) return '6.8L V8 Gas';
+    if (stripos($lower, '7.3l') !== false) return '7.3L V8 Gas';
+
+    // Explorer/Expedition engines
+    if (stripos($lower, '2.3l') !== false) return '2.3L EcoBoost I4';
+    if (stripos($lower, '3.0l') !== false) return '3.0L EcoBoost V6';
+
+    // Bronco engines
+    if (stripos($lower, '2.3l') !== false && !stripos($lower, 'maverick')) return '2.3L EcoBoost I4';
+    if (stripos($lower, '2.7l') !== false && !stripos($lower, 'maverick')) return '2.7L EcoBoost V6';
+    if (stripos($lower, '3.0l') !== false && !stripos($lower, 'maverick')) return '3.0L EcoBoost V6';
+
+    // Bronco Sport engines
+    if (stripos($lower, '1.5l') !== false) return '1.5L I3';
+
+    // Maverick engines (specific patterns)
+    if (stripos($lower, '2.0l ecoboost engine') !== false) return '2.0L EcoBoost Engine';
+    if (stripos($lower, '2.5l hybrid engine') !== false) return '2.5L Hybrid Engine';
+
+    // General 2.0L engines (Bronco Sport, Edge, Escape, etc.)
+    if (stripos($lower, '2.0l') !== false) return '2.0L EcoBoost I4';
+
+    // Mustang engines
+    if (stripos($lower, '5.0l') !== false && stripos($lower, 'v8') !== false) return '5.0L V8';
+
+    // Transit engines
+    if (stripos($lower, '3.5l') !== false && stripos($lower, 'v6') !== false) return '3.5L V6';
+
+    // Mach-E engines
+    if (stripos($lower, 'extended range') !== false) return 'Extended Range Battery';
+
+    return $engine;
+}
+
+function normalizeDrivetrain($drivetrain) {
+    $drivetrain = trim($drivetrain);
+    $lower = strtolower($drivetrain);
+
+    if (stripos($lower, '4x2') !== false || stripos($lower, 'rwd') !== false) return '4x2';
+    if (stripos($lower, '4x4') !== false || stripos($lower, '4wd') !== false) return '4x4';
+    if (stripos($lower, 'awd') !== false) return 'AWD';
+
+    return $drivetrain;
+}
+
+function normalizeBodyStyle($bodyStyle) {
+    $bodyStyle = trim($bodyStyle);
+    $lower = strtolower($bodyStyle);
+
+    if (stripos($lower, 'regular cab') !== false) return 'Regular Cab';
+    if (stripos($lower, 'super cab') !== false) return 'Super Cab';
+    if (stripos($lower, 'supercrew') !== false) return 'SuperCrew';
+    if (stripos($lower, 'supercab') !== false) return 'Super Cab'; // Handle variations
+
+    return $bodyStyle;
+}
+
 // FAST PATH: Single vehicle lookup by stock number
 if (isset($_GET['stock']) && !empty($_GET['stock'])) {
     header('Content-Type: application/json');
@@ -45,23 +175,59 @@ if (isset($_GET['stock']) && !empty($_GET['stock'])) {
     
     $escapedStock = escapeStockSql($stock);
     
-    $query = <<<SQL
+$query = <<<SQL
 SELECT
-    vin, stock, photo_urls, vehicle_link, vehicle_type,
-    year, make, model, trim, paint, interior_color, interior_material,
-    drivetrain, body_style, truck_body_style, rear_axle_config,
-    engine, transmission_type, fuel, mpg, msrp, total_vehicle,
-    equipment_group, optional, standard,
-    bed_length, towing_capacity, payload_capacity,
-    cargo_volume, ground_clearance, horsepower, torque
+    vin,
+    stock,
+    photo_urls,
+    vehicle_link,
+    year,
+    make,
+    model,
+    trim,
+    paint,
+    interior_color,
+    interior_material,
+    drivetrain,
+    body_style,
+    truck_body_style,
+    rear_axle_config,
+    engine,
+    transmission_type,
+    fuel,
+    mpg,
+    msrp,
+    pricing,
+    equipment_group,
+    optional,
+    standard,
+    axle_ratio,
+    axle_ratio_type,
+    wheelbase,
+    engine_displacement,
+    cylinder_count,
+    transmission_speeds,
+    final_assembly_plant,
+    method_of_transport,
+    special_order
 FROM vehicles_all
 WHERE stock = '{$escapedStock}' OR vin = '{$escapedStock}'
 LIMIT 1;
 SQL;
 
-    $cmd = 'sqlite3 -json ' . escapeshellarg($dbPath) . ' ' . escapeshellarg($query);
+    $cmd = 'sqlite3 -json ' . escapeshellarg($dbPath) . ' ' . escapeshellarg($query) . ' 2>&1';
     $output = shell_exec($cmd);
-    $rows = json_decode($output, true);
+    $rows = null;
+    $trimOut = trim((string)$output);
+    if ($trimOut === '') {
+        $rows = [];
+    } else {
+        $rows = json_decode($output, true);
+        if (!is_array($rows)) {
+            error_log('[inventory.php] sqlite3 output was not valid JSON for stock lookup: ' . substr($trimOut, 0, 500));
+            $rows = [];
+        }
+    }
     
     if (!is_array($rows) || empty($rows)) {
         echo json_encode(['error' => 'Vehicle not found', 'stock' => $stock]);
@@ -97,7 +263,14 @@ SQL;
         $parsed = json_decode($row['standard'], true);
         if (is_array($parsed)) $standardEquipment = $parsed;
     }
-    
+
+    // Parse pricing data from nested JSON
+    $pricingData = [];
+    if (!empty($row['pricing'])) {
+        $parsed = json_decode($row['pricing'], true);
+        if (is_array($parsed)) $pricingData = $parsed;
+    }
+
     $vehicle = [
         'vin' => $row['vin'] ?? '',
         'stock' => $row['stock'] ?? '',
@@ -108,9 +281,9 @@ SQL;
         'exterior' => $row['paint'] ?? '',
         'interior_color' => $row['interior_color'] ?? '',
         'interior_material' => $row['interior_material'] ?? '',
-        'msrp' => $row['msrp'] ?? '',
-        'retail_price' => $row['total_vehicle'] ?? '',
-        'sale_price' => $row['msrp'] ?? '',
+        'msrp' => $pricingData['msrp'] ?? $row['msrp'] ?? '',
+        'retail_price' => $pricingData['retail_price'] ?? $pricingData['total_vehicle'] ?? '',
+        'sale_price' => $pricingData['sale_price'] ?? $pricingData['retail_price'] ?? $pricingData['total_vehicle'] ?? '',
         'engine' => $row['engine'] ?? '',
         'drive_line' => $row['drivetrain'] ?? '',
         'body_style' => $bodyStyle,
@@ -134,6 +307,7 @@ SQL;
         'ground_clearance' => $row['ground_clearance'] ?? '',
         'horsepower' => $row['horsepower'] ?? '',
         'torque' => $row['torque'] ?? '',
+        'pricing_breakdown' => $pricingData,  // Full pricing data for detailed breakdown
     ];
     
     echo json_encode(['vehicle' => $vehicle]);
@@ -144,9 +318,10 @@ SQL;
 $cacheFileFull = __DIR__ . '/../db/inventory_cache.json';
 $cacheFileLite = __DIR__ . '/../db/inventory_cache_lite.json';
 $useLiteMode = isset($_GET['lite']) && $_GET['lite'] === '1';
-$hasFilters = !empty($_GET['trim']) || !empty($_GET['package']) || !empty($_GET['engine']) || 
-              !empty($_GET['drivetrain']) || !empty($_GET['body_style']) || !empty($_GET['color']) ||
-              !empty($_GET['equipment']) || !empty($_GET['price_min']) || !empty($_GET['price_max']);
+$hasFilters = !empty($_GET['model']) || !empty($_GET['trim']) || !empty($_GET['package']) || !empty($_GET['engine']) ||
+              !empty($_GET['wheelbase']) || !empty($_GET['drivetrain']) || !empty($_GET['body_style']) || !empty($_GET['color']) ||
+              !empty($_GET['equipment']) || !empty($_GET['price_min']) || !empty($_GET['price_max']) ||
+              !empty($_GET['facets']);
 
 // Pagination parameters
 // Allow large page sizes for clients (like the SPA) that do client-side
@@ -154,9 +329,10 @@ $hasFilters = !empty($_GET['trim']) || !empty($_GET['package']) || !empty($_GET[
 $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $perPage = isset($_GET['per_page']) ? min(9999, max(1, (int)$_GET['per_page'])) : 24;
 
-// Set caching headers - inventory changes roughly daily
+// Set caching headers - include query string so facet requests don't get a stale 304
 $dbMtime = file_exists($dbPath) ? filemtime($dbPath) : time();
-$etag = '"' . md5($dbMtime . ($useLiteMode ? '-lite' : '') . "-p$page-$perPage") . '"';
+$etagSeed = $dbMtime . ($useLiteMode ? '-lite' : '') . "-p$page-$perPage-" . ($_SERVER['QUERY_STRING'] ?? '');
+$etag = '"' . md5($etagSeed) . '"';
 
 header('Content-Type: application/json');
 header('Cache-Control: public, max-age=300'); // Cache for 5 minutes
@@ -168,28 +344,48 @@ if (isset($_SERVER['HTTP_IF_NONE_MATCH']) && trim($_SERVER['HTTP_IF_NONE_MATCH']
     exit;
 }
 
-// FAST PATH: Serve from pre-generated cache if no filters applied
+// FAST PATH: Serve from pre-generated cache if no filters applied.
+//
+// Resiliency: if the DB has been updated but the cache generator hasn't run yet,
+// serving the slightly-stale cache is still better than breaking the homepage.
+// We therefore serve cache whenever it's present + non-empty, and mark it stale
+// when its mtime is older than the DB.
 $cacheFile = $useLiteMode ? $cacheFileLite : $cacheFileFull;
-if (!$hasFilters && file_exists($cacheFile) && filemtime($cacheFile) >= $dbMtime) {
-    $cached = json_decode(file_get_contents($cacheFile), true);
-    if ($cached && isset($cached['vehicles'])) {
+if (!$hasFilters && file_exists($cacheFile)) {
+    $cacheMtime = @filemtime($cacheFile) ?: 0;
+    $cached = json_decode(@file_get_contents($cacheFile), true);
+    if ($cached && isset($cached['vehicles']) && is_array($cached['vehicles']) && count($cached['vehicles']) > 0) {
         $allVehicles = $cached['vehicles'];
         $totalCount = count($allVehicles);
-        
+
         // Apply pagination
         $offset = ($page - 1) * $perPage;
         $paginatedVehicles = array_slice($allVehicles, $offset, $perPage);
-        
+
         $cached['vehicles'] = $paginatedVehicles;
         $cached['totalCount'] = $totalCount;
         $cached['page'] = $page;
         $cached['perPage'] = $perPage;
         $cached['totalPages'] = ceil($totalCount / $perPage);
         $cached['servedFromCache'] = true;
-        
+
+        $isStale = ($cacheMtime < $dbMtime);
+        if ($isStale) {
+            $cached['servedFromStaleCache'] = true;
+            $cached['debug'] = $cached['debug'] ?? [];
+            $cached['debug']['cacheMtime'] = $cacheMtime ? date('Ymd-His', $cacheMtime) : null;
+            $cached['debug']['dbMtime'] = $dbMtime ? date('Ymd-His', $dbMtime) : null;
+            header('X-Inventory-Cache: stale');
+            // Encourage clients/CDNs to revalidate more frequently when stale.
+            header('Cache-Control: public, max-age=60');
+        } else {
+            header('X-Inventory-Cache: fresh');
+        }
+
         echo json_encode($cached);
         exit;
     }
+    // Fallback to live query if cache is empty or malformed
 }
 
 $filtersPath = __DIR__ . '/filters.json';
@@ -210,6 +406,7 @@ $filters = [
     'trim' => isset($_GET['trim']) ? (array)$_GET['trim'] : [],
     'package' => isset($_GET['package']) ? (array)$_GET['package'] : [],
     'engine' => isset($_GET['engine']) ? (array)$_GET['engine'] : [],
+    'wheelbase' => isset($_GET['wheelbase']) ? (array)$_GET['wheelbase'] : [],
     'drivetrain' => isset($_GET['drivetrain']) ? (array)$_GET['drivetrain'] : [],
     'body_style' => isset($_GET['body_style']) ? (array)$_GET['body_style'] : [],
     'color' => isset($_GET['color']) ? (array)$_GET['color'] : [],
@@ -255,6 +452,16 @@ if (!empty($filters['engine'])) {
     $whereClauses[] = '(' . implode(' OR ', $placeholders) . ')';
 }
 
+// Wheelbase filter
+if (!empty($filters['wheelbase'])) {
+    $placeholders = [];
+    foreach ($filters['wheelbase'] as $v) {
+        $wheelbaseValue = floatval(trim($v));
+        $placeholders[] = "ABS(wheelbase - " . $wheelbaseValue . ") < 0.01";
+    }
+    $whereClauses[] = '(' . implode(' OR ', $placeholders) . ')';
+}
+
 // Drivetrain filter
 if (!empty($filters['drivetrain'])) {
     $placeholders = [];
@@ -278,13 +485,40 @@ if (!empty($filters['body_style'])) {
     $whereClauses[] = '(' . implode(' OR ', $placeholders) . ')';
 }
 
-// Color filter (partial match on paint field)
+// Color filter (exact match or variation-aware matching)
 if (!empty($filters['color'])) {
-    $placeholders = [];
-    foreach ($filters['color'] as $v) {
-        $placeholders[] = "paint LIKE '%" . escapeSql($v) . "%'";
+    $colorMappingPath = __DIR__ . '/../db/color_mapping.json';
+    $colorMapping = [];
+    if (file_exists($colorMappingPath)) {
+        $colorMapping = json_decode(file_get_contents($colorMappingPath), true) ?: [];
     }
-    $whereClauses[] = '(' . implode(' OR ', $placeholders) . ')';
+
+    $colorConditions = [];
+    foreach ($filters['color'] as $selectedColor) {
+        $escapedColor = escapeSql($selectedColor);
+
+        // Check if this color has variations in the mapping
+        $canonicalColors = $colorMapping['canonical_colors'] ?? [];
+        $matchedVariations = [$escapedColor]; // Always include the selected color itself
+
+        foreach ($canonicalColors as $canonical => $data) {
+            $variations = $data['variations'] ?? [];
+            if (in_array($selectedColor, $variations) || $canonical === $selectedColor) {
+                // Add all variations of this canonical color
+                foreach ($variations as $variation) {
+                    $matchedVariations[] = escapeSql($variation);
+                }
+                break; // Found the matching canonical color
+            }
+        }
+
+        // Create IN clause for all matched variations
+        $colorConditions[] = "paint IN ('" . implode("','", array_unique($matchedVariations)) . "')";
+    }
+
+    if (!empty($colorConditions)) {
+        $whereClauses[] = '(' . implode(' OR ', $colorConditions) . ')';
+    }
 }
 
 // Optional equipment filter (search in both optional and standard JSON blobs)
@@ -305,6 +539,20 @@ if (!empty($filters['equipment'])) {
             // Search both optional and standard columns for equipment keywords
             $keywordClauses[] = "(LOWER(optional) LIKE '%" . $escaped . "%' OR LOWER(standard) LIKE '%" . $escaped . "%')";
         }
+        // 2025 F-150 trims/packages that always include running boards even if not listed in equipment JSON
+        if ($equipVal === 'running_boards') {
+            $runningBoardPackages = ['201A', '301A', '302A', '303A', '501A', '502A'];
+            $runningBoardTrims = ['king ranch', 'platinum', 'tremor', 'raptor'];
+            $packageList = implode("','", array_map('escapeSql', $runningBoardPackages));
+            $trimClauses = [];
+            foreach ($runningBoardTrims as $t) {
+                $trimClauses[] = "LOWER(trim) = '" . escapeSql($t) . "'";
+            }
+            $modelClause = "(LOWER(model) LIKE '%f-150%' OR LOWER(model) LIKE '%f150%')";
+            $makeClause = "LOWER(make) = 'ford'";
+            $trimClauseSql = '(' . implode(' OR ', $trimClauses) . ')';
+            $keywordClauses[] = "(year IN ('2025','2026') AND {$makeClause} AND {$modelClause} AND ((equipment_group IN ('{$packageList}')) OR {$trimClauseSql}))";
+        }
         $equipmentClauses[] = '(' . implode(' OR ', $keywordClauses) . ')';
     }
     // All selected equipment must be present (AND logic)
@@ -313,10 +561,10 @@ if (!empty($filters['equipment'])) {
 
 // Price range filter
 if ($priceMin !== null) {
-    $whereClauses[] = "total_vehicle >= " . $priceMin;
+    $whereClauses[] = "(pricing IS NOT NULL AND json_extract(pricing, '$.total_vehicle') >= " . $priceMin . ")";
 }
 if ($priceMax !== null) {
-    $whereClauses[] = "total_vehicle <= " . $priceMax;
+    $whereClauses[] = "(pricing IS NOT NULL AND json_extract(pricing, '$.total_vehicle') <= " . $priceMax . ")";
 }
 
 // Build WHERE string
@@ -329,10 +577,10 @@ if (!empty($whereClauses)) {
 $orderSQL = 'ORDER BY stock ASC';
 switch ($sortOption) {
     case 'price_asc':
-        $orderSQL = 'ORDER BY total_vehicle ASC NULLS LAST';
+        $orderSQL = 'ORDER BY CASE WHEN pricing IS NULL THEN 1 ELSE 0 END, json_extract(pricing, \'$.total_vehicle\') ASC NULLS LAST';
         break;
     case 'price_desc':
-        $orderSQL = 'ORDER BY total_vehicle DESC NULLS LAST';
+        $orderSQL = 'ORDER BY CASE WHEN pricing IS NULL THEN 1 ELSE 0 END, json_extract(pricing, \'$.total_vehicle\') DESC NULLS LAST';
         break;
     case 'trim_asc':
         $orderSQL = 'ORDER BY trim ASC';
@@ -349,7 +597,6 @@ SELECT
     stock,
     photo_urls,
     vehicle_link,
-    vehicle_type,
     year,
     make,
     model,
@@ -366,18 +613,19 @@ SELECT
     fuel,
     mpg,
     msrp,
-    total_vehicle,
+    pricing,
     equipment_group,
     optional,
     standard,
-    -- Type-specific fields
-    bed_length,
-    towing_capacity,
-    payload_capacity,
-    cargo_volume,
-    ground_clearance,
-    horsepower,
-    torque
+    axle_ratio,
+    axle_ratio_type,
+    wheelbase,
+    engine_displacement,
+    cylinder_count,
+    transmission_speeds,
+    final_assembly_plant,
+    method_of_transport,
+    special_order
 FROM vehicles_all
 {$whereSQL}
 {$orderSQL};
@@ -385,17 +633,23 @@ SQL;
 
 // Execute the query via the sqlite3 CLI (-json outputs a JSON array of rows).
 $cmd = 'sqlite3 -json ' . escapeshellarg($dbPath) . ' ' . escapeshellarg($query);
-$output = shell_exec($cmd);
+$output = shell_exec($cmd . ' 2>&1');
 
 if ($output === null) {
     echo json_encode(['vehicles' => [], 'debug' => ['dbPath' => $dbPath, 'error' => 'sqlite3 command failed', 'query' => $query]]);
     exit;
 }
 
-$rows = json_decode($output, true);
-if (!is_array($rows)) {
-    // Empty result returns empty string, not empty array
+$trimOut = trim((string)$output);
+if ($trimOut === '') {
     $rows = [];
+} else {
+    $rows = json_decode($output, true);
+    if (!is_array($rows)) {
+        // If sqlite3 printed an error, log it and continue with empty results so the API stays valid JSON.
+        error_log('[inventory.php] sqlite3 output was not valid JSON for list query: ' . substr($trimOut, 0, 500));
+        $rows = [];
+    }
 }
 
 $vehicles = [];
@@ -434,6 +688,22 @@ foreach ($rows as $row) {
         }
     }
 
+    // Parse standard equipment JSON if present
+    $standardEquipment = [];
+    if (!empty($row['standard'])) {
+        $parsed = json_decode($row['standard'], true);
+        if (is_array($parsed)) {
+            $standardEquipment = $parsed;
+        }
+    }
+
+    // Parse pricing data from nested JSON
+    $pricingData = [];
+    if (!empty($row['pricing'])) {
+        $parsed = json_decode($row['pricing'], true);
+        if (is_array($parsed)) $pricingData = $parsed;
+    }
+
     // Build vehicle record - lite mode omits large fields for faster list loading
     $vehicle = [
         'vin' => $row['vin'] ?? '',
@@ -445,7 +715,7 @@ foreach ($rows as $row) {
         'interior_color' => $row['interior_color'] ?? '',
         'interior_material' => $row['interior_material'] ?? '',
         'msrp' => $row['msrp'] ?? '',
-        'retail_price' => $row['total_vehicle'] ?? '',
+        'retail_price' => $pricingData['retail_price'] ?? $pricingData['total_vehicle'] ?? '',
         'stock' => $row['stock'] ?? '',
         'engine' => $row['engine'] ?? '',
         'drive_line' => $row['drivetrain'] ?? '',
@@ -456,106 +726,62 @@ foreach ($rows as $row) {
         'equipment_pkg' => $row['equipment_group'] ?? '',
     ];
     
-    // Include full data only when not in lite mode
-    if (!$useLiteMode) {
-        $vehicle['vehicle_type'] = $row['vehicle_type'] ?? '';
-        $vehicle['interior'] = $row['interior_color'] ?? '';
-        $vehicle['odometer'] = '';
-        $vehicle['sale_price'] = $row['msrp'] ?? '';
-        $vehicle['transmission'] = $row['transmission_type'] ?? '';
-        $vehicle['fuel_type'] = $row['fuel'] ?? '';
-        $vehicle['rear_axle_config'] = $row['rear_axle_config'] ?? '';
-        $vehicle['inventory_date'] = '';
-        $vehicle['fuel_economy'] = $row['mpg'] ?? '';
-        $vehicle['city_mpg'] = '';
-        $vehicle['highway_mpg'] = '';
-        $vehicle['vehicle_link'] = $row['vehicle_link'] ?? '';
-        $vehicle['photo_urls'] = $urls;  // Large array - only in full mode
-        $vehicle['optional_equipment'] = $optionalEquipment;  // Large JSON - only in full mode
-        // Truck-specific fields
-        $vehicle['bed_length'] = $row['bed_length'] ?? '';
-        $vehicle['towing_capacity'] = $row['towing_capacity'] ?? '';
-        $vehicle['payload_capacity'] = $row['payload_capacity'] ?? '';
-        // SUV-specific fields
-        $vehicle['cargo_volume'] = $row['cargo_volume'] ?? '';
-        $vehicle['ground_clearance'] = $row['ground_clearance'] ?? '';
-        // Coupe-specific fields
-        $vehicle['horsepower'] = $row['horsepower'] ?? '';
-        $vehicle['torque'] = $row['torque'] ?? '';
-    } else {
-        // In lite mode, include minimal optional_equipment for filter matching
-        $vehicle['optional_equipment'] = $optionalEquipment;
-    }
+    // Include ALL data for both lite and full modes to ensure detail pages load instantly
+    $vehicle['vehicle_type'] = $row['vehicle_type'] ?? '';
+    $vehicle['interior'] = $row['interior_color'] ?? '';
+    $vehicle['odometer'] = '';
+    $vehicle['sale_price'] = $pricingData['sale_price'] ?? $pricingData['retail_price'] ?? $pricingData['total_vehicle'] ?? '';
+    $vehicle['transmission'] = $row['transmission_type'] ?? '';
+    $vehicle['fuel_type'] = $row['fuel'] ?? '';
+    $vehicle['rear_axle_config'] = $row['rear_axle_config'] ?? '';
+    $vehicle['inventory_date'] = '';
+    $vehicle['fuel_economy'] = $row['mpg'] ?? '';
+    $vehicle['city_mpg'] = '';
+    $vehicle['highway_mpg'] = '';
+    $vehicle['vehicle_link'] = $row['vehicle_link'] ?? '';
+    $vehicle['photo_urls'] = $urls;  // Full photo array for detail view
+    $vehicle['optional_equipment'] = $optionalEquipment;
+    $vehicle['standard_equipment'] = $standardEquipment;
+    // Truck-specific fields
+    $vehicle['bed_length'] = $row['bed_length'] ?? '';
+    $vehicle['towing_capacity'] = $row['towing_capacity'] ?? '';
+    $vehicle['payload_capacity'] = $row['payload_capacity'] ?? '';
+    $vehicle['wheelbase'] = $row['wheelbase'] ?? '';
+    // SUV-specific fields
+    $vehicle['cargo_volume'] = $row['cargo_volume'] ?? '';
+    $vehicle['ground_clearance'] = $row['ground_clearance'] ?? '';
+    // Coupe-specific fields
+    $vehicle['horsepower'] = $row['horsepower'] ?? '';
+    $vehicle['torque'] = $row['torque'] ?? '';
+    $vehicle['pricing_breakdown'] = $pricingData;  // Include pricing breakdown for immediate display
     
     $vehicles[] = $vehicle;
 }
 
-// Generate facet counts if requested
+// Serve facets from pre-computed cache (generated by generate_cache.php)
+// This eliminates an expensive GROUP BY query on every facet request
 $facets = null;
 if ($includeFacets) {
-    $facetQuery = <<<SQL
-SELECT
-    trim,
-    equipment_group,
-    engine,
-    drivetrain,
-    truck_body_style,
-    paint,
-    COUNT(*) as count
-FROM vehicles_all
-GROUP BY trim, equipment_group, engine, drivetrain, truck_body_style, paint;
-SQL;
+    // Try to load pre-computed facets from cache
+    $facetsCacheFile = __DIR__ . '/../db/inventory_cache.json';
+    if (file_exists($facetsCacheFile)) {
+        $cachedData = json_decode(file_get_contents($facetsCacheFile), true);
+        if ($cachedData && isset($cachedData['facets'])) {
+            $facets = $cachedData['facets'];
+        }
+    }
     
-    $facetCmd = 'sqlite3 -json ' . escapeshellarg($dbPath) . ' ' . escapeshellarg($facetQuery);
-    $facetOutput = shell_exec($facetCmd);
-    $facetRows = json_decode($facetOutput, true) ?: [];
-    
-    // Aggregate facet counts
-    $facets = [
-        'trim' => [],
-        'package' => [],
-        'engine' => [],
-        'drivetrain' => [],
-        'body_style' => [],
-        'color' => [],
-    ];
-    
-    foreach ($facetRows as $fr) {
-        $t = $fr['trim'] ?? '';
-        if ($t) {
-            if (!isset($facets['trim'][$t])) $facets['trim'][$t] = 0;
-            $facets['trim'][$t] += $fr['count'];
-        }
-        
-        $p = $fr['equipment_group'] ?? '';
-        if ($p) {
-            if (!isset($facets['package'][$p])) $facets['package'][$p] = 0;
-            $facets['package'][$p] += $fr['count'];
-        }
-        
-        $e = $fr['engine'] ?? '';
-        if ($e) {
-            if (!isset($facets['engine'][$e])) $facets['engine'][$e] = 0;
-            $facets['engine'][$e] += $fr['count'];
-        }
-        
-        $d = $fr['drivetrain'] ?? '';
-        if ($d) {
-            if (!isset($facets['drivetrain'][$d])) $facets['drivetrain'][$d] = 0;
-            $facets['drivetrain'][$d] += $fr['count'];
-        }
-        
-        $b = $fr['truck_body_style'] ?? '';
-        if ($b) {
-            if (!isset($facets['body_style'][$b])) $facets['body_style'][$b] = 0;
-            $facets['body_style'][$b] += $fr['count'];
-        }
-        
-        $c = $fr['paint'] ?? '';
-        if ($c) {
-            if (!isset($facets['color'][$c])) $facets['color'][$c] = 0;
-            $facets['color'][$c] += $fr['count'];
-        }
+    // Fallback: compute facets if cache doesn't have them (shouldn't happen normally)
+    if ($facets === null) {
+        $facets = [
+            'trim' => [],
+            'package' => [],
+            'engine' => [],
+            'wheelbase' => [],
+            'drivetrain' => [],
+            'body_style' => [],
+            'color' => [],
+        ];
     }
 }
 

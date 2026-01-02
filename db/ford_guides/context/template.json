@@ -1,52 +1,249 @@
 {
-    "vin": "string (e.g., VIN)",
-    "source_pdf": "string (path or filename)",
-    "labels": {
-      "vin": "string",
-      "year": "integer (avoid: null)",
-      "make": "string (always 'Ford') (avoid: null)",
-      "model": "string (e.g., 'Explorer', 'F-250', 'GT', 'GT Premium', 'Ecoboost', 'F-550') (avoid: 'F550', 'F250', 'F350SRW', 'GT Coupe', 'GT Coupe Premium', 'Ecoboost Coupe', 'F-Series', null)",
-      "trim": "string (e.g., 'XLT', 'Active') (avoid: null, 'Coupe', 'EcoBoost Coupe', 'GT Coupe')",
-      "drivetrain": "string (e.g., '4WD', 'RWD', '4x4', 'AWD') (avoid: null)",
-      "body_style": "string (e.g., 'SUV', 'Truck', 'Van', 'Coupe') (avoid: 'Sports Car', null)",
-      "truck_body_style": "string or null (e.g., 'Regular Cab', 'Super Cab', 'SuperCrew', 'Chassis') (avoid: 'SuperCab', 'Chassis Cab', 'Reg Chassis')",
-      "rear_axle_configuration": "string or null (e.g., 'SRW', 'DRW')",
-      "wheelbase": "number or null (e.g., 119)",
-      "msrp": "number (total MSRP)",
-      "engine": "string (e.g., '2.3L EcoBoost I4', '3.5L EcoBoost V6', '5.0L V8') (avoid: null)",
-      "engine_displacement": "string (e.g., 2.3L, 3.5L, 5.0L) (avoid: '5', null)",
+  "_meta": {
+    "note": [
+      "Single source of truth for DB schema and LLM output.",
+      "Edit these tables to add/remove fields, then run: python db/sync_db.py",
+      "Use --prune-columns (with a backup) to drop fields removed here.",
+      "Model tables use snake_case: f150, super_duty, bronco_sport, mach_e, f150_lightning"
+    ]
+  },
+
+  "tables": {
+    "vehicles": {
+      "vin": "string (VIN; primary key)",
+      "stock": "string or null (CSV-owned)",
+      "photo_urls": "string or null (CSV-owned; comma-separated URLs)",
+      "vehicle_link": "string or null (CSV-owned)",
+
+      "model_table": "string (model table name: f150|super_duty|explorer|maverick|mach_e|bronco|bronco_sport|mustang|expedition|ranger|escapes|f150_lightning|transit|unknown)",
+
+      "year": "integer",
+      "make": "string",
+      "model": "string",
+      "trim": "string",
+      "paint": "string",
+      "interior_color": "string",
+      "interior_material": "string",
+      "body_style": "string",
+      "fuel": "string",
+
+      "msrp": "number",
+      "pricing": {
+        "base_price": "number",
+        "total_options": "number",
+        "total_vehicle": "number",
+        "destination_delivery": "number",
+        "discount": "number or null"
+      },
+
+      "optional_equipment": [
+        {
+          "description": "string",
+          "included": "string or null (comma-separated sub-items)",
+          "cost": "number or string"
+        }
+      ],
+      "standard_equipment": ["array of strings"],
+
+      "final_assembly_plant": "string",
+      "method_of_transport": "string",
+      "special_order": "boolean or null",
+      "preferred_equipment_pkg": "string or null",
+      "preferred_equipment_pkg_cost": "number or null",
+      "equipment_group": "alias of preferred_equipment_pkg (use preferred_equipment_pkg)",
+      "equipment_group_discount": "alias of preferred_equipment_pkg_cost (use preferred_equipment_pkg_cost)",
+      "address": "string or null",
+
       "mpg": {
         "city": "integer or null",
         "highway": "integer or null",
         "combined": "integer or null"
       },
-      "cylinder_count": "integer or null (e.g., '4', '6', '8') (avoid: null)",
-      "fuel": "string (e.g., 'Gas', 'Diesel', 'Electric', 'Hybrid') (avoid: 'Gasoline', null)",
-      "paint": "string (e.g., 'Star White', 'Carbonized Gray', 'Vapor Blue') (avoid: 'Metallic', null, More than two words)",
-      "interior_color": "string (e.g., 'Dark Slate', 'Ebony') (avoid: 'Ebny', null)",
-      "interior_material": "string (e.g., 'Cloth', 'Leather', 'Vinyl', 'Leather-Trimmed', 'ActiveX', 'Vinyl/Cloth') (avoid: 'Ltr-Trimmed', 'ActiveX Trm', 'Part Vnyl/Cloth', 'Cloth/Vinyl Trim', null)",
-      "transmission_type": "string (e.g., 'Automatic', 'Manual', 'CVT') (avoid: null)",
-      "transmission_speeds": "string or null (e.g., '8', '10', 'CVT') (avoid: '8-speed', null)",
-      "final_assembly_plant": "string",
-      "method_of_transport": "string (e.g., 'Convoy', 'Rail')",
-      "special_order": "boolean or null",
-      "preferred_equipment_pkg": "string or null (e.g., '202A')",
-      "preferred_equipment_pkg_cost": "number or null",
-      "axle_ratio": "number or null (e.g., 3.73)",
-      "axle_ratio_type": "string or null (e.g., 'Electronic-Locking')",
-      "optional_equipment": [
-        {
-          "description": "string (e.g., 'Twin Panel Moonroof')",
-          "included": "string or null (comma-separated sub-items, e.g., 'Heated Steering Wheel,Windshield Wiper De-Icer')",
-          "cost": "number or string (e.g., 1695, 'null')"
-        }
-      ],
-      "base_price": "number",
-      "total_options": "number",
-      "total_vehicle": "number",
-      "destination_delivery": "number",
-      "discount": "number or null",
-      "standard_equipment": ["array of strings (e.g., 'Easy Fuel® Capless Filler')"],
-      "address": "string or null (dealer address, e.g., 'Ford Fairfield 3050 Auto Mall Court Fairfield CA 94534')"
+
+      "engine": "string",
+      "engine_displacement": "string",
+      "cylinder_count": "integer or null",
+      "drivetrain": "string",
+      "transmission_type": "string",
+      "transmission_speeds": "string or null"
+    },
+
+    "f150": {
+      "truck_body_style": "string or null",
+      "rear_axle_configuration": "string or null",
+      "wheelbase": "number or string or null",
+      "bed_length": "number or string or null (feet; e.g. 5.5, 6.5, 8.0)",
+      "axle_ratio": "number or null",
+      "axle_ratio_type": "string or null",
+      "towing_conventional_lbs": "integer or null (computed from towing guide + config)",
+      "towing_fifth_wheel_lbs": "integer or null (computed from towing guide + config)",
+      "towing_gooseneck_lbs": "integer or null (computed from towing guide + config)",
+      "payload_capacity_lbs": "integer or null (from sticker if available; else null)",
+      "gcwr_lbs": "integer or null (computed/selected from towing guide tables where applicable)"
+    },
+
+    "super_duty": {
+      "truck_body_style": "string or null",
+      "rear_axle_configuration": "string or null",
+      "wheelbase": "number or string or null",
+      "bed_length": "number or string or null (feet; e.g. 6.75, 8.0)",
+      "axle_ratio": "number or null",
+      "axle_ratio_type": "string or null",
+      "towing_conventional_lbs": "integer or null (computed from towing guide + config)",
+      "towing_fifth_wheel_lbs": "integer or null (computed from towing guide + config)",
+      "towing_gooseneck_lbs": "integer or null (computed from towing guide + config)",
+      "payload_capacity_lbs": "integer or null (from sticker if available; else null)",
+      "gcwr_lbs": "integer or null (computed/selected from towing guide tables where applicable)"
+    },
+
+    "ranger": {
+      "truck_body_style": "string or null",
+      "rear_axle_configuration": "string or null",
+      "wheelbase": "number or string or null",
+      "bed_length": "number or string or null (feet)",
+      "axle_ratio": "number or null",
+      "axle_ratio_type": "string or null",
+      "towing_conventional_lbs": "integer or null (computed from towing guide + config)",
+      "payload_capacity_lbs": "integer or null (from sticker if available; else null)",
+      "gcwr_lbs": "integer or null (computed/selected from towing guide tables where applicable)"
+    },
+
+    "maverick": {
+      "truck_body_style": "string or null",
+      "rear_axle_configuration": "string or null",
+      "wheelbase": "number or string or null",
+      "bed_length": "number or string or null (feet)",
+      "axle_ratio": "number or null",
+      "axle_ratio_type": "string or null",
+      "towing_conventional_lbs": "integer or null (computed from towing guide + config)",
+      "payload_capacity_lbs": "integer or null (from sticker if available; else null)",
+      "gcwr_lbs": "integer or null (computed/selected from towing guide tables where applicable)"
+    },
+
+    "f150_lightning": {
+      "truck_body_style": "string or null",
+      "wheelbase": "number or string or null",
+      "battery_capacity": "string or null",
+      "range_estimate": "integer or null"
+    },
+
+    "explorer": {},
+
+    "expedition": {},
+
+    "bronco": {},
+
+    "bronco_sport": {},
+
+    "escapes": {},
+
+    "mach_e": {
+      "battery_capacity": "string or null",
+      "range_estimate": "integer or null"
+    },
+
+    "mustang": {
+      "horsepower": "integer or null",
+      "torque": "integer or null"
+    },
+
+    "transit": {
+      "cargo_length": "string or null",
+      "roof_height": "string or null"
     }
+  },
+
+  "model_table_map": {
+    "F-150": "f150",
+    "F-150 Lightning": "f150_lightning",
+    "F-250": "super_duty",
+    "F-350": "super_duty",
+    "F-450": "super_duty",
+    "F-550": "super_duty",
+    "F-600": "super_duty",
+    "F-650": "super_duty",
+    "F-750": "super_duty",
+    "Super Duty": "super_duty",
+    "Ranger": "ranger",
+    "Maverick": "maverick",
+    "Explorer": "explorer",
+    "Expedition": "expedition",
+    "Bronco": "bronco",
+    "Bronco Sport": "bronco_sport",
+    "Escape": "escapes",
+    "Mustang Mach-E": "mach_e",
+    "Mach-E": "mach_e",
+    "Mustang": "mustang",
+    "GT": "mustang",
+    "Transit": "transit",
+    "E-Transit": "transit",
+    "Transit Connect": "transit"
+  },
+
+  "labels": {
+    "vin": "string (VIN from sticker; uppercase if possible)",
+    "stock": "string or null (CSV-owned; keep if known)",
+    "photo_urls": "string or null (CSV-owned; comma-separated URLs)",
+    "vehicle_link": "string or null (CSV-owned)",
+    "model_table": "string (model table name for DB routing)",
+    "year": "integer",
+    "make": "string",
+    "model": "string",
+    "trim": "string",
+    "paint": "string",
+    "interior_color": "string",
+    "interior_material": "string",
+    "body_style": "string",
+    "fuel": "string",
+    "msrp": "number",
+    "base_price": "number",
+    "total_options": "number",
+    "total_vehicle": "number",
+    "destination_delivery": "number",
+    "discount": "number or null",
+    "optional_equipment": [
+      {
+        "description": "string",
+        "included": "string or null (comma-separated sub-items)",
+        "cost": "number or string"
+      }
+    ],
+    "standard_equipment": ["array of strings"],
+    "final_assembly_plant": "string",
+    "method_of_transport": "string",
+    "special_order": "boolean or null",
+    "preferred_equipment_pkg": "string or null",
+    "preferred_equipment_pkg_cost": "number or null",
+    "equipment_group": "alias of preferred_equipment_pkg (use preferred_equipment_pkg)",
+    "equipment_group_discount": "alias of preferred_equipment_pkg_cost (use preferred_equipment_pkg_cost)",
+    "address": "string or null",
+    "mpg": {
+      "city": "integer or null",
+      "highway": "integer or null",
+      "combined": "integer or null"
+    },
+    "engine": "string",
+    "engine_displacement": "string",
+    "cylinder_count": "integer or null",
+    "drivetrain": "string",
+    "transmission_type": "string",
+    "transmission_speeds": "string or null",
+    "truck_body_style": "string or null",
+    "rear_axle_configuration": "string or null",
+    "wheelbase": "number or string or null",
+    "axle_ratio": "number or null",
+    "axle_ratio_type": "string or null",
+    "bed_length": "string or null",
+    "towing_capacity": "integer or null",
+    "payload_capacity": "integer or null",
+    "cargo_volume": "number or null",
+    "third_row_seating": "boolean or null",
+    "ground_clearance": "number or null",
+    "cargo_length": "string or null",
+    "roof_height": "string or null",
+    "horsepower": "integer or null",
+    "torque": "integer or null",
+    "battery_capacity": "string or null",
+    "range_estimate": "integer or null"
   }
+}

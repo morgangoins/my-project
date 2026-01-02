@@ -1,0 +1,128 @@
+{
+  "canonical_colors": {
+    "Oxford White": {
+      "variations": ["Oxford White"],
+      "code": "YZ"
+    },
+    "Space White Metallic": {
+      "variations": ["Space White", "Space White Metallic"],
+      "code": "A3"
+    },
+    "Star White Metallic Tri-Coat": {
+      "variations": ["Star White Metallic Tri-Coat", "Star White Tri-Coat"],
+      "code": "AZ"
+    },
+    "White Metallic": {
+      "variations": ["White Metallic", "White"],
+      "code": null
+    },
+    "Agate Black Metallic": {
+      "variations": ["Agate Black", "Agate Black Metallic"],
+      "code": "UM"
+    },
+    "Antimatter Blue Metallic": {
+      "variations": ["Antimatter Blue", "Antimatter Blue Metallic"],
+      "code": "HX"
+    },
+    "Atlas Blue Metallic": {
+      "variations": ["Atlas Blue"],
+      "code": "B3"
+    },
+    "Argon Blue Metallic": {
+      "variations": ["Argon Blue", "Argon Blue Metallic"],
+      "code": null
+    },
+    "Carbonized Gray Metallic": {
+      "variations": ["Carbonized Gray", "Carbonized Gray Metallic"],
+      "code": "M7"
+    },
+    "Dark Matter Gray Metallic": {
+      "variations": ["Dark Matter Gray Metallic"],
+      "code": null
+    },
+    "Iconic Silver Metallic": {
+      "variations": ["Iconic Silver", "Iconic Silver Metallic"],
+      "code": "JS"
+    },
+    "Marsh Gray": {
+      "variations": ["Marsh Gray"],
+      "code": "T9"
+    },
+    "Rapid Red Metallic Tinted Clearcoat": {
+      "variations": ["Rapid Red Metallic Tinted Clearcoat", "Rapid Red Tinted"],
+      "code": "D4"
+    },
+    "Ruby Red Metallic Tinted Clearcoat": {
+      "variations": ["Ruby Red Metallic Tinted Clearcoat", "Ruby Red Tinted"],
+      "code": null
+    },
+    "Azure Gray Metallic Tri-Coat": {
+      "variations": ["Azure Gray Metallic", "Azure Gray Metallic Tri-Coat"],
+      "code": null
+    },
+    "Glacier Gray Metallic Tri-Coat": {
+      "variations": ["Glacier Gray Metallic Tri-Coat", "Glacier Gray Metallic Tricoat", "Glacier Gray TriCoat"],
+      "code": null
+    },
+    "Vapor Blue Metallic": {
+      "variations": ["Vapor Blue", "Vapor Blue Metallic"],
+      "code": null
+    },
+    "Grabber Blue Metallic": {
+      "variations": ["Grabber Blue Metallic"],
+      "code": null
+    },
+    "Blue Ember Metallic": {
+      "variations": ["Blue Ember Metallic"],
+      "code": null
+    },
+    "Molten Magenta Tri-Coat": {
+      "variations": ["Molten Magenta Tinted", "Molten Magenta Tri-Coat"],
+      "code": null
+    },
+    "Shadow Black": {
+      "variations": ["Shadow Black"],
+      "code": null
+    },
+    "Avalanche": {
+      "variations": ["Avalanche"],
+      "code": null
+    },
+    "Velocity Blue": {
+      "variations": ["Velocity Blue"],
+      "code": null
+    },
+    "Robin's Egg Blue": {
+      "variations": ["Robins Egg Blue"],
+      "code": null
+    },
+    "Shelter Green": {
+      "variations": ["Shelter Green", "Eruption Green", "Wild Green", "Green"],
+      "code": "DB"
+    },
+    "Desert Sand": {
+      "variations": ["Desert Sand"],
+      "code": null
+    },
+    "Race Red": {
+      "variations": ["Race Red"],
+      "code": null
+    },
+    "Adriatic Blue Metallic": {
+      "variations": ["Adriatic Blue Metallic"],
+      "code": null
+    },
+    "Gray Metallic": {
+      "variations": ["Gray", "Gray Metallic"],
+      "code": null
+    },
+    "Blue Metallic": {
+      "variations": ["Blue", "Blue Metallic"],
+      "code": null
+    }
+  }
+}
+
+
+
+

@@ -1,0 +1,70 @@
+{
+  "vin": "1FTFW5LD3TFA01925",
+  "stock": null,
+  "photo_urls": null,
+  "vehicle_link": null,
+  "model_table": "f150",
+  "year": 2026,
+  "make": "Ford",
+  "model": "F-150",
+  "trim": "Lariat",
+  "paint": "Agate Black Metallic",
+  "interior_color": "Black",
+  "interior_material": "ActiveX",
+  "body_style": "Truck",
+  "fuel": "Hybrid",
+  "msrp": 63920,
+  "base_price": null,
+  "total_options": null,
+  "total_vehicle": null,
+  "destination_delivery": null,
+  "discount": null,
+  "optional_equipment": [
+    {
+      "description": "3.5L PowerBoost Full Hybrid V6 Engine",
+      "included": null,
+      "cost": 1340
+    }
+  ],
+  "standard_equipment": [],
+  "final_assembly_plant": null,
+  "method_of_transport": null,
+  "special_order": null,
+  "preferred_equipment_pkg": null,
+  "preferred_equipment_pkg_cost": null,
+  "equipment_group": null,
+  "equipment_group_discount": null,
+  "address": null,
+  "mpg": {
+    "city": 23,
+    "highway": 24,
+    "combined": 20
+  },
+  "engine": "3.5L V6 PowerBoost Hybrid",
+  "engine_displacement": "3.5",
+  "cylinder_count": 6,
+  "drivetrain": "4x4",
+  "transmission_type": "Automatic",
+  "transmission_speeds": 10,
+  "truck_body_style": "SuperCrew",
+  "rear_axle_configuration": null,
+  "wheelbase": 157,
+  "axle_ratio": null,
+  "axle_ratio_type": null,
+  "bed_length": null,
+  "towing_capacity": null,
+  "payload_capacity": null,
+  "cargo_volume": null,
+  "third_row_seating": null,
+  "ground_clearance": null,
+  "cargo_length": null,
+  "roof_height": null,
+  "horsepower": null,
+  "torque": null,
+  "battery_capacity": null,
+  "range_estimate": null
+}
+
+
+
+

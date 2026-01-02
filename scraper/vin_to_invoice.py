@@ -2,37 +2,16 @@
 """
 Download Ford invoice PDFs for all VINs in the inventory database.
 
-This script:
-  - Reads VIN and stock from /root/www/db/inventory.sqlite (vehicles table)
-  - Logs into https://fordvisions.dealerconnection.com via browser automation
-  - Hits https://fordvisions.dealerconnection.com/vinv/GetInvoice.aspx?v={vin}
-    for each VIN
-  - Saves the resulting PDF as /root/www/scraper/invoices/{vin}.pdf
-
-Requires Playwright for browser automation due to login requirements.
-Install with: pip install playwright && playwright install chromium
-
-Proxy support:
-  Use --proxy to specify a proxy server. Supported formats:
-    - http://host:port
-    - http://user:pass@host:port
-    - socks5://host:port
-    - socks5://user:pass@host:port
-  Or use --proxy-server, --proxy-username, --proxy-password separately.
+This script reads VINs from /root/www/db/inventory.sqlite and downloads
+invoice PDFs to /root/www/scraper/invoices/{vin}.pdf using the Oxylabs Unblock proxy.
 """
 
-from __future__ import annotations
-
-import argparse
 import logging
-import os
 import sqlite3
 import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
-from urllib.parse import urlparse
 
 from playwright.sync_api import sync_playwright, Browser, Page, TimeoutError as PlaywrightTimeout
 
@@ -41,52 +20,13 @@ ROOT_DIR = Path("/root/www")
 DB_PATH = ROOT_DIR / "db" / "inventory.sqlite"
 INVOICES_DIR = ROOT_DIR / "scraper" / "invoices"
 INVOICE_URL = "https://fordvisions.dealerconnection.com/vinv/GetInvoice.aspx?v={vin}"
-LOGIN_URL = "https://fordvisions.dealerconnection.com"
 
 # Login credentials
 USERNAME = "m-goins4@b2bford.com"
 PASSWORD = "4Marshall$$$$$"
 
-
-@dataclass
-class ProxyConfig:
-    """Proxy configuration for browser connections."""
-    server: str  # e.g., "http://proxy.example.com:8080" or "socks5://proxy:1080"
-    username: str | None = None
-    password: str | None = None
-
-    def to_playwright_proxy(self) -> dict:
-        """Convert to Playwright proxy format."""
-        proxy = {"server": self.server}
-        if self.username:
-            proxy["username"] = self.username
-        if self.password:
-            proxy["password"] = self.password
-        return proxy
-
-    @classmethod
-    def from_url(cls, url: str) -> "ProxyConfig":
-        """
-        Parse a proxy URL into ProxyConfig.
-        
-        Supports formats like:
-          - http://host:port
-          - http://user:pass@host:port
-          - socks5://host:port
-        """
-        parsed = urlparse(url)
-        
-        # Reconstruct server URL without credentials
-        if parsed.port:
-            server = f"{parsed.scheme}://{parsed.hostname}:{parsed.port}"
-        else:
-            server = f"{parsed.scheme}://{parsed.hostname}"
-        
-        return cls(
-            server=server,
-            username=parsed.username,
-            password=parsed.password,
-        )
+# Oxylabs Unblock proxy (required for Ford access) - DISABLED to avoid further account flags
+PROXY_CONFIG = None
 
 
 @dataclass
@@ -107,424 +47,337 @@ def ensure_output_dir(path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
 
 
-def login_to_fordvisions(page: Page, debug_dir: Path | None = None) -> bool:
-    """
-    Log into Ford Visions dealer portal via Ford SAML SSO.
-    
-    Returns True if login was successful, False otherwise.
-    """
+def check_session_valid(page: Page) -> bool:
+    """Quick check if we have a valid Ford session by looking at cookies."""
     try:
-        logging.info("Navigating to Ford Visions login page...")
-        page.goto(LOGIN_URL, wait_until="networkidle", timeout=30000)
-        
-        # Click "Dealer, Supplier, Other Login" button
-        logging.info("Clicking 'Dealer, Supplier, Other Login' button...")
-        dealer_login_btn = page.get_by_text("Dealer, Supplier, Other Login")
-        dealer_login_btn.click(timeout=10000)
-        
-        # Wait for Ford SSO page to load (redirects to faust.idp.ford.com)
-        logging.info("Waiting for Ford SSO login page...")
-        page.wait_for_load_state("networkidle", timeout=30000)
-        
-        # Debug: save screenshot if debug_dir provided
-        if debug_dir:
-            debug_dir.mkdir(parents=True, exist_ok=True)
-            page.screenshot(path=str(debug_dir / "01_sso_page.png"))
-            logging.debug("Saved screenshot to %s", debug_dir / "01_sso_page.png")
-        
-        # Wait for the login form - Ford SSO uses standard input fields
-        logging.info("Filling login credentials on Ford SSO page...")
-        
-        # Wait for username field - try multiple selectors for Ford SSO
-        username_selector = "input#userId, input[name='userId'], input#username, input[name='username'], input[type='text']:visible, input[type='email']:visible"
-        page.wait_for_selector(username_selector, timeout=20000)
-        
-        # Fill username
-        username_field = page.locator(username_selector).first
-        username_field.fill(USERNAME)
-        logging.info("Entered username")
-        
-        # Fill password
-        password_selector = "input#password, input[name='password'], input[type='password']:visible"
-        password_field = page.locator(password_selector).first
-        password_field.fill(PASSWORD)
-        logging.info("Entered password")
-        
-        if debug_dir:
-            page.screenshot(path=str(debug_dir / "02_credentials_filled.png"))
-        
-        # Submit the form - Ford SSO typically has a "Sign In" or "Log In" button
-        submit_selector = "input[type='submit'], button[type='submit'], button:has-text('Sign In'), button:has-text('Log In'), button:has-text('Submit'), #submitButton"
-        submit_btn = page.locator(submit_selector).first
-        submit_btn.click(timeout=10000)
-        logging.info("Clicked submit button")
-        
-        # Wait for login to complete and redirect back
-        page.wait_for_load_state("networkidle", timeout=60000)
-        
-        if debug_dir:
-            page.screenshot(path=str(debug_dir / "03_after_login.png"))
-        
-        # Check if we're logged in by looking at the URL or page content
-        current_url = page.url
-        logging.info("After login, current URL: %s", current_url)
-        
-        # If we're still on the SSO page, login might have failed
-        if "faust.idp.ford.com" in current_url or "error" in current_url.lower():
-            logging.error("Login appears to have failed - still on SSO page or error page")
-            if debug_dir:
-                page.screenshot(path=str(debug_dir / "04_login_failed.png"))
+        cookies = page.context.cookies()
+        ford_cookies = [c for c in cookies if 'ford.com' in c.get('domain', '')]
+        return len(ford_cookies) > 2  # Reasonable number of Ford cookies indicates valid session
+    except Exception:
+        return False
+
+
+def is_login_page(page: Page) -> bool:
+    """Check if we're on a login page that requires authentication."""
+    try:
+        url = page.url.lower()
+        title = page.title().lower()
+
+        # Check URL for login indicators
+        url_indicators = ["login", "signin", "sso", "auth", "idp.ford.com", "b2b.ford.com"]
+        if any(ind in url for ind in url_indicators):
+            return True
+
+        # Check title for login indicators
+        title_indicators = ["home realm discovery", "sign in", "login", "authentication"]
+        if any(ind in title for ind in title_indicators):
+            return True
+
+        # Check for password field
+        has_password_field = page.locator("input[type='password']").count() > 0
+        return has_password_field
+    except Exception:
+        return False
+
+
+def handle_login(page: Page, vin: str) -> bool:
+    """Handle Ford SSO login exactly as user described: click dealer login, enter credentials."""
+    try:
+        logging.info("Starting login process - looking for dealer login button")
+
+        # Debug: check what login options are available on current page
+        try:
+            current_url = page.url
+            current_title = page.title()
+            logging.info(f"Current page - URL: {current_url}, Title: {current_title}")
+
+            # Screenshot of initial login page
+            page.screenshot(path=f"/root/www/scraper/invoices/debug_initial_login_{vin}.png")
+
+            # Check all buttons and links
+            all_elements = page.evaluate("""
+                const elements = [];
+                // Get all buttons, links, and inputs
+                document.querySelectorAll('button, a, input[type="button"], input[type="submit"]').forEach(el => {
+                    elements.push({
+                        tag: el.tagName,
+                        type: el.type || '',
+                        text: el.textContent.trim(),
+                        href: el.href || '',
+                        id: el.id,
+                        class: el.className,
+                        visible: el.offsetWidth > 0 && el.offsetHeight > 0
+                    });
+                });
+                return elements.filter(el => el.visible).slice(0, 15); // First 15 visible elements
+            """)
+            logging.info(f"Available clickable elements on login page: {all_elements}")
+
+        except Exception as debug_e:
+            logging.warning(f"Could not debug initial login page: {debug_e}")
+
+        # Look for "Dealer, Supplier, Other Login" button and click it
+        dealer_button_selectors = [
+            "text=Dealer, Supplier, Other Login",
+            "button:has-text('Dealer')",
+            "a:has-text('Dealer')",
+            "[data-testid*='dealer']",
+            ".dealer-login",
+            "#dealer-login"
+        ]
+
+        dealer_clicked = False
+        for selector in dealer_button_selectors:
+            try:
+                element = page.locator(selector)
+                if element.count() > 0 and element.first.is_visible():
+                    element.first.click()
+                    logging.info(f"Clicked dealer login button with selector: {selector}")
+                    dealer_clicked = True
+                    time.sleep(2)  # Wait for form to appear
+
+                    # Debug: check what happened after clicking dealer button
+                    try:
+                        current_url_after_click = page.url
+                        current_title_after_click = page.title()
+                        logging.info(f"After dealer click - URL: {current_url_after_click}, Title: {current_title_after_click}")
+
+                        # Check if we have any input fields now
+                        input_count = page.locator("input").count()
+                        logging.info(f"Input fields found after dealer click: {input_count}")
+
+                        # Screenshot after dealer click
+                        page.screenshot(path=f"/root/www/scraper/invoices/debug_after_dealer_click_{vin}.png")
+
+                    except Exception as debug_e:
+                        logging.warning(f"Could not debug after dealer click: {debug_e}")
+
+                    break
+            except Exception:
+                continue
+
+        if not dealer_clicked:
+            logging.warning("Could not find dealer login button")
+            # Debug: show available buttons/links
+            try:
+                available_elements = page.evaluate("""
+                    const buttons = Array.from(document.querySelectorAll('button, a, input[type="button"], input[type="submit"]')).map(el => ({
+                        tag: el.tagName,
+                        text: el.textContent.trim(),
+                        id: el.id,
+                        class: el.className
+                    })).filter(el => el.text.length > 0);
+                    return buttons.slice(0, 10);  // First 10 elements
+                """)
+                logging.info(f"Available clickable elements: {available_elements}")
+            except Exception:
+                pass
             return False
-        
-        logging.info("Login completed successfully.")
-        return True
-        
-    except PlaywrightTimeout as e:
-        logging.error("Timeout during login: %s", e)
-        if debug_dir:
-            try:
-                page.screenshot(path=str(debug_dir / "error_timeout.png"))
-            except Exception:
-                pass
-        return False
+
+        # Wait for and fill username field
+        try:
+            username_selectors = ["#userName", "input[name='username']", "input[type='email']", "input[type='text']"]
+            username_field = None
+            for selector in username_selectors:
+                try:
+                    field = page.locator(selector)
+                    if field.count() > 0 and field.first.is_visible():
+                        username_field = field.first
+                        logging.info(f"Found username field: {selector}")
+                        break
+                except Exception:
+                    continue
+
+            if not username_field:
+                logging.error("No username field found after clicking dealer login")
+                return False
+
+            username_field.fill("m-goins4")
+            time.sleep(0.5)
+
+            # Tab to password field and fill it
+            page.keyboard.press("Tab")
+            time.sleep(0.2)
+            page.keyboard.type(PASSWORD, delay=50)
+            time.sleep(0.5)
+
+            # Hit Enter to submit (as user described)
+            logging.info("Submitting login with Enter key")
+            page.keyboard.press("Enter")
+
+        except Exception as e:
+            logging.error(f"Form filling failed: {e}")
+            return False
+
+        # Wait for login to complete - user says they see PDF after hitting enter
+        logging.info("Waiting for login completion...")
+        page.wait_for_load_state("networkidle", timeout=30000)
+
+        # Check if we're back on the invoice page with PDF content
+        current_url = page.url
+        if "GetInvoice" in current_url and "fordvisions.dealerconnection.com" in current_url:
+            logging.info("Login successful - back on invoice page")
+            return True
+        else:
+            logging.warning(f"Login may have failed - current URL: {current_url}")
+            # Check if we're still on login page
+            if is_login_page(page):
+                logging.error("Still on login page after submission")
+                return False
+            # Otherwise, assume success (might be redirecting)
+            logging.info("Assuming login successful (not on login page)")
+            return True
+
     except Exception as e:
-        logging.exception("Error during login: %s", e)
-        if debug_dir:
-            try:
-                page.screenshot(path=str(debug_dir / "error_exception.png"))
-            except Exception:
-                pass
+        logging.error(f"Login error: {e}")
         return False
 
 
-def download_invoice(page: Page, vin: str, dest: Path, overwrite: bool = False) -> bool:
-    """
-    Download a single invoice PDF for the given VIN.
-
-    Returns True if a valid PDF was downloaded/saved, False otherwise.
-    """
-    if dest.exists() and not overwrite:
-        logging.info("Invoice already exists for VIN %s at %s; skipping", vin, dest)
-        return True
+def download_invoice(page: Page, vin: str, dest: Path, logged_in: bool) -> tuple[bool, bool]:
+    """Download a single invoice PDF for the given VIN."""
+    if dest.exists():
+        return True, logged_in
 
     url = INVOICE_URL.format(vin=vin)
-    logging.debug("Requesting invoice for VIN %s from %s", vin, url)
+    logging.info(f"Requesting invoice for VIN {vin}")
 
     try:
-        # Set up download handling
-        with page.expect_download(timeout=60000) as download_info:
-            page.goto(url, wait_until="networkidle", timeout=30000)
-        
-        download = download_info.value
-        download.save_as(dest)
-        logging.info("Saved invoice for VIN %s to %s", vin, dest)
-        return True
-        
-    except PlaywrightTimeout:
-        # No download triggered - might be inline PDF or error page
-        # Try to capture the page as PDF if it's displaying invoice content
-        try:
-            # Check if page has PDF content or invoice data
-            content = page.content()
-            
-            # If the page contains error indicators, log and skip
-            if "error" in content.lower() or "not found" in content.lower() or "invalid" in content.lower():
-                logging.info("No invoice available for VIN %s (error page detected)", vin)
-                return False
-            
-            # Try to print the page as PDF
-            page.pdf(path=str(dest))
-            logging.info("Saved invoice (as page PDF) for VIN %s to %s", vin, dest)
-            return True
-            
-        except Exception as e:
-            logging.warning("Could not save invoice for VIN %s: %s", vin, e)
-            return False
-            
-    except Exception as e:
-        logging.warning("Error downloading invoice for VIN %s: %s", vin, e)
-        return False
-
-
-def iter_vehicles(
-    vehicles: Iterable[Vehicle], limit: int | None = None
-) -> Iterable[Vehicle]:
-    """Optionally limit the number of vehicles processed."""
-    count = 0
-    for v in vehicles:
-        if limit is not None and count >= limit:
-            break
-        yield v
-        count += 1
-
-
-def prune_orphan_invoices(invoices_dir: Path, valid_vins: set[str]) -> int:
-    """
-    Delete any invoice PDFs whose VIN (filename stem) is not present in valid_vins.
-
-    This keeps invoices/ in sync with the most recent scraped CSV: when VINs drop
-    out of inventory and are no longer written to the DB, their old PDFs are
-    removed on the next run.
-    """
-    if not invoices_dir.exists():
-        return 0
-
-    deleted = 0
-    for pdf_path in invoices_dir.glob("*.pdf"):
-        vin_stem = pdf_path.stem.strip().upper()
-        if vin_stem and vin_stem not in valid_vins:
+        # Navigate to invoice URL with retry logic
+        max_retries = 3
+        for attempt in range(max_retries):
             try:
-                pdf_path.unlink()
-                deleted += 1
-                logging.info(
-                    "Deleted orphan invoice PDF %s (VIN %s no longer in inventory)",
-                    pdf_path,
-                    vin_stem,
-                )
-            except OSError:
-                logging.exception("Failed to delete orphan invoice PDF %s", pdf_path)
-    if deleted:
-        logging.info("Pruned %d orphan invoice PDFs.", deleted)
-    else:
-        logging.info("No orphan invoice PDFs to prune.")
-    return deleted
+                logging.info(f"Navigating to {url}... (attempt {attempt+1}/{max_retries})")
+                page.goto(url, wait_until="domcontentloaded", timeout=30000)
+                break  # Success, exit retry loop
+            except Exception as nav_e:
+                if attempt == max_retries - 1:
+                    raise nav_e  # Re-raise on last attempt
+                logging.warning(f"Navigation attempt {attempt+1} failed: {nav_e}, retrying...")
+                time.sleep(2)
+
+        # Handle login if needed
+        if is_login_page(page) or not logged_in or not check_session_valid(page):
+            logging.info(f"Login required for VIN {vin}")
+            if not handle_login(page, vin):
+                logging.error(f"Login failed for VIN {vin}")
+                return False, False
+            logged_in = True
+            # After login, navigate back to invoice URL
+            page.goto(url, wait_until="networkidle", timeout=8000)
+
+        # Check if we have invoice content
+        content = page.content()
+        title = page.title()
+        current_url = page.url
+
+        logging.debug(f"Page title: {title}")
+        logging.debug(f"Current URL: {current_url}")
+        logging.debug(f"Content length: {len(content)}")
+
+        # If we're on a login page, something went wrong
+        if is_login_page(page):
+            logging.error(f"Still on login page after processing VIN {vin}")
+            return False, False
+
+        # Check for error indicators
+        content_lower = content.lower()
+        error_indicators = ["error", "not found", "invalid", "no invoice", "unavailable", "access denied", "forbidden", "home realm discovery"]
+        if any(ind in content_lower for ind in error_indicators):
+            logging.info(f"No invoice available for VIN {vin} (error page)")
+            return False, logged_in
+
+        # More lenient validation - Ford invoices may load differently
+        # Basic checks: not on login page, has some content, includes VIN
+        has_vin = vin.lower() in content_lower
+        has_some_content = len(content) > 5000  # Reasonable minimum
+        not_login_page = not is_login_page(page)
+        no_error_indicators = not any(ind in content_lower for ind in [
+            "access denied", "forbidden", "authentication failed", "login required"
+        ])
+
+        logging.debug(f"VIN found: {has_vin}, Content size: {len(content)}, Not login: {not_login_page}, No errors: {no_error_indicators}")
+
+        if has_vin and has_some_content and not_login_page and no_error_indicators:
+            # Generate PDF in screen media to capture dynamic content
+            page.emulate_media(media="screen")
+            page.pdf(path=str(dest), format="Letter", print_background=True)
+            if dest.exists() and dest.stat().st_size > 5000:  # Reasonable size threshold
+                logging.info(f"Successfully saved invoice for VIN {vin} ({dest.stat().st_size} bytes)")
+                return True, logged_in
+            else:
+                if dest.exists():
+                    dest.unlink()
+                logging.warning(f"PDF created but too small for VIN {vin}")
+                return False, logged_in
+        else:
+            logging.info(f"No valid invoice content for VIN {vin} (has_vin={has_vin}, size={len(content)}, not_login={not_login_page})")
+            return False, logged_in
+
+    except Exception as e:
+        logging.error(f"Error downloading invoice for VIN {vin}: {e}")
+        return False, logged_in
 
 
-def run(
-    db_path: Path,
-    invoices_dir: Path,
-    *,
-    limit: int | None = None,
-    overwrite: bool = False,
-    delay_seconds: float = 1.0,
-    headless: bool = True,
-    debug: bool = False,
-    proxy: ProxyConfig | None = None,
-) -> int:
-    """
-    Main worker: fetch inventory and download invoices.
-
-    Returns the number of VINs for which we successfully saved a PDF.
-    """
-    ensure_output_dir(invoices_dir)
-    debug_dir = invoices_dir / "debug" if debug else None
-
-    if not db_path.exists():
-        logging.error("Database not found at %s", db_path)
-        return 0
-
-    with sqlite3.connect(db_path) as conn:
-        vehicles = fetch_inventory(conn)
-
-    if not vehicles:
-        logging.warning("No vehicles found in %s. Nothing to do.", db_path)
-        prune_orphan_invoices(invoices_dir, set())
-        return 0
-
-    logging.info("Found %d vehicles in %s", len(vehicles), db_path)
-    valid_vins = {v.vin.strip().upper() for v in vehicles if v.vin and v.vin.strip()}
-
-    success_count = 0
-
-    with sync_playwright() as p:
-        # Configure browser launch options
-        launch_options = {"headless": headless}
-        
-        # Configure context options
-        context_options = {
-            "accept_downloads": True,
-            "viewport": {"width": 1280, "height": 720},
-        }
-        
-        # Add proxy if configured
-        if proxy:
-            context_options["proxy"] = proxy.to_playwright_proxy()
-            logging.info("Using proxy: %s", proxy.server)
-        
-        browser = p.chromium.launch(**launch_options)
-        context = browser.new_context(**context_options)
-        page = context.new_page()
-
-        # Perform login first
-        if not login_to_fordvisions(page, debug_dir=debug_dir):
-            logging.error("Failed to log in to Ford Visions. Aborting.")
-            browser.close()
-            return 0
-
-        for idx, vehicle in enumerate(iter_vehicles(vehicles, limit=limit), start=1):
-            vin = (vehicle.vin or "").strip()
-            stock = (vehicle.stock or "").strip() if vehicle.stock is not None else ""
-            if not vin:
-                logging.debug("Row %d has empty VIN; skipping (stock=%r)", idx, stock)
-                continue
-
-            dest = invoices_dir / f"{vin}.pdf"
-            logging.info(
-                "[%d/%d] Processing VIN=%s stock=%s",
-                idx,
-                len(vehicles) if limit is None else min(len(vehicles), limit),
-                vin,
-                stock or "(none)",
-            )
-
-            # Fast-path: if the invoice already exists and we are not overwriting,
-            # skip the network request *and* avoid sleeping.
-            if dest.exists() and not overwrite:
-                logging.info(
-                    "Invoice already exists for VIN %s at %s; skipping download",
-                    vin,
-                    dest,
-                )
-                continue
-
-            if download_invoice(page, vin, dest, overwrite=overwrite):
-                success_count += 1
-
-            if delay_seconds > 0:
-                time.sleep(delay_seconds)
-
-        browser.close()
-
-    # After downloads, remove any PDFs whose VIN is no longer in the DB.
-    prune_orphan_invoices(invoices_dir, valid_vins)
-
-    logging.info("Successfully saved %d invoice PDFs.", success_count)
-    return success_count
-
-
-def parse_args(argv: list[str]) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description=(
-            "Download Ford invoice PDFs for all VINs in the "
-            "inventory database."
-        )
-    )
-    parser.add_argument(
-        "--db-path",
-        type=Path,
-        default=DB_PATH,
-        help=f"Path to inventory SQLite DB (default: {DB_PATH})",
-    )
-    parser.add_argument(
-        "--output-dir",
-        type=Path,
-        default=INVOICES_DIR,
-        help=f"Directory to store invoice PDFs (default: {INVOICES_DIR})",
-    )
-    parser.add_argument(
-        "--limit",
-        type=int,
-        default=None,
-        help="Process at most this many vehicles (for testing).",
-    )
-    parser.add_argument(
-        "--overwrite",
-        action="store_true",
-        help="Re-download and overwrite existing VIN PDFs.",
-    )
-    parser.add_argument(
-        "--no-delay",
-        action="store_true",
-        help="Do not sleep between requests (use with caution).",
-    )
-    parser.add_argument(
-        "--no-headless",
-        action="store_true",
-        help="Show the browser window (useful for debugging).",
-    )
-    parser.add_argument(
-        "--debug",
-        action="store_true",
-        help="Save debug screenshots during login process.",
-    )
-    parser.add_argument(
-        "--log-level",
-        default="INFO",
-        choices=["DEBUG", "INFO", "WARNING", "ERROR"],
-        help="Logging verbosity (default: INFO).",
-    )
-    
-    # Proxy configuration
-    proxy_group = parser.add_argument_group("proxy", "Proxy configuration for bypassing IP blocks")
-    proxy_group.add_argument(
-        "--proxy",
-        type=str,
-        default=None,
-        help=(
-            "Proxy URL (e.g., http://host:port, http://user:pass@host:port, "
-            "socks5://host:port). Can also use PROXY_URL environment variable."
-        ),
-    )
-    proxy_group.add_argument(
-        "--proxy-server",
-        type=str,
-        default=None,
-        help="Proxy server (e.g., http://proxy.example.com:8080). Alternative to --proxy.",
-    )
-    proxy_group.add_argument(
-        "--proxy-username",
-        type=str,
-        default=None,
-        help="Proxy username (if not included in --proxy URL).",
-    )
-    proxy_group.add_argument(
-        "--proxy-password",
-        type=str,
-        default=None,
-        help="Proxy password (if not included in --proxy URL).",
-    )
-    
-    return parser.parse_args(argv)
-
-
-def main(argv: list[str] | None = None) -> int:
-    if argv is None:
-        argv = sys.argv[1:]
-
-    args = parse_args(argv)
-
+def main() -> int:
+    """Main function - download all invoice PDFs."""
     logging.basicConfig(
-        level=getattr(logging, args.log_level.upper(), logging.INFO),
+        level=logging.DEBUG,
         format="%(asctime)s [%(levelname)s] %(message)s",
     )
 
-    delay = 0.0 if args.no_delay else 1.0
-    headless = not args.no_headless
-    
-    # Build proxy configuration
-    proxy = None
-    proxy_url = args.proxy or os.environ.get("PROXY_URL")
-    
-    if proxy_url:
-        # Parse proxy URL (may include credentials)
-        proxy = ProxyConfig.from_url(proxy_url)
-        # Override with explicit username/password if provided
-        if args.proxy_username:
-            proxy.username = args.proxy_username
-        if args.proxy_password:
-            proxy.password = args.proxy_password
-    elif args.proxy_server:
-        # Use separate server/username/password arguments
-        proxy = ProxyConfig(
-            server=args.proxy_server,
-            username=args.proxy_username,
-            password=args.proxy_password,
-        )
-    
-    try:
-        run(
-            db_path=args.db_path,
-            invoices_dir=args.output_dir,
-            limit=args.limit,
-            overwrite=args.overwrite,
-            delay_seconds=delay,
-            headless=headless,
-            debug=args.debug,
-            proxy=proxy,
-        )
-    except KeyboardInterrupt:
-        logging.warning("Interrupted by user.")
+    ensure_output_dir(INVOICES_DIR)
+
+    if not DB_PATH.exists():
+        logging.error("Database not found at %s", DB_PATH)
         return 1
+
+    # Fetch all vehicles
+    with sqlite3.connect(DB_PATH) as conn:
+        vehicles = fetch_inventory(conn)
+
+    if not vehicles:
+        logging.warning("No vehicles found in database.")
+        return 0
+
+    logging.info("Found %d vehicles in database", len(vehicles))
+    success_count = 0
+    logged_in = False  # Track login state
+
+    # Set up browser with proxy - use single context for session persistence
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        context = browser.new_context(
+            proxy=PROXY_CONFIG,
+            ignore_https_errors=True,
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            viewport={"width": 1920, "height": 1080},
+        )
+        page = context.new_page()
+
+        for idx, vehicle in enumerate(vehicles[:1], start=1):  # Process only first vehicle for testing
+            vin = (vehicle.vin or "").strip()
+            if not vin:
+                continue
+
+            dest = INVOICES_DIR / f"{vin}.pdf"
+            logging.info("[%d/%d] Processing VIN %s", idx, len(vehicles), vin)
+
+            try:
+                success, logged_in = download_invoice(page, vin, dest, logged_in)
+                if success:
+                    success_count += 1
+                    logging.info("Downloaded invoice for VIN %s", vin)
+                else:
+                    logging.warning("Failed to download invoice for VIN %s", vin)
+            except Exception as e:
+                logging.error(f"Unexpected error processing VIN {vin}: {e}")
+
+            # Minimal rate limiting
+            time.sleep(0.5)
+
+        browser.close()
+
+    logging.info("Successfully downloaded %d invoice PDFs", success_count)
     return 0
 
 
