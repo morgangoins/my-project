@@ -169,6 +169,10 @@
         .clear-all-filters:hover { text-decoration: underline; }
         .inventory { flex: 1; min-width: 0; }
         .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+        /* When showing bookmark comparison table, the grid layout constrains width; switch to full-width flow */
+        .cards-grid.table-view { display: block; }
+        /* Also ensure the table container spans the whole grid if grid layout is active for any reason */
+        .cards-grid .comparison-table-container { grid-column: 1 / -1; }
         .card { background: #fff; border-radius: 12px; padding: 16px 16px 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.04); border: 1px solid #e7e7e7; display: flex; flex-direction: column; gap: 12px; cursor: pointer; transition: box-shadow 0.2s, transform 0.2s; }
         .card:hover { box-shadow: 0 12px 28px rgba(0,0,0,0.08); transform: translateY(-2px); }
         .card-image-placeholder { background: #f2f2f2; border-radius: 12px 12px 0 0; margin: -16px -16px 12px -16px; overflow: hidden; display: flex; align-items: center; justify-content: center; color: #b0b3b8; font-size: 13px; height: 200px; position: relative; }
@@ -790,6 +794,8 @@ document.addEventListener('DOMContentLoaded', function() {
         isHomepage = true;
         selectedFilters.model = null;
         updateSortVisibility();
+        // Ensure we are not in bookmark table layout mode when returning home
+        grid.classList.remove('table-view');
         // Clear all filters
         ['year', 'series', 'trim', 'package', 'engine', 'wheelbase', 'drivetrain', 'body_style', 'equipment', 'color', 'status'].forEach(k => selectedFilters[k] = []);
         // Clear all exclude filters
@@ -4462,6 +4468,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderTableView() {
+        // Table view should take the full page width (not be constrained by the card grid columns)
+        grid.classList.add('table-view');
         grid.innerHTML = '';
 
         if (!filteredVehicles.length) {
@@ -4559,6 +4567,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderCards(reset) {
+        // Cards view uses the grid layout; ensure table-specific layout is disabled
+        grid.classList.remove('table-view');
         if (reset) {
             grid.innerHTML = '';
             displayedCount = 0;
