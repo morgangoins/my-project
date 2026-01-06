@@ -1,541 +1,1321 @@
 {
-    "definitions": {
-        "model_codes": {
-            "F1K": "XL Regular Cab 4x2",
-            "F1L": "XL Regular Cab 4x4",
-            "X1K": "XL SuperCab 4x2",
-            "X1L": "XL SuperCab 4x4",
-            "W1K": "XL SuperCrew 4x2",
-            "W1L": "XL SuperCrew 4x4",
-            "W1F": "XL SuperCrew (Hybrid Fleet) 4x4",
-            "X2K": "STX SuperCab 4x2",
-            "X2L": "STX SuperCab 4x4",
-            "W2K": "STX SuperCrew 4x2",
-            "W2L": "STX SuperCrew 4x4",
-            "X3K": "XLT SuperCab 4x2",
-            "X3L": "XLT SuperCab 4x4",
-            "W3K": "XLT SuperCrew 4x2",
-            "W3L": "XLT SuperCrew 4x4",
-            "W5K": "Lariat SuperCrew 4x2",
-            "W5L": "Lariat SuperCrew 4x4",
-            "W6K": "King Ranch SuperCrew 4x2",
-            "W6L": "King Ranch SuperCrew 4x4",
-            "W7K": "Platinum SuperCrew 4x2",
-            "W7L": "Platinum SuperCrew 4x4",
-            "W4L": "Tremor SuperCrew 4x4",
-            "W1R": "Raptor SuperCrew 4x4"
-        },
-        "wheelbase_codes": {
-            "122.5": "Regular Cab 6.5' Bed",
-            "141.0": "Regular Cab 8' Bed",
-            "145.0": ["SuperCab 6.5' Bed", "SuperCrew 5.5' Bed"],
-            "157.0": "SuperCrew 6.5' Bed"
-        },
-        "engine_codes": {
-            "99P": "2.7L V6 EcoBoost Engine",
-            "995": "5.0L V8 Engine",
-            "998": "3.5L V6 EcoBoost Engine",
-            "99D": "3.5L PowerBoost Full Hybrid V6 Engine",
-            "99G": "3.5L V6 EcoBoost High Output Engine",
-            "99J": "5.2L Supercharged V8 Engine"
-        },
-        "transmission_codes": {
-            "44H": "Hybrid Electronic Ten-Speed Automatic Transmission",
-            "44G": "Electronic Ten-Speed Automatic Transmission"
-        },
-        "option_codes": {
-            "53T": "Tow/Haul Package",
-            "41H": "Engine Block Heater",
-            "18B": "Black Platform Running Boards",
-            "18C": "6\" Angular Bright Anodized Step Bar",
-            "477": "Pro Power Onboard - 7.2 KW",
-            "63T": "Tailgate Step w/ Work Surface (or Black Finish Tailgate Appliqué on Platinum)",
-            "924": "Rear-Window, Fixed Privacy Glass with Defroster",
-            "A": "Vinyl 40/20/40 Front-Seat",
-            "67T": "Integrated Trailer Brake Controller",
-            "153": "Front License Plate Bracket"
-        },
-        "accessory_codes": {
-            "90B": "Aluminum Crossbed Toolbox by Weather Guard - Matte Black",
-            "90P": "Aluminum Crossbed Toolbox by Weather Guard - Bright",
-            "96W": "Bedliner - Tough Bed spray-in",
-            "96P": "Bedliner - Plastic drop-in",
-            "66C": "Paint Protection Film",
-            "96X": "Tonneau Pickup Box Cover - Hard Folding",
-            "96T": "Tonneau Pickup Box Cover - Soft Folding",
-            "96J": "Tonneau Pickup Box Cover - Retractable",
-            "91P": "8-way Power Driver's Seat",
-            "94S": "LED Warning Beacons - Amber",
-            "94W": "LED Warning Beacons - Amber/White",
-            "85H": "Back-up Alarm System",
-            "942": "Daytime Running Lamps (DRL) (Non-controllable)",
-            "413": "Skid Plates",
-            "T7C": "LT265/70R17C BSW all-terrain tires",
-            "19S": "Lobo Package",
-            "50M": "Mobile Office Package",
-            "191": "STX Black Appearance Package",
-            "645": "20\" Alloy Dark Carbonized Gray Wheel",
-            "54Y": "Manual-folding, Power Glass Trailer Tow Mirrors",
-            "59S": "LED Sideview Mirror Spotlights (Tow Mirrors)",
-            "47R": "Floor Liner - Tray Style",
-            "66B": "Retractable Rear Center Step",
-            "68L": "Bed Utility Package",
-            "193": "XLT Black Appearance Package",
-            "19P": "XLT Black Appearance Package Plus",
-            "55A": "FX4 Off-Road Package",
-            "52A": "BlueCruise (1-year Plan)",
-            "64N": "18\" Painted Aluminum Wheel",
-            "64L": "20\" Chrome-like PVD Wheel",
-            "43V": "Twin Panel Moonroof",
-            "T8C": "LT265/70R18C BSW all-terrain tires",
-            "16G": "Vinyl Flooring - Black",
-            "195": "Lariat Black Appearance Package",
-            "64Z": "22\" Gloss Black Wheel without Inserts",
-            "649": "22\" Chrome Wheel without Inserts",
-            "16A": "Heads-Up Display Delete",
-            "54W": "Power-folding, PowerScope Telescoping Trailer Tow Mirrors",
-            "646": "22\" Premium Painted w/ Chrome Inserts Wheel",
-            "96L": "Wheel Well Liner",
-            "648": "22\" Gloss Black Wheel w/ Inserts",
-            "63M": "Pro Access Tailgate",
-            "55D": "Graphics Delete",
-            "UM": "Agate Black Metallic",
-            "HX": "Antimatter Blue Metallic",
-            "B3": "Atlas Blue Metallic",
-            "M7": "Carbonized Gray Metallic",
-            "JS": "Iconic Silver Metallic",
-            "YZ": "Oxford White",
-            "D4": "Rapid Red Metallic Tinted Clearcoat",
-            "A3": "Space White Metallic",
-            "AZ": "Star White Metallic Tri-Coat",
-            "T9": "Marsh Gray",
-            "GR": "Green (Fleet)",
-            "MB": "Orange (Fleet)",
-            "31": "School Bus Yellow (Fleet)",
-            "E4": "Vermillion Red (Fleet)",
-            "AT": "Yellow (Fleet)",
-            "DB": "Shelter Green (Raptor) or Sport Cloth (STX)",
-            "AS": "Vinyl 40/20/40 Front-Seat",
-            "CS": "Cloth 40/20/40 Front-Seat",
-            "US": "Cloth 40/Console/40 Front-Seats",
-            "FB": "Unique Sport Cloth 40/Console/40",
-            "3B": "ActiveX Trimmed 40/Console/40",
-            "79V": "COV Required",
-            "C09": "Priced DORA"
-        }
-    },
+    "year": 2025,
+    "model": "F-150",
+    "revision_date": "2025-09-17",
 
+    "major_product_changes": [
+        "New Platinum Plus (703A) series with premium maintenance plan",
+        "New Lobo Package (19S) for STX",
+        "BlueCruise standard on Lariat (90-day trial)",
+        "BlueCruise 1-year plan standard on King Ranch, Platinum",
+        "Ford Co-Pilot360 2.0 standard across all trims",
+        "Pro Power Onboard standard on King Ranch, Platinum, Tremor, Raptor",
+        "Mobile Office Package standard on XLT 303A, Lariat 502A, King Ranch, Platinum, Tremor 402A, Raptor",
+        "Bed Utility Package standard on King Ranch, Platinum, Raptor",
+        "Tow/Haul Package standard on King Ranch, Platinum"
+    ],
 
-    "rules": {
-        "models": [
-            {
-                "model": "F1K",
-                "wheelbases": [
-                    {
-                        "wheelbase": "122.5",
-                        "packages": [
-                            {
-                                "package": "101A",
-                                "options": {
-                                    "paint": ["UM","HX","B3","M7","JS","YZ"],
-                                    "standard": ["995", "44G", "XL6"],
-                                    "optional": ["41H", "18B", "63T", "924", "A", "153", "90B", "90P", "96W", "96P", "66C", "96X", "96T", "96J"],
-                                    "fleet_only": ["91P", "94S", "94W", "85H", "942", "413", "T7C"]
-                                }
-                            },
-                            {
-                                "package": "103A",
-                                "options": {
-                                    "standard": ["995", "44G", "XL6"],
-                                    "optional": ["41H", "18B", "63T", "A", "153", "90B", "90P", "96W", "96P", "66C", "96X", "96T", "96J"]
-                                },
-                                "includes": ["Interior Work Surfaces", "LED Fog Lamps", "17\" silver painted aluminum", "Chrome Bumpers", "Electronic Rear-Window Defroster", "Rear Privacy Glass"]
-                            }
-                        ]
-                    },
-                    {
-                        "wheelbase": "141.0",
-                        "packages": [
-                            {
-                                "package": "101A",
-                                "options": {
-                                    "standard": ["995", "44G", "XL6"],
-                                    "optional": ["41H", "18B", "63T", "924", "A", "153", "90B", "90P", "96W", "96P", "66C", "96X", "96T", "96J"]
-                                }
-                            },
-                            {
-                                "package": "103A",
-                                "options": {
-                                    "standard": ["995", "44G", "XL6"],
-                                    "optional": ["41H", "18B", "63T", "A", "153", "90B", "90P", "96W", "96P", "66C", "96X", "96T", "96J"]
-                                },
-                                "includes": ["Interior Work Surfaces", "LED Fog Lamps", "17\" silver painted aluminum", "Chrome Bumpers", "Electronic Rear-Window Defroster", "Rear Privacy Glass"]
-                            }
-                        ]
-                    }
+    "trim_levels": {
+        "XL": {
+            "series_codes": ["F1K", "F1L", "X1K", "X1L", "W1K", "W1L", "W1F"],
+            "equipment_groups": {
+                "101A": "Standard",
+                "103A": "High",
+                "104A": "Hybrid Fleet Only"
+            },
+            "standard_equipment": {
+                "mechanical": [
+                    "2.7L V6 EcoBoost with Auto Start-Stop Technology (standard on 141\" and 145\")",
+                    "5.0L V8 with Auto Start-Stop Technology (standard on 122\" and 157\")",
+                    "4x4 Electronic-Shift-On-the-Fly (ESOF) with Neutral Towing Capability",
+                    "Auto Hold",
+                    "Axle, Front – Independent Front Suspension (IFS)",
+                    "Brakes – 4-Wheel Disc with ABS",
+                    "Selectable Drive Modes: Normal, ECO, Sport, Tow/Haul, Slippery, Trail – 4x2 only",
+                    "Selectable Drive Modes: Normal, ECO, Sport, Tow/Haul, Slippery, Deep Snow/Sand, Mud/Rut – 4x4 only",
+                    "Electronic Ten-Speed Automatic Transmission",
+                    "Fail-Safe Cooling",
+                    "Jack",
+                    "Electric Parking Brake",
+                    "SelectShift Automatic Transmission with Progressive Range Select",
+                    "Shock Absorbers, Gas – Heavy-Duty, Front",
+                    "Shock Absorbers, Gas – Heavy-Duty, Outboard Mounted, Rear",
+                    "Springs, Front – Coil",
+                    "Springs, Rear – Leaf, Two-Stage Variable Rate",
+                    "Stabilizer Bar, Front",
+                    "Steering – Power, Rack-and-Pinion"
+                ],
+                "exterior": [
+                    "Bed Storage Boxes (NA w/ 8' Box)",
+                    "Bumper and Fascia, Front – Black",
+                    "Bumper, Rear – Black",
+                    "Cargo Lamp – integrated with Center High-mounted Stop Lamp (CHMSL)",
+                    "Daytime Running Lamps (DRL) (On/Off Cluster Controllable)",
+                    "Easy Fuel Capless Fuel-Filler",
+                    "Exhaust – Single Rear",
+                    "F-150 Fender Badge",
+                    "Fuel Tank – Standard Range 23 Gallon (Regular Cab 6.5' Box)",
+                    "Fuel Tank – Extended Range 36 Gallon (Regular Cab NA w/ 6.5' Box, SuperCab and SuperCrew)",
+                    "Fully Boxed Steel Frame",
+                    "Grille – Black Coast to Coast",
+                    "Handles, Black – Door and Tailgate with Black Bezel",
+                    "Hooks – Pickup Box Tie-Down, four (4)",
+                    "Hooks – Front Tow 4x4, two (2)",
+                    "Mirrors, Sideview – Manual-folding, Power Glass with Heat and Black Skull Caps",
+                    "Power Tailgate Lock",
+                    "Spare Tire Carrier – Rear Under Frame",
+                    "Spare Tire",
+                    "Stone Cuffs, Front & Rear",
+                    "Tailgate Lift Assist",
+                    "Tailgate – removable with key lock",
+                    "Tires – 245/70R17 BSW all-season (A/S) 4x2",
+                    "Tires – 265/70R17 BSW all-terrain (A/T) 4x4",
+                    "Trailer Sway Control",
+                    "Trailer Towing – 4-pin wiring, ball mounting provisions in rear bumper",
+                    "Wheels – 17\" silver steel",
+                    "Wipers – Intermittent speed"
+                ],
+                "interior_comfort": [
+                    "12\" Productivity Screen in Instrument Cluster",
+                    "Air Conditioning Registers – Black Vanes with Chrome Knob",
+                    "Auxiliary Audio Input Jack",
+                    "Black Vinyl Floor Covering",
+                    "Compass Display in Instrument Cluster",
+                    "Cruise Control",
+                    "Dome Light",
+                    "Door trim – Soft armrest, grab handle and front map pockets",
+                    "Fade-to-Off Interior Lighting",
+                    "Gauges and Meters – Fuel, Oil Pressure, Transmission Temperature and Engine Coolant Temperature Gauges; Speedometer, Odometer and Tachometer",
+                    "Grab Handles – Front A-Pillar, Driver and Passenger Side",
+                    "Grab Handles – Rear B-Pillar (SuperCrew)",
+                    "Horn – Dual-Note",
+                    "Illuminated Entry",
+                    "Manual Air Conditioning, Single Zone",
+                    "Outside Temperature Display",
+                    "Powerpoint 12V (Hybrid only)",
+                    "Power Door-Locks with Flip Key and Integrated Key Transmitter Keyless-Entry (incl. Autolock)",
+                    "Power Windows (Front/Rear) – One-touch Up/Down Driver and Passenger Front Windows",
+                    "Rear-window with Fixed Glass and Solar Tint",
+                    "Rearview Mirror, Day/Night",
+                    "Scuff Plates – MIC, Front",
+                    "Seat, Front – Cloth 40/20/40, 2-Way manual driver/passenger, Armrest",
+                    "Seat, Rear – Cloth, USB charging ports two (2), 60/40 flip-up split seat (SuperCab), 60/40 flip-up split seat with elongated cushion (SuperCrew)",
+                    "Steering Wheel, Black Urethane – Manual Tilt/Telescoping and Manual Locking",
+                    "Visor, Driver Side; Visor with Mirror, Passenger-Side"
+                ],
+                "safety_security": [
+                    "AdvanceTrac w/RSC (Roll Stability Control)",
+                    "Airbags – Driver and Passenger Front",
+                    "Airbags – Driver and Passenger Seat-Mounted Side",
+                    "Airbags – Safety Canopy Side-Curtain (1st and 2nd row coverage)",
+                    "Curve Control",
+                    "LED Reflector Headlamps – Black Bezels",
+                    "Perimeter Alarm",
+                    "Rainlamp Wiper Activated Headlamps",
+                    "Seat Belts, Active Restraint System (ARS)",
+                    "SecuriLock Passive Anti-Theft System (PATS)",
+                    "SOS Post-Crash Alert System",
+                    "Tire Pressure Monitoring System (TPMS)",
+                    "Ford Security Package (1-year included with activation)"
+                ],
+                "ford_copilot360": [
+                    "Ford Co-Pilot360 2.0",
+                    "Auto High Beams",
+                    "Blind Spot Assist",
+                    "BLIS with Cross-Traffic Alert",
+                    "Camera Only AEB Oncoming",
+                    "Camera Only Evasive Steering Assist",
+                    "Lane-Keeping System (Lane-Keeping Alert, Lane-Keeping Aid, Driver Alert, Road Edge Detection)",
+                    "Intersection Assist",
+                    "Pre-Collision Assist with Automatic Emergency Braking (AEB) (Pedestrian Detection, Forward Collision Warning, Dynamic Brake Support)",
+                    "Post-Collision Braking",
+                    "Rear View Camera",
+                    "Rear Parking Sensors",
+                    "Reverse Brake Assist"
+                ],
+                "functional": [
+                    "Autolamp – Auto On/Off Headlamps",
+                    "AM/FM Stereo (4 speakers Regular Cab, 6 speakers SuperCab/SuperCrew)",
+                    "Class IV Trailer Hitch (incl. Smart Trailer Tow Connector, 7/4 pin-connector)",
+                    "FordPass Connect (5G) – 5G LTE Wi-Fi hotspot",
+                    "Hill Start Assist",
+                    "SYNC 4 with Enhanced Voice Recognition",
+                    "12\" LCD Capacitive Touchscreen with Swipe Capability",
+                    "Wireless Phone Connection",
+                    "Cloud Connected",
+                    "AppLink w/App Catalog",
+                    "911 Assist",
+                    "Apple CarPlay and Android Auto Compatibility",
+                    "SiriusXM with 360L (3-month trial)",
+                    "USB charging ports – two (2)",
+                    "USB data charging ports – two (2)"
                 ]
             },
-            {
-                "model": "F1L",
-                "wheelbases": [
-                    {
-                        "wheelbase": "122.5",
-                        "packages": [
-                            {
-                                "package": "101A",
-                                "options": {
-                                    "standard": ["995", "44G", "XL6"],
-                                    "optional": ["41H", "18B", "63T", "924", "A", "153", "90B", "90P", "96W", "96P", "66C", "96X", "96T", "96J"]
-                                }
-                            },
-                            {
-                                "package": "103A",
-                                "options": {
-                                    "standard": ["995", "44G", "XL6"],
-                                    "optional": ["41H", "18B", "63T", "A", "153", "90B", "90P", "96W", "96P", "66C", "96X", "96T", "96J"]
-                                },
-                                "includes": ["Interior Work Surfaces", "LED Fog Lamps", "17\" silver painted aluminum", "Chrome Bumpers", "Electronic Rear-Window Defroster", "Rear Privacy Glass"]
-                            }
-                        ]
-                    },
-                    {
-                        "wheelbase": "141.0",
-                        "packages": [
-                            {
-                                "package": "101A",
-                                "options": {
-                                    "standard": ["995", "44G", "XL6"],
-                                    "optional": ["41H", "18B", "63T", "924", "A", "153", "90B", "90P", "96W", "96P", "66C", "96X", "96T", "96J"]
-                                }
-                            },
-                            {
-                                "package": "103A",
-                                "options": {
-                                    "standard": ["995", "44G", "XL6"],
-                                    "optional": ["41H", "18B", "63T", "A", "153", "90B", "90P", "96W", "96P", "66C", "96X", "96T", "96J"]
-                                },
-                                "includes": ["Interior Work Surfaces", "LED Fog Lamps", "17\" silver painted aluminum", "Chrome Bumpers", "Electronic Rear-Window Defroster", "Rear Privacy Glass"]
-                            }
-                        ]
-                    }
+            "equipment_group_content": {
+                "103A": {
+                    "includes": [
+                        "Interior Work Surfaces",
+                        "LED Fog Lamps",
+                        "17\" silver painted aluminum",
+                        "Chrome Bumpers",
+                        "Electronic Rear-Window Defroster",
+                        "Rear Privacy Glass"
+                    ]
+                },
+                "104A": {
+                    "includes": [
+                        "Dual-zone Electronic Automatic Temperature Control (DEATC)",
+                        "8-way Power Driver's Seat – Power Lumbar Driver",
+                        "40/Console/40 Front-Seats"
+                    ]
+                }
+            }
+        },
+        "STX": {
+            "series_codes": ["X2K", "X2L", "W2K", "W2L"],
+            "equipment_groups": {
+                "200B": "Standard",
+                "200A": "Mid",
+                "201A": "FX4"
+            },
+            "additions_over_xl": {
+                "exterior": [
+                    "Bumper, Front/Rear – Body-color",
+                    "Electronic Rear-Window Defroster",
+                    "Rear Privacy Glass",
+                    "Fender Vent – Lime Accent",
+                    "Grille – Black and Dark Gray Coast to Coast",
+                    "Tires – 265/60R18 BSW all-season (A/S) 4x2",
+                    "Tires – 275/65R18 BSW all-terrain 4x4",
+                    "Wheels – 18\" Gloss Black"
+                ],
+                "interior_comfort": [
+                    "Carpet – Color-coordinated with Carpeted Floor Mats",
+                    "Seat, Front – Unique Sport Cloth 40/console/40, Manual lumbar (driver), Seatback Map Pockets"
                 ]
             },
-            {
-                "model": "X1K",
-                "wheelbases": [
-                    {
-                        "wheelbase": "145.0",
-                        "packages": [
-                            {
-                                "package": "101A",
-                                "options": {
-                                    "standard": ["99P", "44G", "XL6"],
-                                    "optional": ["53T", "41H", "18B", "63T", "924", "A", "153", "90B", "90P", "96W", "96P", "66C", "96X", "96T", "96J"]
-                                }
-                            },
-                            {
-                                "package": "103A",
-                                "options": {
-                                    "standard": ["99P", "44G", "XL6"],
-                                    "optional": ["53T", "41H", "18B", "63T", "A", "153", "90B", "90P", "96W", "96P", "66C", "96X", "96T", "96J"]
-                                },
-                                "includes": ["Interior Work Surfaces", "LED Fog Lamps", "17\" silver painted aluminum", "Chrome Bumpers", "Electronic Rear-Window Defroster", "Rear Privacy Glass"]
-                            }
-                        ]
-                    }
+            "equipment_group_content": {
+                "200A": {
+                    "includes": [
+                        "20\" Dark Gray with Machined Aluminum Wheel",
+                        "275/60/20 BSW all-season (A/S) 4x2 or all-terrain 4x4",
+                        "LED Fog Lamps w/ LED Cornering Lamp",
+                        "Zone Lighting"
+                    ]
+                },
+                "201A": {
+                    "includes": [
+                        "18\" Black Painted Aluminum Wheel",
+                        "LT265/70/18 A/T BSW Tire",
+                        "Dual Exhaust w/ Black Tips",
+                        "Bumper, Front/Rear – Argent",
+                        "6\" Black Running Boards",
+                        "STX Badge in Fender Vent",
+                        "FX4 Box Decal",
+                        "3.31 E-Locker (5.0L only)",
+                        "3.55 E-Locker (2.7L only)",
+                        "Off-Road-Tuned Front Shock Absorbers",
+                        "Monotube Rear Shocks",
+                        "Skid Plates: fuel tank, transfer case, front differential",
+                        "Floor Liner – Tray Style (without carpet mats)"
+                    ]
+                }
+            }
+        },
+        "XLT": {
+            "series_codes": ["X3K", "X3L", "W3K", "W3L"],
+            "equipment_groups": {
+                "300A": "Base",
+                "301A": "Standard",
+                "302A": "Mid",
+                "303A": "High"
+            },
+            "additions_over_xl": {
+                "exterior": [
+                    "Bumper, Front – Chrome with Body-color Fascia",
+                    "Bumper Rear – Chrome",
+                    "Electronic Rear-Window Defroster",
+                    "Door and tailgate handles – Black",
+                    "Grille – Coast to Coast Black",
+                    "LED Fog Lamps",
+                    "Tires – 245/70R17 BSW all-season (A/S) 4x2",
+                    "Tires – 275/65R18 BSW all-terrain (A/T) 4x4",
+                    "Rear Privacy Glass",
+                    "Wheels – 17\" Silver Painted Aluminum 4x2",
+                    "Wheels – 18\" Chrome-like PVD 4x4"
+                ],
+                "interior_comfort": [
+                    "Carpet – Color-coordinated with Carpeted Floor Mats",
+                    "Seat, Front – Cloth 40/20/40, 2-Way manual driver/passenger, Manual lumbar (driver), Armrest",
+                    "Seat, Rear – Cloth, USB charging ports two (2), 60/40 flip-up split seat, Rear Under-seat Storage",
+                    "Steering Wheel, Black Urethane – Manual Tilt/Telescoping and Manual Locking",
+                    "Visors with Driver and Passenger Covered Mirrors"
+                ],
+                "functional": [
+                    "Zone Lighting"
                 ]
-        ]
-    }
+            },
+            "equipment_group_content": {
+                "301A": {
+                    "includes": [
+                        "Cloth 40/20/40 front seats (8-way power driver's seat w/ power driver lumbar; Armrest w/storage and Locking storage under 20% seat)",
+                        "6\" Angular Bright Anodized Step Bar",
+                        "Chrome Door and Tailgate handles",
+                        "Chrome single-tip exhaust",
+                        "Grille – Black Painted Coast to Coast Black Mesh with chrome center bar",
+                        "Wrapped Steering Wheel",
+                        "Dual-zone Electronic Automatic Temperature Control (DEATC)",
+                        "265/60R18 BSW all-season (A/S) 4x2",
+                        "18\" Chrome-like PVD 4x2"
+                    ]
+                },
+                "302A": {
+                    "includes": [
+                        "Connected Navigation (1-year trial)",
+                        "Ford Co-Pilot360 Assist 2.0 (360-Degree Camera, Adaptive Cruise Control with Lane Centering/Predictive Speed Assist/Stop & Go, AEB Oncoming, Driver State Detection, Evasive Steering Assist, Front Parking Sensors, Pro Trailer Backup Assist, Pro Trailer Hitch Assist)",
+                        "Auto-Dimming Rearview Mirror",
+                        "Manual-folding, Power Glass Sideview Mirrors with Heat, Turn Signal, High-Intensity LED Security Approach Lamps, LED Sideview mirror Spotlights and Chrome Skull Caps",
+                        "Remote Start System with Remote Tailgate Release",
+                        "Cloth 40/Console/40 Seats (10-way power driver seat w/ power lumbar, 8-way power passenger seat w/ power lumbar)",
+                        "Heated Front Seats",
+                        "Intelligent Access with Push-Button Start (incl. Approach Detection)",
+                        "Power-Sliding Rear Window",
+                        "400W Outlets (Cab & Bed)"
+                    ]
+                },
+                "303A": {
+                    "includes": [
+                        "20\" Chrome-Like PVD Wheel",
+                        "B&O Sound System by Bang & Olufsen with HD Radio (8 speakers including subwoofer)",
+                        "Power-Adjustable Pedals",
+                        "Mobile Office Package"
+                    ]
+                }
+            }
+        },
+        "Lariat": {
+            "series_codes": ["W5K", "W5L"],
+            "equipment_groups": {
+                "500A": "Standard",
+                "501A": "Mid",
+                "502A": "High"
+            },
+            "additions_over_xlt": {
+                "mechanical": [
+                    "5.0L V8 with Auto Start-Stop Technology",
+                    "Two-Speed Automatic 4WD with Neutral Towing Capability"
+                ],
+                "exterior": [
+                    "Front tow hooks two (2)",
+                    "Mirrors, Sideview – Power-folding, Power Glass with Heat, Turn Signal, Memory, Auto-Dimming Feature (Driver's Side), High-Intensity LED Security Approach Lamps, LED Sideview mirror Spotlights w/ Chrome skull caps",
+                    "LED Projector with Dynamic bending Headlamps",
+                    "Tailgate LED"
+                ],
+                "interior_comfort": [
+                    "Additional Steering Wheel Controls",
+                    "Auto-Dimming Rearview Mirror",
+                    "Dual-zone Electronic Automatic Temperature Control (DEATC)",
+                    "Premium Wrapped Heated Steering Wheel",
+                    "Media Bin w/ USB data charging ports – two (2)",
+                    "Pedals, Power-Adjustable w/Memory",
+                    "Seat, Front – ActiveX Trimmed 40/console/40, Heated and ventilated, 10-way power driver seat and 8-way power front passenger seat (power lumbar driver/passenger), Memory driver's seat",
+                    "Seat, Rear – Armrest w/cupholders"
+                ],
+                "functional": [
+                    "400W Outlets (Cab & Bed)",
+                    "B&O Sound System by Bang & Olufsen with HD Radio (8 speakers including subwoofer)",
+                    "Connected Navigation (1-year included)",
+                    "Intelligent Access with Push-button Start (incl. Approach Detection)",
+                    "Rain-sensing wipers",
+                    "Remote Start System with Remote Tailgate Release"
+                ],
+                "ford_copilot360": [
+                    "Ford Co-Pilot360 Assist 2.0",
+                    "360-Degree Camera",
+                    "Adaptive Cruise Control (ACC) with Lane Centering, Predictive Speed Assist, Stop & Go",
+                    "AEB Oncoming",
+                    "Driver State Detection",
+                    "Evasive Steering Assist",
+                    "Front Parking Sensors",
+                    "Pro Trailer Backup Assist",
+                    "Pro Trailer Hitch Assist",
+                    "BlueCruise Equipped (90-day Trial)"
+                ]
+            },
+            "equipment_group_content": {
+                "501A": {
+                    "includes": [
+                        "20\" chrome-like PVD Wheels",
+                        "275/60/20 BSW all-terrain tires (A/T)",
+                        "Power-Sliding rear-window",
+                        "Visors with Driver and Passenger illuminated, covered mirrors",
+                        "6\" Angular Bright Anodized Step Bar"
+                    ]
+                },
+                "502A": {
+                    "includes": [
+                        "Ambient Lighting – Ice Blue Color Only",
+                        "6\" Extended Angular Bright Anodized Step Bar (NA w/ 157\" WB)",
+                        "Heads-Up Display",
+                        "B&O Unleashed Sound System by Bang & Olufsen with HD Radio (14 speakers including subwoofer)",
+                        "Second-row heated seats",
+                        "Mobile Office Package"
+                    ]
+                }
+            }
+        },
+        "King Ranch": {
+            "series_codes": ["W6K", "W6L"],
+            "equipment_groups": {
+                "601A": "High"
+            },
+            "additions_over_lariat": {
+                "mechanical": [
+                    "3.5L V6 EcoBoost with Auto Start-Stop Technology"
+                ],
+                "exterior": [
+                    "Badges – King Ranch Fender",
+                    "Bumper, Front/Rear – Painted Tu-Tone",
+                    "Chrome skull caps",
+                    "Grille – chrome surround w/ bronze accents",
+                    "Power-Deployable Running Boards",
+                    "Pro Power Onboard – 2KW (3.5L V6 EcoBoost only)",
+                    "Unique Hood with Inserts",
+                    "Two-Tone Paint with Marsh Gray Lower Accent Color",
+                    "Tires – 275/60/20 BSW all-terrain tires (A/T)",
+                    "Wheels – 20\" Chrome-Like PVD and King Ranch wheel ornament"
+                ],
+                "interior_comfort": [
+                    "Ambient Lighting – Ice Blue Color Only",
+                    "Leather Center Console Lid, Shifter Knob and Door Armrests",
+                    "Power-Sliding rear window",
+                    "Power Tilt/Telescoping Steering Column with Memory",
+                    "Steering Wheel with King Ranch Logo",
+                    "Seat, Front – Multicontour seats with Active Motion Leather bucket with King Ranch Badge",
+                    "Seat, Rear – Heated seats",
+                    "Twin Panel Moonroof",
+                    "Unique Genuine Wood Interior Trim Accents",
+                    "Unique Metallic Front Scuff Plates"
+                ],
+                "functional": [
+                    "B&O Unleashed Sound System by Bang & Olufsen HD Radio (14 speakers including subwoofer)",
+                    "Bed Utility Package",
+                    "BlueCruise Equipped (1-year Plan)",
+                    "Heads-Up Display",
+                    "Mobile Office Package",
+                    "Tow/Haul Package"
+                ]
+            }
+        },
+        "Platinum": {
+            "series_codes": ["W7K", "W7L"],
+            "equipment_groups": {
+                "701A": "Standard",
+                "702A": "High",
+                "703A": "Plus"
+            },
+            "additions_over_lariat": {
+                "mechanical": [
+                    "3.5L V6 EcoBoost with Auto Start-Stop Technology"
+                ],
+                "exterior": [
+                    "Badge – Platinum Fender",
+                    "Bumper, Front/Rear – Body-color",
+                    "Gloss Black Belt Moldings",
+                    "Gloss Black skull caps",
+                    "Grille – Gloss Black Surround w/ Gloss Black Accents",
+                    "Handles, Body-Color – Door, Tailgate and Bezel",
+                    "Power-Deployable Running Boards",
+                    "Pro Power Onboard – 2KW (3.5L V6 EcoBoost only)",
+                    "Smoked Chrome – Single Exhaust",
+                    "Unique Hood with Gloss Black Inserts",
+                    "Tires – 275/60/20 BSW all-terrain tires (A/T)",
+                    "Wheels – 20\" Painted Gloss Ebony Black"
+                ],
+                "interior_comfort": [
+                    "Aluminum Appliqué on Center Panel and Console",
+                    "Ambient Lighting – Ice Blue Color Only",
+                    "Leather-Trimmed Center Console Lid, Shifter Knob and Door Armrests",
+                    "Leather-Wrapped and Heated Steering Wheel w/ Platinum Logo – Power Tilt/Telescoping with Memory",
+                    "Lockable fold-flat storage",
+                    "Power-Sliding rear window",
+                    "Power Tilt/Telescoping Steering Column with Memory",
+                    "Seat, Front – Unique multicontour seats with Active Motion Leather Seating Surfaces with flow-through console and floor shifter",
+                    "Seat, Rear – Heated seats",
+                    "Unique Bright Inserts in Scuff Plates"
+                ],
+                "functional": [
+                    "Bed Utility Package",
+                    "BlueCruise Equipped (1-year Plan)",
+                    "Mobile Office Package",
+                    "Tow/Haul Package"
+                ]
+            },
+            "equipment_group_content": {
+                "702A": {
+                    "includes": [
+                        "B&O Unleashed Sound System by Bang & Olufsen with HD Radio (14 speakers including subwoofer)",
+                        "Heads-up Display",
+                        "Twin Panel Moonroof"
+                    ]
+                },
+                "703A": {
+                    "includes": [
+                        "22\" Premium Painted w/Chrome Inserts Wheel",
+                        "Floor Liner – Tray Style",
+                        "Full Quilted Leather Seats w/ Platinum Badge",
+                        "Illuminated Scuff Plate",
+                        "Leather-wrapped Instrument Panel",
+                        "Platinum Hood Lettering",
+                        "Platinum Plus Exterior Theme",
+                        "Platinum Plus Interior Theme",
+                        "Satin – Single Exhaust",
+                        "Wheel Well Liner",
+                        "Platinum Plus Experience (Premium Maintenance Plan, Elite Welcome Call, Welcome Package and Tribute Item, Accessories Discount (90 day window), FordPass Rewards Upgrade Tier, 1:1 Texting with Ford Truck Expert)"
+                    ]
+                }
+            }
+        },
+        "Tremor": {
+            "series_codes": ["W4L"],
+            "equipment_groups": {
+                "401A": "Standard",
+                "402A": "High"
+            },
+            "additions_over_xlt": {
+                "mechanical": [
+                    "5.0L V8 with Auto Start-Stop Technology",
+                    "3.73 Electronic-locking rear-axle",
+                    "9.75\" gearset",
+                    "Heavy-Duty Jack",
+                    "Selectable Drive Modes: Normal, ECO, Sport, Tow/Haul, Slippery, Deep Snow/Sand, Mud/Rut, Rock Crawl",
+                    "Shocks – Off-Road Front and Rear; Tremor Logo on Rear",
+                    "Springs, Front – Coil",
+                    "Springs, Rear – Leaf, Two-Stage Variable Rate",
+                    "Stabilizer Bar, Front",
+                    "Trail Control with Trail 1-Pedal Drive and Trail Turn Assist",
+                    "Unique Tremor Control Arms",
+                    "Unique Tremor Front Knuckle"
+                ],
+                "exterior": [
+                    "Box Side Decal – Tremor Logo",
+                    "Bumper, Front and Rear – Body-color",
+                    "Black Belt Moldings",
+                    "Exhaust – Unique Dual Outlet",
+                    "Grille – Unique Tremor Style Coast to Coast w/ Active Orange Accents",
+                    "Handles, Body-Color – Door with Body-Color Bezel",
+                    "Hooks – Front Tow, two (2)",
+                    "Hooks – Rear Tow, two (2)",
+                    "Manual-folding, Power Glass Sideview Mirrors with Heat, Turn Signal, High-Intensity LED Security Approach Lamps, LED Sideview mirror Spotlights and Black Skull Caps",
+                    "Skid Plates",
+                    "Tires – 275/70R18 all-terrain (A/T)",
+                    "Wheels – 18\" Alloy w/ Dark Matte Finish",
+                    "Unique Off-Road Style Running Boards"
+                ],
+                "interior_comfort": [
+                    "6 upfitter switches in overhead console",
+                    "Color-coordinated Carpet w/ Carpeted Matching Floor Mats w/ Tremor Logo",
+                    "Dual-zone Electronic Automatic Temperature Control (DEATC)",
+                    "Power-Adjustable Pedals",
+                    "Power-Sliding rear-window",
+                    "Seats, Front – 10-way Power Driver Seat and Multi-Adjustable Power Front Passenger Seat",
+                    "Seats, Front – Unique Black Sport Cloth 40/Console/40 w/ Flow through Console and Floor Shifter",
+                    "Active Orange Stitching on seats and console",
+                    "Heated Front-Seats"
+                ],
+                "ford_copilot360": [
+                    "BlueCruise Equipped (90-day Trial)",
+                    "Ford Co-Pilot360 Assist 2.0",
+                    "360-Degree Camera",
+                    "Adaptive Cruise Control (ACC) with Lane Centering, Predictive Speed Assist, Stop & Go",
+                    "AEB Oncoming",
+                    "Driver State Detection",
+                    "Evasive Steering Assist",
+                    "Front Parking Sensors",
+                    "Pro Trailer Backup Assist",
+                    "Pro Trailer Hitch Assist"
+                ],
+                "functional": [
+                    "B&O Sound System by Bang & Olufsen with HD Radio (8 speakers including subwoofer)",
+                    "Connected Navigation (1-year included)",
+                    "Hill Descent Control",
+                    "Remote Start System with Remote Tailgate Release",
+                    "Increased Ride Height and Improved Approach/Departure Angles",
+                    "Intelligent Access with Push-Button Start (incl. Approach Detection)",
+                    "Pro Power Onboard – 2KW (removes Rear Under-seat storage)"
+                ]
+            },
+            "equipment_group_content": {
+                "402A": {
+                    "includes": [
+                        "Bed Utility Pkg",
+                        "Mobile Office Pkg",
+                        "Tow/Haul Pkg",
+                        "LED Taillamps",
+                        "Modular Front Bumper and Carbon Black Rear Bumper",
+                        "Hi-Lock Transfer Case",
+                        "Two-Speed Automatic AWD with Mechanical Locking 4WD",
+                        "Front axle w/ Torsen Differential",
+                        "Rain-Sensing Wipers",
+                        "Power-folding, Power Glass Sideview Mirrors with Heat, Turn Signal, Memory, Auto-Dimming Feature (Driver's Side), High-Intensity LED Security Approach Lamps, LED Sideview Mirror Spotlights with Body-color Skull Caps",
+                        "Pedals, Power-Adjustable w/Memory",
+                        "Media Bin Door",
+                        "Unique Tremor Leather-Trimmed Bucket Seats with heated and ventilated, memory driver's seat",
+                        "Second-row heated seats",
+                        "Heated Steering Wheel",
+                        "Premium Wrapped Steering Wheel",
+                        "B&O Unleashed Sound System by Bang & Olufsen with HD Radio (14 speakers including subwoofer)",
+                        "Heads-up Display",
+                        "Universal Garage Door Opener",
+                        "Ambient Lighting"
+                    ]
+                }
+            }
+        },
+        "Raptor": {
+            "series_codes": ["W1R"],
+            "equipment_groups": {
+                "801A": "Standard",
+                "802A": "Raptor 37",
+                "803A": "Raptor R"
+            },
+            "additions_over_lariat": {
+                "mechanical": [
+                    "3.5L V6 EcoBoost High Output Engine with Auto Start-Stop Technology",
+                    "4.10 Rear-Axle",
+                    "5-Link Rear Suspension w/ Panhard Rod",
+                    "Electronic Ten-Speed Automatic Transmission with Terrain Management Modes: Normal, Sport, Tow/Haul, Slippery, Rock Crawl, Off-Road, Baja",
+                    "Mechanical Locking 4WD Transfer Case",
+                    "MyMode",
+                    "Trail Control",
+                    "Long Travel Suspension w/Unique Front Upper & Lower control Arms and Unique Tie Rods",
+                    "SelectShift Automatic Transmission and Paddle Shifters",
+                    "Skid Plates – Heavy-Duty – Front and Engine",
+                    "Sport Tuned Shock Absorbers – Front and Rear – Fox Racing Shox with Live Valve Technology"
+                ],
+                "exterior": [
+                    "Black Surround Headlamps & Tail Lamps",
+                    "Dual Exhaust with Dual Tailpipes Under the Rear Bumper",
+                    "Flare Front Fenders w/Air Extractors, Flared Pickup Box Outers and Hood w/Air Extractors",
+                    "Front and Rear Tow Hooks",
+                    "Handles – Door and Tailgate Body-color",
+                    "Heavy-Duty Jack",
+                    "Integrated Marker Lights",
+                    "Rigid LED Fog Lamps",
+                    "Power-folding, Power Glass Sideview Mirrors with Heat, Turn Signal, Memory, Auto-Dimming Feature (Driver's Side), High-Intensity LED Security Approach Lamps, LED Sideview Mirror Spotlights w/ Body-Color Skull Caps",
+                    "Pro Power Onboard – 2KW",
+                    "Tailgate Applique FORD",
+                    "Wheels – 17\" Cast Aluminum",
+                    "Tires – LT315/70R17 BSW All-Terrain (A/T)",
+                    "Full Size Spare Tire",
+                    "Unique Front & Rear Bumper, Accent Color & Body-Color Fascia",
+                    "Unique Front & Rear-Wheellip Moldings",
+                    "Unique Front Grille w/ FORD lettering",
+                    "Unique Off-Road Style Running Boards"
+                ],
+                "interior_comfort": [
+                    "Onboard 400W outlet (Two (2) Outlets; One (1) in the IP and one (1) in the Flow-through Console; additional outlet in the bed)",
+                    "6 upfitter switches in overhead console",
+                    "Floor Mats – Unique Raptor Branded all-weather rubber floor",
+                    "Power-Adjustable Pedals w/ memory",
+                    "Power Windows (Front/Rear) – One-touch Up/Down Driver and Passenger Front Windows",
+                    "Power-Sliding rear-window with Privacy Tint and Defrost",
+                    "Remote Tailgate Release",
+                    "Scuff Plates – Aluminum",
+                    "Seat, Front – Leather-Trimmed w/ Flow through Console & Floor Shifter, Unique Seat Back Bolsters, 10-way Power Driver Seat with Power Lumbar, Multi-adjustable Power Passenger Seat, Heated/Ventilated Seats",
+                    "Seat, Rear – 60/40 flip-up split seat with elongated cushions, Heated Seats, Under seat storage",
+                    "Unique IP Center-Stack and Door-Trim Applique Finish",
+                    "Unique Steering Wheel – Heated Leather-Wrapped w/ Thumb Pads & Steering Wheel Controls",
+                    "Power Tilt/Telescoping with Memory",
+                    "Visors with Driver and Passenger Covered Mirrors"
+                ],
+                "safety_security": [
+                    "Integrated Trailer Brake Controller"
+                ],
+                "ford_copilot360": [
+                    "Ford Co-Pilot360 Assist 2.0",
+                    "360-Degree Camera",
+                    "Adaptive Cruise Control (ACC) with Lane Centering, Predictive Speed Assist, Stop & Go",
+                    "AEB Oncoming",
+                    "Driver State Detection",
+                    "Evasive Steering Assist",
+                    "Front Parking Sensors"
+                ],
+                "functional": [
+                    "Bed Utility Package",
+                    "Mobile Office Package",
+                    "B&O Unleashed Sound System by Bang & Olufsen HD Radio (14 speakers including subwoofer)",
+                    "Electric Power-Assisted Steering (EPAS) with Selectable Effort (Normal, Sport, and Comfort)",
+                    "Heads-Up Display",
+                    "Pro Trailer Backup Assist",
+                    "Pro Trailer Hitch Assist"
+                ]
+            },
+            "equipment_group_content": {
+                "802A": {
+                    "includes": [
+                        "37x12.5R17 BSW all-terrain tires (A/T)",
+                        "Raptor 37 Unique 17\" Cast Aluminum Bead-Lock Capable Wheels",
+                        "Dual Valve Shocks",
+                        "Modular Front Bumper",
+                        "Recaro Black Alcantara Suede Front-Seats w/ Unique Leather Seating Surfaces",
+                        "Carbon Fiber interior appliques"
+                    ]
+                },
+                "803A": {
+                    "includes": [
+                        "5.2L Supercharged V8 Engine",
+                        "37x12.5R17 BSW all-terrain tires (A/T)",
+                        "Front Tow Hooks – Code Orange",
+                        "Upgraded Dual Exhaust",
+                        "Modular Front Bumper",
+                        "Recaro Black Alcantara Suede Front-Seats w/ Unique Leather Seating Surfaces",
+                        "Raptor R Exterior Theme",
+                        "Raptor R Interior Theme",
+                        "Raptor R Exterior Graphics",
+                        "Raptor R Unique Hood Vent with R Badge",
+                        "Raptor R Unique Grille",
+                        "Raptor R Unique 17\" Forged Aluminum Bead-Lock Capable Wheels",
+                        "Raptor R Badge on tailgate applique",
+                        "Removes Pro Power Onboard – 2KW",
+                        "Unique Carbon Fiber Appliques",
+                        "Code Orange Stitching on doors and instrument panel",
+                        "Interior Code Orange Raptor R badging"
+                    ]
+                }
+            }
+        }
+    },
 
+    "configurations": {
+        "XL": {
+            "Regular Cab 4x2": {
+                "code": "F1K",
+                "wheelbases": {
+                    "122.5": {"bed": "6.5'", "description": "Short Box"},
+                    "141.0": {"bed": "8.0'", "description": "Long Box"}
+                }
+            },
+            "Regular Cab 4x4": {
+                "code": "F1L",
+                "wheelbases": {
+                    "122.5": {"bed": "6.5'", "description": "Short Box"},
+                    "141.0": {"bed": "8.0'", "description": "Long Box"}
+                }
+            },
+            "SuperCab 4x2": {
+                "code": "X1K",
+                "wheelbases": {
+                    "145.0": {"bed": "6.5'", "description": "Standard Box"}
+                }
+            },
+            "SuperCab 4x4": {
+                "code": "X1L",
+                "wheelbases": {
+                    "145.0": {"bed": "6.5'", "description": "Standard Box"}
+                }
+            },
+            "SuperCrew 4x2": {
+                "code": "W1K",
+                "wheelbases": {
+                    "145.0": {"bed": "5.5'", "description": "Short Box"}
+                }
+            },
+            "SuperCrew 4x4": {
+                "code": "W1L",
+                "wheelbases": {
+                    "145.0": {"bed": "5.5'", "description": "Short Box"},
+                    "157.0": {"bed": "6.5'", "description": "Long Box"}
+                }
+            },
+            "SuperCrew 4x4 Hybrid Fleet": {
+                "code": "W1F",
+                "wheelbases": {
+                    "145.0": {"bed": "5.5'", "description": "Short Box"},
+                    "157.0": {"bed": "6.5'", "description": "Long Box"}
+                }
+            }
+        },
+        "STX": {
+            "SuperCab 4x2": {"code": "X2K", "wheelbases": {"145.0": {"bed": "6.5'", "description": "Standard Box"}}},
+            "SuperCab 4x4": {"code": "X2L", "wheelbases": {"145.0": {"bed": "6.5'", "description": "Standard Box"}}},
+            "SuperCrew 4x2": {"code": "W2K", "wheelbases": {"145.0": {"bed": "5.5'", "description": "Short Box"}}},
+            "SuperCrew 4x4": {"code": "W2L", "wheelbases": {"145.0": {"bed": "5.5'", "description": "Short Box"}}}
+        },
+        "XLT": {
+            "SuperCab 4x2": {"code": "X3K", "wheelbases": {"145.0": {"bed": "6.5'", "description": "Standard Box"}}},
+            "SuperCab 4x4": {"code": "X3L", "wheelbases": {"145.0": {"bed": "6.5'", "description": "Standard Box"}}},
+            "SuperCrew 4x2": {"code": "W3K", "wheelbases": {"145.0": {"bed": "5.5'", "description": "Short Box"}}},
+            "SuperCrew 4x4": {
+                "code": "W3L",
+                "wheelbases": {
+                    "145.0": {"bed": "5.5'", "description": "Short Box"},
+                    "157.0": {"bed": "6.5'", "description": "Long Box"}
+                }
+            }
+        },
+        "Lariat": {
+            "SuperCrew 4x2": {"code": "W5K", "wheelbases": {"145.0": {"bed": "5.5'", "description": "Short Box"}}},
+            "SuperCrew 4x4": {
+                "code": "W5L",
+                "wheelbases": {
+                    "145.0": {"bed": "5.5'", "description": "Short Box"},
+                    "157.0": {"bed": "6.5'", "description": "Long Box"}
+                }
+            }
+        },
+        "King Ranch": {
+            "SuperCrew 4x2": {"code": "W6K", "wheelbases": {"145.0": {"bed": "5.5'", "description": "Short Box"}}},
+            "SuperCrew 4x4": {
+                "code": "W6L",
+                "wheelbases": {
+                    "145.0": {"bed": "5.5'", "description": "Short Box"},
+                    "157.0": {"bed": "6.5'", "description": "Long Box"}
+                }
+            }
+        },
+        "Platinum": {
+            "SuperCrew 4x2": {"code": "W7K", "wheelbases": {"145.0": {"bed": "5.5'", "description": "Short Box"}}},
+            "SuperCrew 4x4": {
+                "code": "W7L",
+                "wheelbases": {
+                    "145.0": {"bed": "5.5'", "description": "Short Box"},
+                    "157.0": {"bed": "6.5'", "description": "Long Box"}
+                }
+            }
+        },
+        "Tremor": {
+            "SuperCrew 4x4": {"code": "W4L", "wheelbases": {"145.0": {"bed": "5.5'", "description": "Short Box"}}}
+        },
+        "Raptor": {
+            "SuperCrew 4x4": {"code": "W1R", "wheelbases": {"145.0": {"bed": "5.5'", "description": "Short Box"}}}
+        }
+    },
 
-    {
-      "model": "F1K",
-      "wheelbase": "122.5",
-        {
-          "122.5": {
-            
-          }
+    "engines": {
+        "99P": {
+            "name": "2.7L V6 EcoBoost",
+            "displacement": "2.7L",
+            "configuration": "V6",
+            "type": "EcoBoost",
+            "features": ["Auto Start-Stop Technology"],
+            "horsepower": {"hp": 325, "rpm": 5000},
+            "torque": {"ft_lbs": 400, "rpm": 3000},
+            "compression_ratio": "10:1",
+            "availability": {
+                "standard": ["141\" WB", "145\" WB"],
+                "not_available": ["122\" WB", "157\" WB"]
+            }
         },
-        {
-          "length": 141.0
-        }
-      ]
-    },
-    {
-      "model": "F1L",
-      "description": ["XL","Regular Cab", "4x4"],
-      "valid": [
-        {
-          "wheelbase": 122.5,
-          "box_length": 6.5,
-          "description": "Short Box"
+        "995": {
+            "name": "5.0L V8",
+            "displacement": "5.0L",
+            "configuration": "V8",
+            "type": "Naturally Aspirated",
+            "features": ["Auto Start-Stop Technology"],
+            "horsepower": {"hp": 400, "rpm": 6000},
+            "torque": {"ft_lbs": 410, "rpm": 4250},
+            "compression_ratio": "12:1",
+            "availability": {
+                "standard": ["122\" WB", "157\" WB"],
+                "optional": ["145\" WB"]
+            }
         },
-        {
-          "wheelbase": 141.0,
-          "box_length": 8.0,
-          "description": "Long Box"
-        }
-      ]
-    },
-    {
-      "model": "X1K",
-      "description": ["XL","SuperCab", "4x2"],
-      "valid": [
-        {
-          "wheelbase": 145.0,
-          "box_length": 6.5,
-          "description": "Standard Box"
-        }
-      ]
-    },
-    {
-      "model": "X1L",
-      "description": ["XL","SuperCab", "4x4"],
-      "valid": [
-        {
-          "wheelbase": 145.0,
-        "box_length": 6.5,
-          "description": "Standard Box"
-        }
-      ]
-    },
-    {
-      "model": "W1K",
-      "description": ["XL","SuperCrew", "4x2"],
-      "valid": [
-        {
-          "wheelbase": 145.0,
-          "box_length": 5.5,
-          "description": "Short Box"
-        }
-      ]
-    },
-    {
-      "model": "W1L",
-      "description": ["XL","SuperCrew", "4x4"],
-      "valid": [
-        {
-          "wheelbase": 145.0,
-          "box_length": 5.5,
-          "description": "Short Box"
+        "998": {
+            "name": "3.5L V6 EcoBoost",
+            "displacement": "3.5L",
+            "configuration": "V6",
+            "type": "EcoBoost",
+            "features": ["Auto Start-Stop Technology"],
+            "horsepower": {"hp": 400, "rpm": 6000},
+            "torque": {"ft_lbs": 500, "rpm": 3100},
+            "compression_ratio": "10.5:1",
+            "availability": {
+                "not_available": ["122\" WB"]
+            }
         },
-        {
-          "wheelbase": 157.0,
-          "box_length": 6.5,
-          "description": "Long Box"
-        }
-      ]
-    },
-    {
-      "model": "W1F",
-      "description": ["XL","SuperCrew", "4x4", "Hybrid Fleet Only"],
-      "valid": [
-        {
-          "wheelbase": 145.0,
-          "box_length": 5.5,
-          "description": "Short Box"
+        "99D": {
+            "name": "3.5L PowerBoost Full Hybrid V6",
+            "displacement": "3.5L",
+            "configuration": "V6",
+            "type": "Hybrid",
+            "features": ["Auto Start-Stop Technology", "Pro Power Onboard – 2.4KW included"],
+            "horsepower": {"hp": 430, "rpm": 6000},
+            "torque": {"ft_lbs": 570, "rpm": 3000},
+            "compression_ratio": "10.5:1",
+            "requirements": ["Hybrid Electronic Ten-Speed Automatic Transmission (44H)", "4x4"],
+            "notes": ["Removes 36 Gallon Fuel Tank"]
         },
-        {
-          "wheelbase": 157.0,
-          "box_length": 6.5,
-          "description": "Long Box"
-        }
-      ]
-    },
-    {
-      "model": "X2K",
-      "description": ["STX","SuperCab", "4x2"],
-      "valid": [
-        {
-          "wheelbase": 145.0,
-          "box_length": 6.5,
-          "description": "Standard Box"
-        }
-      ]
-    },
-    {
-      "model": "X2L",
-      "description": ["STX","SuperCab", "4x4"],
-      "valid": [
-        {
-          "wheelbase": 145.0,
-          "box_length": 6.5,
-          "description": "Standard Box"
-        }
-      ]
-    },
-    {
-      "model": "W2K",
-      "description": ["STX","SuperCrew", "4x2"],
-      "valid": [
-        {
-          "wheelbase": 145.0,
-          "box_length": 5.5,
-          "description": "Short Box"
-        }
-      ]
-    },
-    {
-      "model": "W2L",
-      "description": ["STX","SuperCrew", "4x4"],
-      "valid": [
-        {
-          "wheelbase": 145.0,
-          "box_length": 5.5,
-          "description": "Short Box"
-        }
-      ]
-    },
-    {
-      "model": "X3K",
-      "description": ["XLT","SuperCab", "4x2"],
-      "valid": [
-        {
-          "wheelbase": 145.0,
-          "box_length": 6.5,
-          "description": "Standard Box"
-        }
-      ]
-    },
-    {
-      "model": "X3L",
-      "description": ["XLT","SuperCab", "4x4"],
-      "valid": [
-        {
-          "wheelbase": 145.0,
-          "box_length": 6.5,
-          "description": "Standard Box"
-        }
-      ]
-    },
-    {
-      "model": "W3K",
-      "description": ["XLT","SuperCrew", "4x2"],
-      "valid": [
-        {
-          "wheelbase": 145.0,
-          "box_length": 5.5,
-          "description": "Short Box"
-        }
-      ]
-    },
-    {
-      "model": "W3L",
-      "description": ["XLT","SuperCrew", "4x4"],
-      "valid": [
-        {
-          "wheelbase": 145.0,
-          "box_length": 5.5,
-          "description": "Short Box"
+        "99G": {
+            "name": "3.5L V6 EcoBoost High Output",
+            "displacement": "3.5L",
+            "configuration": "V6",
+            "type": "EcoBoost High Output",
+            "features": ["Auto Start-Stop Technology"],
+            "horsepower": {"hp": 450, "rpm": 5250},
+            "torque": {"ft_lbs": 510, "rpm": 3000},
+            "compression_ratio": "10.5:1",
+            "availability": {
+                "standard": ["Raptor 801A", "Raptor 802A"]
+            }
         },
-        {
-          "wheelbase": 157.0,
-          "box_length": 6.5,
-          "description": "Long Box"
+        "99J": {
+            "name": "5.2L Supercharged V8",
+            "displacement": "5.2L",
+            "configuration": "V8",
+            "type": "Supercharged",
+            "features": [],
+            "horsepower": {"hp": 720, "rpm": 6650},
+            "torque": {"ft_lbs": 640, "rpm": 4250},
+            "compression_ratio": "9.5:1",
+            "availability": {
+                "standard": ["Raptor R 803A"]
+            }
         }
-      ]
     },
-    {
-      "model": "W5K",
-      "description": ["LARIAT","SuperCrew", "4x2"],
-      "valid": [
-        {
-          "wheelbase": 145.0,
-          "box_length": 5.5,
-          "description": "Short Box"
-        }
-      ]
-    },
-    {
-      "model": "W5L",
-      "description": ["LARIAT","SuperCrew", "4x4"],
-      "valid": [
-        {
-          "wheelbase": 145.0,
-          "box_length": 5.5,
-          "description": "Short Box"
+
+    "transmissions": {
+        "44G": {
+            "name": "Electronic Ten-Speed Automatic Transmission",
+            "type": "Automatic",
+            "speeds": 10,
+            "features": ["SelectShift with Progressive Range Select"]
         },
-        {
-          "wheelbase": 157.0,
-          "box_length": 6.5,
-          "description": "Long Box"
+        "44H": {
+            "name": "Hybrid Electronic Ten-Speed Automatic Transmission",
+            "type": "Automatic",
+            "speeds": 10,
+            "requirements": ["3.5L PowerBoost Full Hybrid V6 Engine (99D)"]
         }
-      ]
     },
-    {
-      "model": "W6K",
-      "description": ["KING RANCH","SuperCrew", "4x2"],
-      "valid": [
-        {
-          "wheelbase": 145.0,
-          "box_length": 5.5,
-          "description": "Short Box"
-        }
-      ]
-    },
-    {
-      "model": "W6L",
-      "description": ["KING RANCH","SuperCrew", "4x4"],
-      "valid": [
-        {
-          "wheelbase": 145.0,
-          "box_length": 5.5,
-          "description": "Short Box"
+
+    "packaged_options": {
+        "191": {
+            "name": "STX Black Appearance Package",
+            "code": "191",
+            "availability": ["STX 200A"],
+            "not_available_with": [],
+            "requires": [],
+            "includes": [
+                "6\" Black Running Boards",
+                "20\" Gloss black wheels",
+                "Black exterior badging",
+                "Box Side Decal – Gray (4x4 only)"
+            ]
         },
-        {
-          "wheelbase": 157.0,
-          "box_length": "6.5 ft",
-          "description": "Long Box"
-        }
-      ]
-    },
-    {
-      "model": "W7K",
-      "description": ["PLATINUM","SuperCrew", "4x2"],
-      "valid": [
-        {
-          "wheelbase": 145.0,
-          "box_length": "5.5 ft",
-          "description": "Short Box"
-        }
-      ]
-    },
-    {
-      "model": "W7L",
-      "description": ["PLATINUM","SuperCrew", "4x4"],
-      "valid": [
-        {
-          "wheelbase": 145.0,
-          "box_length": "5.5 ft",
-          "description": "Short Box"
+        "19S": {
+            "name": "Lobo Package",
+            "code": "19S",
+            "availability": ["STX 200A"],
+            "not_available_with": ["4x2"],
+            "requires": ["5.0L V8 engine (995)", "Crew Cab"],
+            "includes": [
+                "22\" Aluminum Wheel (64D)",
+                "3.73 Final Drive Ratio",
+                "Dual Exhaust w/ Black Tips",
+                "Lower Body Ground Effects",
+                "Painted Grille",
+                "Signature Lighting",
+                "Ride Height Lowered Shocks (Rear)",
+                "Two-Speed Automatic 4WD with Neutral Towing Capability"
+            ]
         },
-        {
-          "wheelbase": 157.0,
-          "box_length": 6.5,
-          "description": "Long Box"
+        "193": {
+            "name": "XLT Black Appearance Package",
+            "code": "193",
+            "availability": ["XLT 301A", "XLT 302A"],
+            "not_available_with": ["XLT Black Appearance Pkg Plus (19P)", "3.5L V6 EcoBoost engine (998) 4x2"],
+            "requires": ["145\" Wheelbase", "SuperCrew"],
+            "includes": [
+                "18\" Gloss black wheels",
+                "6\" Black Running Boards",
+                "Body-color front and rear bumpers",
+                "Box Side Decal – Gray (4x4 and FX4 Off-Road Package (55A) only)",
+                "Black exterior badging",
+                "Floor Shifter",
+                "Grille – Black",
+                "Dark interior appliques"
+            ]
+        },
+        "19P": {
+            "name": "XLT Black Appearance Package Plus",
+            "code": "19P",
+            "availability": ["XLT 302A", "XLT 303A"],
+            "not_available_with": ["3.5L V6 EcoBoost engine (998) 4x2", "XLT Black Appearance Pkg (193)"],
+            "requires": ["145\" Wheelbase", "SuperCrew"],
+            "includes": [
+                "20\" Gloss black painted aluminum wheel",
+                "6\" Black Running Boards",
+                "Body-color front and rear bumpers",
+                "Box Side Decal – Gray (4x4 and FX4 Off-Road Package (55A) only)",
+                "Black exterior badging",
+                "Floor Shifter",
+                "Grille – Black",
+                "Dual Exhaust w/ Black tips",
+                "Dark interior appliques",
+                "ActiveX Trimmed (303A only)"
+            ]
+        },
+        "195": {
+            "name": "Lariat Black Appearance Package",
+            "code": "195",
+            "availability": ["Lariat 500A", "Lariat 501A", "Lariat 502A"],
+            "not_available_with": [],
+            "requires": ["145\" Wheelbase"],
+            "includes": [
+                "6\" Black Running Boards",
+                "Black exterior badging",
+                "Black Taillamp Bezels",
+                "Body-color front and rear bumpers",
+                "Body-color skull caps and door handles",
+                "Box Side Decal – Gray",
+                "Grille – Black",
+                "Dark interior appliques"
+            ],
+            "equipment_group_specific": {
+                "500A": ["18\" Gloss black wheels"],
+                "501A": [
+                    "6\" Black Running Boards (6\" Extended Black Running Boards w/ Bed Utility Pkg (68L))",
+                    "20\" Gloss black painted aluminum wheel",
+                    "Dual Exhaust with Black Tips"
+                ],
+                "502A": [
+                    "6\" Extended Black Running Boards",
+                    "20\" Gloss black painted aluminum wheel",
+                    "Dual Exhaust with Black Tips"
+                ]
+            },
+            "optional_equipment": ["22\" Gloss Black Wheel (req. 502A and 3.5L PowerBoost Full Hybrid V6 engine (99D))"],
+            "notes": ["When 4x2 is ordered front tow hooks will be removed"]
+        },
+        "55A": {
+            "name": "FX4 Off-Road Package",
+            "code": "55A",
+            "availability": ["XLT 301A", "XLT 302A", "XLT 303A", "Lariat", "King Ranch", "Platinum 701A", "Platinum 702A"],
+            "not_available_with": ["22\" wheel on Lariat 502A", "22\" wheel on Platinum 702A"],
+            "requires": ["4x4"],
+            "includes": [
+                "3.31 Electronic-locking rear-axle with 5.0L V8 engine (995) or 3.5L V6 EcoBoost engine (998)",
+                "3.55 Electronic-locking rear-axle with 2.7L V6 EcoBoost (99P)",
+                "4x4 FX4 Off-Road bodyside decal",
+                "Floor Liner – Tray Style (less Carpeted Matching Floor Mats – included only when carpet is present with XL, XLT and Lariat)",
+                "Floor Liner – Tray Style (47R) – included with King Ranch and Platinum",
+                "Hill Descent Control",
+                "Off-Road tuned front shock absorbers",
+                "Monotube Rear Shocks",
+                "Rock Crawl Mode",
+                "Skid plates: fuel tank, transfer case and front differential"
+            ],
+            "optional_equipment": [
+                "3.55 Electronic-locking rear-axle (requires 3.5L V6 EcoBoost engine (998))",
+                "3.73 Electronic-locking rear-axle (requires 5.0L V8 engine (995) or 2.7L V6 EcoBoost engine (99P))",
+                "LT265/70R17C BSW all-terrain tires (A/T) (T7C) – Fleet only",
+                "LT265/70R18C BSW A/T (T8C)"
+            ]
+        },
+        "53T": {
+            "name": "Tow/Haul Package",
+            "code": "53T",
+            "availability": ["XL", "STX 200A", "STX 201A", "XLT", "Lariat", "Tremor 401A"],
+            "standard_on": ["Tremor 402A", "King Ranch", "Platinum"],
+            "not_available_with": ["2.7L Engine"],
+            "requires": [],
+            "includes": [
+                "Integrated Trailer Brake Controller",
+                "3.55 Electronic-locking rear-axle (requires 3.5L V6 EcoBoost engine (998))",
+                "3.73 Electronic-locking rear-axle (requires 5.0L V8 engine (995); std on 3.5L PowerBoost Full Hybrid V6 engine (99D))"
+            ],
+            "optional_equipment": [
+                "Max Tow Axle required for maximum trailer tow capability",
+                "3.55 Max Tow Electronic-locking rear-axle (XL5) (NA on XL, 300A, 17\" Wheels, 18\" Chrome-like PVD or 22\" Wheels)",
+                "3.73 Max Tow Electronic-locking rear-axle (XL7) (NA on XL, 300A, 17\" Wheels, 18\" Chrome-like PVD or 22\" Wheels)"
+            ]
+        },
+        "68L": {
+            "name": "Bed Utility Package",
+            "code": "68L",
+            "availability": ["XLT", "Lariat", "Tremor 401A"],
+            "standard_on": ["Tremor 402A", "King Ranch", "Platinum", "Raptor"],
+            "not_available_with": [],
+            "requires": [],
+            "includes": {
+                "XLT and Lariat 500A": [
+                    "Tailgate Step (63T)",
+                    "Tailgate Work Surface",
+                    "Four (4) pickup box tie-down plates",
+                    "LED Box Lighting"
+                ],
+                "Lariat 501A/502A, King Ranch, Platinum": [
+                    "Tailgate Step (63T)",
+                    "Tailgate Work Surface",
+                    "Four (4) pickup box tie-down plates",
+                    "LED Box Lighting",
+                    "6\" Extended Running Boards (NA w/ 157\" WB)",
+                    "Pro Access Tailgate (63M) (Note: Pro Access Tailgate replaces the Tailgate Step)",
+                    "Power Tailgate"
+                ],
+                "Tremor 401A and Raptor": [
+                    "Tailgate Step (63T)",
+                    "Tailgate Work Surface",
+                    "Four (4) pickup box tie-down plates",
+                    "LED Box Lighting",
+                    "Power Tailgate"
+                ]
+            },
+            "notes": ["Power Deployable Running Boards standard on King Ranch and Platinum"]
+        },
+        "50M": {
+            "name": "Mobile Office Package",
+            "code": "50M",
+            "availability": ["STX 200A", "STX 201A", "XLT 301A", "XLT 302A", "Lariat 501A", "Tremor 401A"],
+            "standard_on": ["XLT 303A", "Lariat 502A", "King Ranch", "Platinum", "Tremor 402A", "Raptor"],
+            "not_available_with": [],
+            "requires": [],
+            "includes": {
+                "STX": [
+                    "Console Worksurface",
+                    "400W Outlets (Cab & Bed)",
+                    "Note: Bucket Seats std feature on STX"
+                ],
+                "XLT 301A": [
+                    "Console Worksurface",
+                    "400W Outlets (Cab & Bed)",
+                    "Bucket Seats",
+                    "Lockable Rear Storage (SuperCrew only)"
+                ],
+                "XLT 302A/303A, Lariat, King Ranch, Platinum, Tremor, Raptor": [
+                    "Console Worksurface",
+                    "400W Outlets (Cab & Bed)",
+                    "Bucket Seats",
+                    "Lockable Rear Storage (SuperCrew only)",
+                    "Wireless Charging"
+                ]
+            },
+            "notes": [
+                "Bucket Seats and 400W Outlets (Cab & Bed) std feature on XLT 302A/303A, Lariat, King Ranch, Platinum, Tremor and Raptor",
+                "On King Ranch, Platinum 701A/702A, Tremor 402A and Raptor 801A/802A 2KW Pro Power Onboard replaces 400W Outlets",
+                "When 3.5L PowerBoost Full Hybrid V6 engine (99D) is ordered 2.4KW Pro Power Onboard replaces 400W Outlets"
+            ]
         }
-      ]
     },
-    {
-      "model": "W4L",
-      "description": ["TREMOR","SuperCrew", "4x4"],
-      "valid": [
-        {
-          "wheelbase": 145.0,
-          "box_length": 5.5,
-          "description": "Short Box"
-        }
-      ]
+
+    "free_standing_options": {
+        "41H": {"name": "Engine Block Heater", "notes": ["Front License Plate Bracket (153) is required w/ 5.0L V8 (995) Engine"]},
+        "18B": {"name": "Black Platform Running Boards"},
+        "18C": {"name": "6\" Angular Bright Anodized Step Bar"},
+        "477": {"name": "Pro Power Onboard – 7.2 KW", "requires": ["3.5L PowerBoost Full Hybrid V6 Engine (99D)"]},
+        "63T": {"name": "Tailgate Step w/ Work Surface"},
+        "63M": {"name": "Pro Access Tailgate"},
+        "924": {"name": "Rear-Window, Fixed Privacy Glass with Defroster"},
+        "A": {"name": "Vinyl 40/20/40 Front-Seat"},
+        "67T": {"name": "Integrated Trailer Brake Controller", "requires": ["2.7L V6 EcoBoost (99P)"]},
+        "153": {"name": "Front License Plate Bracket", "notes": ["Standard in states where required by law, opt. to all others"]},
+        "52A": {"name": "BlueCruise (Equipment + 1-year Plan)"},
+        "64N": {"name": "18\" Painted Aluminum Wheel"},
+        "64L": {"name": "20\" Chrome-like PVD Wheel"},
+        "43V": {"name": "Twin Panel Moonroof"},
+        "47R": {"name": "Floor Liner – Tray Style"},
+        "54Y": {"name": "Manual-folding, Power Glass Trailer Tow Mirrors"},
+        "59S": {"name": "LED Sideview Mirror Spotlights (Tow Mirrors)"},
+        "54W": {"name": "Power-folding, PowerScope Telescoping Trailer Tow Mirrors"},
+        "645": {"name": "20\" Alloy Dark Carbonized Gray Wheel"},
+        "649": {"name": "22\" Chrome Wheel without Inserts"},
+        "64Z": {"name": "22\" Gloss Black Wheel without Inserts"},
+        "646": {"name": "22\" Premium Painted w/ Chrome Inserts Wheel"},
+        "648": {"name": "22\" Gloss Black Wheel w/ Inserts"},
+        "16A": {"name": "Heads-Up Display Delete"},
+        "55D": {"name": "Graphics Delete"}
     },
-    {
-      "model": "W1R",
-      "description": ["RAPTOR","SuperCrew", "4x4"],
-      "valid": [
-        {
-          "wheelbase": 145.0,
-          "box_length": 5.5,
-          "description": "Short Box"
+
+    "ford_accessories": {
+        "90B": {"name": "Aluminum Crossbed Toolbox by Weather Guard – Matte Black", "model": "127-52-03"},
+        "90P": {"name": "Aluminum Crossbed Toolbox by Weather Guard – Bright", "model": "127-0-03"},
+        "96W": {"name": "Bedliner – Tough Bed spray-in"},
+        "96P": {"name": "Bedliner – Plastic drop-in"},
+        "66C": {"name": "Paint Protection Film"},
+        "96X": {"name": "Tonneau Pickup Box Cover – Hard Folding"},
+        "96T": {"name": "Tonneau Pickup Box Cover – Soft Folding"},
+        "96J": {"name": "Tonneau Pickup Box Cover – Retractable"},
+        "66B": {"name": "Retractable Rear Center Step"},
+        "96L": {"name": "Wheel Well Liner"}
+    },
+
+    "fleet_only_options": {
+        "91P": {"name": "8-way Power Driver's Seat – Power Lumbar Driver"},
+        "94S": {"name": "LED Warning Beacons by Sound Off Signal – Amber strobe color"},
+        "94W": {"name": "LED Warning Beacons by Sound Off Signal – Amber/White strobe color"},
+        "85H": {"name": "Back-up Alarm System"},
+        "942": {"name": "Daytime Running Lamps (DRL) (Non-controllable)"},
+        "413": {"name": "Skid Plates"},
+        "T7C": {"name": "LT265/70R17C BSW all-terrain tires"},
+        "T8C": {"name": "LT265/70R18C BSW all-terrain tires"},
+        "16G": {"name": "Vinyl Flooring – Black"}
+    },
+
+    "axle_availability": {
+        "non_limited_slip": {
+            "X15": {"ratio": "3.15", "type": "Non-Limited-Slip"},
+            "X27": {"ratio": "3.31", "type": "Non-Limited-Slip"},
+            "X19": {"ratio": "3.55", "type": "Non-Limited-Slip"}
+        },
+        "electronic_locking": {
+            "XL3": {"ratio": "3.31", "type": "Electronic-Locking"},
+            "XL9": {"ratio": "3.55", "type": "Electronic-Locking"},
+            "XL6": {"ratio": "3.73", "type": "Electronic-Locking"},
+            "XL4": {"ratio": "4.10", "type": "Electronic-Locking"}
+        },
+        "max_tow": {
+            "XL5": {"ratio": "3.55", "type": "Max Tow Electronic-Locking"},
+            "XL7": {"ratio": "3.73", "type": "Max Tow Electronic-Locking"}
+        },
+        "by_engine": {
+            "2.7L V6 4x2": {"standard": "3.31", "optional": ["3.55", "3.73"]},
+            "2.7L V6 4x4": {"standard": "3.31", "optional": ["3.55", "3.73"]},
+            "5.0L V8 122\"/141\" 4x2/4x4": {"standard": "3.73"},
+            "5.0L V8 145\" 4x2": {"standard": "3.15", "optional": ["3.31", "3.55", "3.73"]},
+            "5.0L V8 145\"/157\" 4x4": {"standard": "3.31", "optional": ["3.55", "3.73"]},
+            "3.5L V6 EcoBoost 4x2": {"standard": "3.31", "optional": ["3.55", "3.73"]},
+            "3.5L V6 EcoBoost 4x4": {"standard": "3.31", "optional": ["3.55", "3.73"]},
+            "3.5L V6 EcoBoost High Output 4x4": {"standard": "4.10"},
+            "3.5L Hybrid 4x4": {"standard": "3.73", "optional": ["Max Tow"]},
+            "5.2L V8 4x4": {"standard": "4.10"}
         }
-      ]
+    },
+
+    "colors": {
+        "exterior": {
+            "standard": {
+                "UM": {"name": "Agate Black Metallic", "type": "standard"},
+                "HX": {"name": "Antimatter Blue Metallic", "type": "extra_charge"},
+                "B3": {"name": "Atlas Blue Metallic", "type": "extra_charge"},
+                "M7": {"name": "Carbonized Gray Metallic", "type": "standard"},
+                "JS": {"name": "Iconic Silver Metallic", "type": "standard"},
+                "YZ": {"name": "Oxford White", "type": "standard"},
+                "D4": {"name": "Rapid Red Metallic Tinted Clearcoat", "type": "extra_charge"},
+                "A3": {"name": "Space White Metallic", "type": "extra_charge"},
+                "AZ": {"name": "Star White Metallic Tri-Coat", "type": "extra_charge"},
+                "T9": {"name": "Marsh Gray", "type": "extra_charge"}
+            },
+            "raptor_exclusive": {
+                "DB": {"name": "Shelter Green", "type": "extra_charge"}
+            },
+            "fleet_only": {
+                "GR": {"name": "Green", "type": "fleet"},
+                "MB": {"name": "Orange", "type": "fleet"},
+                "B1": {"name": "School Bus Yellow", "type": "fleet"},
+                "E4": {"name": "Vermillion Red", "type": "fleet"},
+                "AT": {"name": "Yellow", "type": "fleet"}
+            }
+        },
+        "interior_environments": {
+            "XL": {
+                "AS": {"name": "Vinyl 40/20/40 Front-Seat", "color": "Medium Dark Slate"},
+                "CS": {"name": "Cloth 40/20/40 Front-Seat", "color": "Medium Dark Slate"},
+                "US": {"name": "Cloth 40/Console/40 Front-Seats", "color": "Medium Dark Slate"}
+            },
+            "STX": {
+                "DB": {"name": "Unique Sport Cloth 40/Console/40", "color": "Black"},
+                "8B": {"name": "Unique Cloth 40/Console/40 (201A)", "color": "Black/Bronze"}
+            },
+            "XLT": {
+                "CS": {"name": "Cloth 40/20/40 Front-Seat", "color": "Medium Dark Slate"},
+                "MS": {"name": "Cloth 40/20/40 Front-Seat", "color": "Smoked Truffle"},
+                "US": {"name": "Cloth 40/Console/40 Front-Seats", "color": "Medium Dark Slate"},
+                "6B": {"name": "Cloth 40/Console/40 Front-Seats", "color": "Medium Dark Slate"},
+                "7B": {"name": "Cloth 40/Console/40 Front-Seats", "color": "Smoked Truffle"},
+                "FB": {"name": "Unique Sport Cloth 40/Console/40 (Black Appearance Pkg)", "color": "Black"},
+                "3B": {"name": "ActiveX Trimmed 40/Console/40 (Black Appearance Pkg Plus)", "color": "Black"}
+            },
+            "Lariat": {
+                "JS": {"name": "ActiveX Trimmed 40/Console/40", "color": "Medium Dark Slate"},
+                "GB": {"name": "ActiveX Trimmed 40/Console/40", "color": "Smoked Truffle"},
+                "JB": {"name": "ActiveX Trimmed 40/Console/40", "color": "Black"},
+                "BB": {"name": "ActiveX Trimmed 40/Console/40 (Black Appearance Pkg)", "color": "Black"}
+            },
+            "King Ranch": {
+                "KJ": {"name": "King Ranch Leather Bucket Seats", "color": "Norias/Mesa"}
+            },
+            "Platinum": {
+                "9B": {"name": "Unique multicontour seats with Active Motion Leather", "color": "Black/Blue"}
+            },
+            "Platinum Plus": {
+                "TP": {"name": "Full Quilted Leather Seats w/ Platinum Badge", "color": "Smoked Truffle"}
+            },
+            "Tremor": {
+                "LB": {"name": "Unique Black Sport Cloth 40/Console/40 (401A)", "color": "Black"},
+                "NB": {"name": "Unique Tremor Leather-Trimmed bucket seats (402A)", "color": "Black"}
+            },
+            "Raptor": {
+                "RB": {"name": "Leather-Trimmed (801A)", "color": "Black"},
+                "5B": {"name": "Recaro Black Alcantara Suede Front-Seats (802A)", "color": "Black"},
+                "SB": {"name": "Recaro Black Front-Seats w/ Code Orange Stitching (803A)", "color": "Black"}
+            }
+        }
+    },
+
+    "color_availability": {
+        "XL": {
+            "exterior": ["UM", "HX", "B3", "M7", "JS", "YZ"],
+            "seat_color": "Medium Dark Slate"
+        },
+        "STX": {
+            "exterior": ["UM", "B3", "M7", "JS", "YZ", "D4", "A3"],
+            "seat_colors": ["Black", "Black/Bronze (201A)"],
+            "notes": ["Marsh Gray (T9) available on 201A only"]
+        },
+        "Lobo Package": {
+            "exterior": ["UM", "B3", "M7", "YZ", "D4"],
+            "seat_color": "Black"
+        },
+        "XLT": {
+            "exterior": ["UM", "B3", "M7", "JS", "YZ", "D4", "A3", "T9"],
+            "seat_colors": ["Medium Dark Slate", "Smoked Truffle"],
+            "notes": ["Marsh Gray (T9) NA w/ 300A or 40/20/40 Seats"]
+        },
+        "XLT Black Appearance Package": {
+            "exterior": ["UM", "HX", "M7", "JS", "YZ", "D4", "A3"],
+            "seat_color": "Black"
+        },
+        "Lariat": {
+            "exterior": ["UM", "HX", "B3", "M7", "JS", "YZ", "D4", "A3", "T9", "AZ"],
+            "seat_colors": ["Medium Dark Slate", "Smoked Truffle", "Black"],
+            "notes": ["Marsh Gray (T9) NA w/ 500A", "Star White (AZ) NA w/ 500A"]
+        },
+        "Lariat Black Appearance Package": {
+            "exterior": ["UM", "HX", "M7", "JS", "YZ", "D4", "A3", "AZ"],
+            "seat_color": "Black",
+            "notes": ["Star White (AZ) NA w/ 500A"]
+        },
+        "King Ranch": {
+            "exterior": ["UM", "HX", "M7", "D4", "AZ"],
+            "two_tone": "Marsh Gray (T9)",
+            "seat_color": "Norias/Mesa"
+        },
+        "Platinum": {
+            "exterior": ["UM", "HX", "M7", "JS", "D4", "A3", "AZ"],
+            "seat_color": "Black/Blue"
+        },
+        "Platinum Plus": {
+            "exterior": ["UM", "M7", "D4", "T9", "AZ"],
+            "seat_color": "Smoked Truffle"
+        },
+        "Tremor": {
+            "exterior": ["UM", "HX", "M7", "JS", "YZ", "A3"],
+            "seat_color": "Black"
+        },
+        "Raptor": {
+            "exterior": ["UM", "HX", "M7", "YZ", "D4", "DB", "A3"],
+            "seat_color": "Black",
+            "notes": ["Rapid Red (D4) requires Graphics Delete (55D) on 801A/802A"]
+        }
+    },
+
+    "emissions": {
+        "425": "50-State Emissions System"
+    },
+
+    "miscellaneous_codes": {
+        "79V": "COV Required",
+        "C09": "Priced DORA"
     }
-  ]
+}
